@@ -1,8 +1,8 @@
-﻿# OneSync Reader
+﻿# JetReader
 
-E-book reader in Xamarin.Forms with synchronization via Dropbox or Firebase.
+Yet another eReader app, based on "OneSync Reader" (https://bares43.github.io/onesync-reader/).
 
-https://bares43.github.io/onesync-reader/
+The text below is from OneSync, will be updated as things change.
 
 ## Getting Started
 
