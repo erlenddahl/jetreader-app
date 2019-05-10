@@ -65,7 +65,7 @@
                             </StackLayout>
                             <Label Text="Using device name you can distinguish reading progress on your devices." Style="{StaticResource note}" />
                         </StackLayout>
-                        
+
                         <StackLayout Style="{StaticResource wrapper}">
                             <StackLayout Orientation="Horizontal" CompressedLayout.IsHeadless="true">
                                 <Label Text="Synchronization provider" Style="{StaticResource title}" />
@@ -76,7 +76,7 @@
                                 </Picker>
                             </StackLayout>
                         </StackLayout>
-
+                        
                         <StackLayout IsVisible="{Binding SynchronizationService.Value, Converter={converter:EqualConverter}, ConverterParameter='Dropbox'}}">
                             <StackLayout Style="{StaticResource wrapper}">
                                 <Label Text="Your data will be synchronize using your Dropbox account. The app does not have access to your entire Dropbox, but only to one dedicated folder." Style="{StaticResource note}"></Label>
@@ -90,7 +90,7 @@
                             </StackLayout>
 
                         </StackLayout>
-
+                        
                         <StackLayout IsVisible="{Binding SynchronizationService.Value, Converter={converter:EqualConverter}, ConverterParameter='E-mail'}}" Padding="0">
                             <StackLayout Style="{StaticResource wrapper}">
                                 <Label Text="Your data will be synchronize using Firebase. Just login with same credentials on all your devices." Style="{StaticResource note}"></Label>

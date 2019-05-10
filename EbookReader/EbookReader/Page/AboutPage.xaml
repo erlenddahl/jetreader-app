@@ -20,24 +20,19 @@
     
     <ContentPage.Content>
         <StackLayout Padding="15" CompressedLayout.IsHeadless="true">
-            <Label Text="OneSync Reader"
+            <Label Text="JetReader"
                    FontSize="Large"
                    Margin="10"/>
             <Label Text="{Binding Version}" FontSize="Small" />
             <Label Text="{Binding Copyright}"></Label>
-            <Label Text="https://bares43.github.io/onesync-reader/" Style="{StaticResource link}">
+            <Label Text="https://github.com/erlenddahl/jetreader" Style="{StaticResource link}">
                 <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding OpenUrlCommand}" CommandParameter="https://bares43.github.io/onesync-reader/"></TapGestureRecognizer>
+                    <TapGestureRecognizer Command="{Binding OpenUrlCommand}" CommandParameter="https://github.com/erlenddahl/jetreader"></TapGestureRecognizer>
                 </Label.GestureRecognizers>
             </Label>
-            <Label Text="https://github.com/bares43/onesync-reader-app" Style="{StaticResource link}">
+            <Label Text="erlenddahl.net" Style="{StaticResource link}">
                 <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding OpenUrlCommand}" CommandParameter="https://github.com/bares43/onesync-reader-app"></TapGestureRecognizer>
-                </Label.GestureRecognizers>
-            </Label>
-            <Label Text="janbares.cz" Style="{StaticResource link}">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding OpenUrlCommand}" CommandParameter="https://janbares.cz"></TapGestureRecognizer>
+                    <TapGestureRecognizer Command="{Binding OpenUrlCommand}" CommandParameter="https://erlenddahl.net"></TapGestureRecognizer>
                 </Label.GestureRecognizers>
             </Label>
 
