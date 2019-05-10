@@ -12,37 +12,23 @@ using Xamarin.Forms.Xaml;
 
 namespace EbookReader.Page {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class MasterDetailPage1Master : ContentPage {
-        public ListView ListView;
+    public partial class MasterDetailPage1Master : ContentPage
+    {
+        public ListView ListView => MenuItemsListView;
+        public List<MasterDetailPage1MenuItem> MenuItems { get; set; }
 
-        public MasterDetailPage1Master() {
+        public MasterDetailPage1Master()
+        {
+            MenuItems = new List<MasterDetailPage1MenuItem>(new[]
+            {
+                new MasterDetailPage1MenuItem { Id = 0, Title = "My Books", TargetType = typeof(HomePage) },
+                new MasterDetailPage1MenuItem { Id = 1, Title = "Settings", TargetType = typeof(SettingsPage) },
+                new MasterDetailPage1MenuItem { Id = 2, Title = "About", TargetType = typeof(AboutPage) },
+            });
+
             InitializeComponent();
 
-            BindingContext = new MasterDetailPage1MasterViewModel();
-            ListView = MenuItemsListView;
-        }
-
-        class MasterDetailPage1MasterViewModel : INotifyPropertyChanged {
-            public ObservableCollection<MasterDetailPage1MenuItem> MenuItems { get; set; }
-
-            public MasterDetailPage1MasterViewModel() {
-                MenuItems = new ObservableCollection<MasterDetailPage1MenuItem>(new[]
-                {
-                    new MasterDetailPage1MenuItem { Id = 0, Title = "My Books", TargetType = typeof(HomePage) },
-                    new MasterDetailPage1MenuItem { Id = 1, Title = "Settings", TargetType = typeof(SettingsPage) },
-                    new MasterDetailPage1MenuItem { Id = 2, Title = "About", TargetType = typeof(AboutPage) },
-                });
-            }
-
-            #region INotifyPropertyChanged Implementation
-            public event PropertyChangedEventHandler PropertyChanged;
-            void OnPropertyChanged([CallerMemberName] string propertyName = "") {
-                if (PropertyChanged == null)
-                    return;
-
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-            #endregion
+            BindingContext = this;
         }
     }
 }

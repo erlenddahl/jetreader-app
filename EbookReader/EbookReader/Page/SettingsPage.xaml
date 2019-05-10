@@ -1,10 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:EbookReader.Page.Settings"
              x:Class="EbookReader.Page.SettingsPage">
-    <local:Reader />
-    <local:Synchronization />
-    <local:Control />
-    <local:Application />
-</TabbedPage>
+    <StackLayout CompressedLayout.IsHeadless="true">
+        <ListView
+              x:Name="ListView"
+              SeparatorVisibility="None"
+              HasUnevenRows="true"
+              ItemSelected="ListView_ItemSelected"
+              ItemsSource="{Binding MenuItems}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Padding="15,10" HorizontalOptions="FillAndExpand">
+                            <Label VerticalOptions="FillAndExpand" 
+                    VerticalTextAlignment="Center" 
+                    Text="{Binding Title}" 
+                    FontSize="24"/>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</ContentPage>

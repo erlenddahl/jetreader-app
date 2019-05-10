@@ -20,16 +20,24 @@ namespace EbookReader.Page {
             if (item == null)
                 return;
 
+            LoadPage(item);
+        }
+
+        public void LoadPage(MasterDetailPage1MenuItem item)
+        {
             if (!Detail.Navigation.NavigationStack.Any() ||
                 Detail.Navigation.NavigationStack.Last().GetType() != item.TargetType
-            ) {
+            )
+            {
                 var page = (Xamarin.Forms.Page)Activator.CreateInstance(item.TargetType);
                 page.Title = item.Title;
 
                 Detail.Navigation.PushAsync(page);
 
-                if (item.TargetType == typeof(HomePage)) {
-                    foreach (var pageToRemove in Detail.Navigation.NavigationStack.Where(o => o != page).ToList()) {
+                if (item.TargetType == typeof(HomePage))
+                {
+                    foreach (var pageToRemove in Detail.Navigation.NavigationStack.Where(o => o != page).ToList())
+                    {
                         Detail.Navigation.RemovePage(pageToRemove);
                     }
                 }
@@ -38,7 +46,6 @@ namespace EbookReader.Page {
             IsPresented = false;
 
             MasterPage.ListView.SelectedItem = null;
-
         }
     }
 }
