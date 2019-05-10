@@ -21,7 +21,7 @@ namespace EbookReader.Service {
         public DatabaseService(IFileHelper fileHelper) {
             var dbPath = fileHelper.GetLocalFilePath(AppSettings.Bookshelft.SqlLiteFilename);
             _database = new SQLiteAsyncConnection(dbPath);
-            this.CreateTables();
+            CreateTables();
         }
 
         private void CreateTables() {

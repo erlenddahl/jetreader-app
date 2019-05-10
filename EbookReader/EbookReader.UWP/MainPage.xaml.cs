@@ -28,7 +28,7 @@ namespace EbookReader.UWP
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             LoadApplication(new EbookReader.App());
 
             Window.Current.CoreWindow.KeyDown += CoreWindow_KeyDown;

@@ -14,7 +14,7 @@ namespace EbookReader.Page.Home {
     public partial class AddBookCard : StackLayout {
         public AddBookCard() {
 
-            this.BindingContext = new {
+            BindingContext = new {
                 Width = Card.CardWidth,
             };
 

@@ -28,7 +28,7 @@ namespace EbookReader.Service {
                 BookID = bookID,
             };
 
-            this.SaveBookmark(bookmark);
+            SaveBookmark(bookmark);
             _syncService.SaveBookmark(bookID, bookmark);
         }
 

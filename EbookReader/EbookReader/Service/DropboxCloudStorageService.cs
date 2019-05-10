@@ -93,7 +93,7 @@ namespace EbookReader.Service {
 
                             var filePath = file.PathLower.Replace(".json", "").Split('/').Where(o => !string.IsNullOrEmpty(o)).ToArray();
 
-                            var bookmark = await this.LoadJson<T>(filePath);
+                            var bookmark = await LoadJson<T>(filePath);
 
                             result.Add(bookmark);
                         }

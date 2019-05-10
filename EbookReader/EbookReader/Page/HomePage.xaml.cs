@@ -65,11 +65,11 @@ namespace EbookReader.Page {
                 return false;
             });
 
-            this.ShowAnalyticsAgreement();
+            ShowAnalyticsAgreement();
 
             UserSettings.FirstRun = false;
 
-            this.LoadBookshelf();
+            LoadBookshelf();
         }
 
         private async void AboutItem_Clicked(object sender, EventArgs e) {
@@ -136,7 +136,7 @@ namespace EbookReader.Page {
         }
 
         private void OpenBook(OpenBookMessage msg) {
-            this.SendBookToReader(msg.Book);
+            SendBookToReader(msg.Book);
         }
 
         private async void DeleteBook(DeleteBookMessage msg) {

@@ -19,7 +19,7 @@ namespace EbookReader.Service.Epub {
         public override async Task<List<Item>> GetNavigation() {
 
             var navigation = new List<Item>();
-            var tocFilename = this.GetAttributeOnElementWithAttributeValue(this.GetManifest(), "href", "properties", "nav", "item");
+            var tocFilename = GetAttributeOnElementWithAttributeValue(GetManifest(), "href", "properties", "nav", "item");
 
             if (!string.IsNullOrEmpty(tocFilename)) {
                 var tocFile = await _fileService.OpenFile($"{ContentBasePath}{tocFilename}", Folder);
@@ -56,7 +56,7 @@ namespace EbookReader.Service.Epub {
         public override string GetCover() {
             var cover = string.Empty;
 
-            var href = this.GetAttributeOnElementWithAttributeValue(this.GetManifest(), "href", "properties", "cover-image", "item");
+            var href = GetAttributeOnElementWithAttributeValue(GetManifest(), "href", "properties", "cover-image", "item");
 
             if (!string.IsNullOrEmpty(href)) {
                 cover = $"{ContentBasePath}{href}";

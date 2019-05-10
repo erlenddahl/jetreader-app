@@ -22,7 +22,7 @@ namespace EbookReader.View {
         public ReaderWebView(IAssetsManager assetsManager) : base() {
             _assetsManager = assetsManager;
 
-            this.Messages = new WebViewMessages(this);
+            Messages = new WebViewMessages(this);
         }
     }
 }

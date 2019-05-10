@@ -33,7 +33,7 @@ namespace EbookReader.Service {
         }
 
         public async Task<Model.Format.Ebook> GetBook(string filename, byte[] filedata, string bookID) {
-            var folder = await this.LoadEpub(bookID, filedata);
+            var folder = await LoadEpub(bookID, filedata);
 
             return await OpenBook(folder);
         }
@@ -41,7 +41,7 @@ namespace EbookReader.Service {
         public async Task<Model.Format.Ebook> OpenBook(string path) {
             var epubFolder = await FileSystem.Current.LocalStorage.GetFolderAsync(path);
 
-            var contentFilePath = await this.GetContentFilePath(epubFolder);
+            var contentFilePath = await GetContentFilePath(epubFolder);
             var contentFilePathParts = contentFilePath.Split('/');
             var contentBasePath = string.Join("/", contentFilePathParts.Take(contentFilePathParts.Length - 1));
             if (!string.IsNullOrEmpty(contentBasePath)) {
@@ -54,7 +54,7 @@ namespace EbookReader.Service {
 
             var package = xml.Root;
 
-            var epubVersion = this.GetEpubVersion(package);
+            var epubVersion = GetEpubVersion(package);
 
             var epubParser = IocManager.Container.ResolveKeyed<EpubParser>(
                 epubVersion,
@@ -90,9 +90,9 @@ namespace EbookReader.Service {
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
-            this.StripHtmlTags(doc);
+            StripHtmlTags(doc);
 
-            var images = await this.PrepareHtmlImages(doc, epub, chapter);
+            var images = await PrepareHtmlImages(doc, epub, chapter);
 
             var result = new Model.EpubLoader.HtmlResult {
                 Html = doc.DocumentNode.Descendants("body").First().InnerHtml,
@@ -115,9 +115,9 @@ namespace EbookReader.Service {
         }
 
         private async Task<List<Model.EpubLoader.Image>> PrepareHtmlImages(HtmlDocument doc, Model.Format.Ebook epub, Model.Format.File chapter) {
-            var imagesModel = this.GetImages(doc, chapter);
+            var imagesModel = GetImages(doc, chapter);
 
-            return await this.ReplaceImagesWithBase64(imagesModel, epub);
+            return await ReplaceImagesWithBase64(imagesModel, epub);
         }
 
         private async Task<List<Model.EpubLoader.Image>> ReplaceImagesWithBase64(List<Model.EpubLoader.Image> imagesModel, Model.Format.Ebook epub) {

@@ -61,11 +61,11 @@ namespace EbookReader.Model.View {
             IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>(HandleBatteryChange);
             _batteryProvider = IocManager.Container.Resolve<IBatteryProvider>();
 
-            this.SetClock();
-            this.SetBattery();
+            SetClock();
+            SetBattery();
 
             Device.StartTimer(new TimeSpan(0, 0, 10), () => {
-                this.SetClock();
+                SetClock();
 
                 return true;
             });
@@ -76,7 +76,7 @@ namespace EbookReader.Model.View {
         }
 
         private void HandleBatteryChange(BatteryChangeMessage msg) {
-            this.SetBattery();
+            SetBattery();
         }
 
         private void SetClock() {

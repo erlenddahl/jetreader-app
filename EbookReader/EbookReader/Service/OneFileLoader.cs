@@ -36,7 +36,7 @@ namespace EbookReader.Service {
         }
 
         public virtual async Task<Ebook> GetBook(string filename, byte[] filedata, string bookID) {
-            var folder = await this.LoadEpub(filename, filedata, bookID);
+            var folder = await LoadEpub(filename, filedata, bookID);
 
             return await OpenBook(folder);
         }
@@ -68,7 +68,7 @@ namespace EbookReader.Service {
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
-            this.StripHtmlTags(doc);
+            StripHtmlTags(doc);
 
             html = doc.DocumentNode.Descendants("body").First().InnerHtml;
 

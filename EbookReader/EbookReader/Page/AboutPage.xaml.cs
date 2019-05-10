@@ -17,7 +17,7 @@ namespace EbookReader.Page {
             BindingContext = new AboutVM();
 
             var source = new HtmlWebViewSource {
-                Html = this.GetFlaticonHTML()
+                Html = GetFlaticonHTML()
             };
 
             Flaticon.Source = source;

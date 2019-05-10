@@ -13,8 +13,8 @@ namespace EbookReader.Model.Bookshelf {
         }
 
         public Position(int spine, int spinePosition) {
-            this.Spine = spine;
-            this.SpinePosition = spinePosition;
+            Spine = spine;
+            SpinePosition = spinePosition;
         }
 
         public Position(Position position) {

@@ -104,9 +104,9 @@ namespace EbookReader.Model.View {
             var client = new FirebaseClient(AppSettings.Synchronization.Firebase.BaseUrl);
             var authProvider = new FirebaseAuthProvider(new FirebaseConfig(AppSettings.Synchronization.Firebase.ApiKey));
 
-            var connected = await this.TrySignIn();
+            var connected = await TrySignIn();
             if (!connected) {
-                connected = await this.TryCreate();
+                connected = await TryCreate();
             }
 
             if (connected) {

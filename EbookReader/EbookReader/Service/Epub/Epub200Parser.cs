@@ -18,7 +18,7 @@ namespace EbookReader.Service.Epub {
 
         public override async Task<List<Item>> GetNavigation() {
             var navigation = new List<Item>();
-            var tocFilename = this.GetTocFilename();
+            var tocFilename = GetTocFilename();
 
             if (!string.IsNullOrEmpty(tocFilename)) {
                 var tocFile = await _fileService.OpenFile($"{ContentBasePath}{tocFilename}", Folder);
@@ -26,7 +26,7 @@ namespace EbookReader.Service.Epub {
                 var xmlContainer = XDocument.Parse(tocFileData);
                 var items = xmlContainer.Root.Descendants().First(o => o.Name.LocalName == "navMap").Elements();
 
-                navigation = this.LoadItems(items);
+                navigation = LoadItems(items);
             }
 
             return navigation;
@@ -35,10 +35,10 @@ namespace EbookReader.Service.Epub {
         public override string GetCover() {
             var cover = string.Empty;
 
-            var id = this.GetAttributeOnElementWithAttributeValue(this.GetMetadata(), "content", "name", "cover", "meta");
+            var id = GetAttributeOnElementWithAttributeValue(GetMetadata(), "content", "name", "cover", "meta");
 
             if (!string.IsNullOrEmpty(id)) {
-                cover = $"{ContentBasePath}{this.GetFiles().First(o => o.Id == id).Href}";
+                cover = $"{ContentBasePath}{GetFiles().First(o => o.Id == id).Href}";
             }
 
             return cover;
@@ -80,7 +80,7 @@ namespace EbookReader.Service.Epub {
 
                 items.Add(item);
 
-                items.AddRange(this.LoadItems(element.Elements(), depth + 1));
+                items.AddRange(LoadItems(element.Elements(), depth + 1));
             }
 
             return items;
@@ -99,7 +99,7 @@ namespace EbookReader.Service.Epub {
                 .FirstOrDefault();
 
             if (!string.IsNullOrEmpty(attr)) {
-                filename = this.GetFiles().Where(o => o.Id == attr).Select(o => o.Href).FirstOrDefault();
+                filename = GetFiles().Where(o => o.Id == attr).Select(o => o.Href).FirstOrDefault();
             }
 
             return filename;

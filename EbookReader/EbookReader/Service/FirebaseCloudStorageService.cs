@@ -17,8 +17,8 @@ namespace EbookReader.Service {
 
         public async Task<T> LoadJson<T>(string[] path) {
             try {
-                var auth = await this.GetAuth();
-                var result = await this.GetFirebase().Child(this.PathGenerator(path, auth)).OnceSingleAsync<T>();
+                var auth = await GetAuth();
+                var result = await GetFirebase().Child(PathGenerator(path, auth)).OnceSingleAsync<T>();
                 return result;
             } catch { }
 
@@ -27,8 +27,8 @@ namespace EbookReader.Service {
 
         public async Task<List<T>> LoadJsonList<T>(string[] path) {
             try {
-                var auth = await this.GetAuth();
-                var result = await this.GetFirebase().Child(this.PathGenerator(path, auth)).OnceAsync<T>();
+                var auth = await GetAuth();
+                var result = await GetFirebase().Child(PathGenerator(path, auth)).OnceAsync<T>();
                 return result.Select(o => o.Object).ToList();
             } catch { }
 
@@ -37,8 +37,8 @@ namespace EbookReader.Service {
 
         public async void SaveJson<T>(T json, string[] path) {
             try {
-                var auth = await this.GetAuth();
-                await this.GetFirebase().Child($"{this.PathGenerator(path, auth)}").PutAsync(JsonConvert.SerializeObject(json));
+                var auth = await GetAuth();
+                await GetFirebase().Child($"{PathGenerator(path, auth)}").PutAsync(JsonConvert.SerializeObject(json));
             } catch (Exception e) {
                 Crashes.TrackError(e);
             }
@@ -46,8 +46,8 @@ namespace EbookReader.Service {
 
         public async void DeleteNode(string[] path) {
             try {
-                var auth = await this.GetAuth();
-                await this.GetFirebase().Child($"{this.PathGenerator(path, auth)}").DeleteAsync();
+                var auth = await GetAuth();
+                await GetFirebase().Child($"{PathGenerator(path, auth)}").DeleteAsync();
             } catch { }
         }
 
@@ -58,7 +58,7 @@ namespace EbookReader.Service {
         }
 
         public async Task<string> LoginAsync() {
-            var auth = await this.GetAuth();
+            var auth = await GetAuth();
             return auth.FirebaseToken;
         }
 

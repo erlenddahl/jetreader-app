@@ -9,8 +9,8 @@ using PCLStorage;
 namespace EbookReader.Service {
     public class FileService : IFileService {
         public async Task<IFile> OpenFile(string name, IFolder folder) {
-            folder = await this.GetFileFolder(name, folder);
-            return await folder.GetFileAsync(this.GetLocalFileName(name));
+            folder = await GetFileFolder(name, folder);
+            return await folder.GetFileAsync(GetLocalFileName(name));
         }
 
         public async Task<IFolder> GetFileFolder(string name, IFolder folder) {
@@ -32,11 +32,11 @@ namespace EbookReader.Service {
         }
 
         public async Task<string> ReadFileData(string filename) {
-            return await this.ReadFileData(filename, FileSystem.Current.LocalStorage);
+            return await ReadFileData(filename, FileSystem.Current.LocalStorage);
         }
 
         public async Task<string> ReadFileData(string filename, IFolder folder) {
-            var file = await this.OpenFile(filename, folder);
+            var file = await OpenFile(filename, folder);
             return await file.ReadAllTextAsync();
         }
 
@@ -51,8 +51,8 @@ namespace EbookReader.Service {
 
         public async Task<bool> Checkfile(string filename) {
             var folder = FileSystem.Current.LocalStorage;
-            var fileFolder = await this.GetFileFolder(filename, folder);
-            var exists = await fileFolder.CheckExistsAsync(this.GetLocalFileName(filename));
+            var fileFolder = await GetFileFolder(filename, folder);
+            var exists = await fileFolder.CheckExistsAsync(GetLocalFileName(filename));
             return exists == ExistenceCheckResult.FileExists;
         }
 

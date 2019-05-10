@@ -28,7 +28,7 @@ namespace EbookReader {
         }
 
         public App() {
-            this.LoadConfig();
+            LoadConfig();
 
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
 

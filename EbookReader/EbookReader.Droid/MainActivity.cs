@@ -29,7 +29,7 @@ namespace EbookReader.Droid {
 
             base.OnCreate(bundle);
 
-            this.SetUpIoc();
+            SetUpIoc();
 
             FormsWebViewRenderer.Initialize();
 
@@ -54,7 +54,7 @@ namespace EbookReader.Droid {
         protected override void OnStart() {
             base.OnStart();
 
-            this.SetUpSubscribers();
+            SetUpSubscribers();
         }
 
         protected override void OnStop() {
@@ -103,7 +103,7 @@ namespace EbookReader.Droid {
         }
 
         private void CloseAppMessageSubscriber(CloseAppMessage msg) {
-            this.Finish();
+            Finish();
         }
 
         private void ChangeBrightness(ChangesBrightnessMessage msg) {

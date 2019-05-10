@@ -32,7 +32,7 @@ namespace EbookReader.Droid {
 
             if (!done) {
 
-                var activity = this.Context as Activity;
+                var activity = Context as Activity;
 
                 var OAuth2Data = Xamarin.Forms.Application.Current.Properties["OAuth2Data"] as OAuth2RequestData;
 

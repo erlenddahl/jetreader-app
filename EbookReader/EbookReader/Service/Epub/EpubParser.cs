@@ -14,29 +14,29 @@ namespace EbookReader.Service.Epub {
         protected string ContentBasePath { get; set; }
 
         public EpubParser(XElement package, IFolder folder, string contentBasePath) {
-            this.Package = package;
-            this.Folder = folder;
-            this.ContentBasePath = contentBasePath;
+            Package = package;
+            Folder = folder;
+            ContentBasePath = contentBasePath;
         }
 
         public virtual string GetTitle() {
-            return this.GetMandatoryElementValue("title", this.GetMetadata().Descendants());
+            return GetMandatoryElementValue("title", GetMetadata().Descendants());
         }
 
         public virtual string GetLanguage() {
-            return this.GetMandatoryElementValue("language", this.GetMetadata().Descendants());
+            return GetMandatoryElementValue("language", GetMetadata().Descendants());
         }
 
         public virtual string GetAuthor() {
-            return this.GetOptionalElementValue("creator", this.GetMetadata().Descendants());
+            return GetOptionalElementValue("creator", GetMetadata().Descendants());
         }
 
         public virtual string GetDescription() {
-            return this.GetOptionalElementValue("description", this.GetMetadata().Descendants());
+            return GetOptionalElementValue("description", GetMetadata().Descendants());
         }
 
         public virtual List<Model.Format.Spine> GetSpines() {
-            return this.GetSpine()
+            return GetSpine()
                 .Descendants()
                 .Where(o => o.Name.LocalName == "itemref")
                 .Select(o => new Model.Format.Spine {
@@ -46,7 +46,7 @@ namespace EbookReader.Service.Epub {
         }
 
         public virtual IEnumerable<Model.Format.File> GetFiles() {
-            return this.GetManifest()
+            return GetManifest()
                 .Descendants()
                 .Where(o => o.Name.LocalName == "item")
                 .Select(o => new Model.Format.File {

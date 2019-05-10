@@ -23,7 +23,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
 
         public void SetNavigation(List<Model.Navigation.Item> items) {
             Device.BeginInvokeOnMainThread(() => {
-                this.SetItems(items);
+                SetItems(items);
             });
         }
 
@@ -31,7 +31,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
 
             Items.Children.Clear();
 
-            foreach (var item in this.GetItems(items)) {
+            foreach (var item in GetItems(items)) {
                 Items.Children.Add(item);
             }
         }
@@ -50,7 +50,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
                 };
 
                 var tgr = new TapGestureRecognizer();
-                tgr.Tapped += (s, e) => this.ClickToItem(item);
+                tgr.Tapped += (s, e) => ClickToItem(item);
                 label.GestureRecognizers.Add(tgr);
 
                 labels.Add(label);
@@ -60,7 +60,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
         }
 
         private void ClickToItem(Model.Navigation.Item item) {
-            this.OnChapterChange?.Invoke(this, item);
+            OnChapterChange?.Invoke(this, item);
         }
 
     }

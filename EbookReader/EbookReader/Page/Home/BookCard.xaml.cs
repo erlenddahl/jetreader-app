@@ -33,17 +33,17 @@ namespace EbookReader.Page.Home {
 
             InitializeComponent();
 
-            this.LoadImage();
+            LoadImage();
 
             DeleteIcon.GestureRecognizers.Add(
                 new TapGestureRecognizer {
-                    Command = new Command(() => { this.Delete(); })
+                    Command = new Command(() => { Delete(); })
                 }
             );
 
             GestureRecognizers.Add(
                 new TapGestureRecognizer {
-                    Command = new Command(() => { this.Open(); }),
+                    Command = new Command(() => { Open(); }),
                 });
         }
 

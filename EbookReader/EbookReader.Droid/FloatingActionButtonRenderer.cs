@@ -32,7 +32,7 @@ namespace EbookReader.Droid {
 
 
             if (Control == null) {
-                fab = new FloatingActionButton(this.Context);
+                fab = new FloatingActionButton(Context);
                 fab.LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent);
                 fab.Clickable = true;
                 fab.SetImageDrawable(ContextCompat.GetDrawable(Context, Resource.Drawable.add));

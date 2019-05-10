@@ -7,7 +7,7 @@ namespace EbookReader.Model.Messages {
         public Key? Key { get; set; }
 
         private KeyStrokeMessage(Key? key) {
-            this.Key = key;
+            Key = key;
         }
 
         public static KeyStrokeMessage FromKeyCode(int keyCode) {
