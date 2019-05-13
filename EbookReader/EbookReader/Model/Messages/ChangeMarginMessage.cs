@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EbookReader.Model.Messages {
-    public class ChangeMarginMessage {
+namespace EbookReader.Model.Messages
+{
+    public class ChangeMarginMessage
+    {
         public int Margin { get; set; }
     }
 }

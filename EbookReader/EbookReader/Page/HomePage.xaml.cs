@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -110,10 +111,10 @@ namespace EbookReader.Page {
 
                     try {
                         var book = await _bookshelfService.AddBook(pickedFile);
-                        if (book.Item2) {
-                            Bookshelf.Children.Add(new BookCard(book.Item1));
+                        if (book.isNew) {
+                            Bookshelf.Children.Add(new BookCard(book.book));
                         }
-                        this.SendBookToReader(book.Item1);
+                        SendBookToReader(book.book);
                     } catch (Exception e) {
                         var ext = string.Empty;
                         if (!string.IsNullOrEmpty(pickedFile.FileName)) {
@@ -125,6 +126,8 @@ namespace EbookReader.Page {
                         Crashes.TrackError(e, new Dictionary<string, string> {
                             { "Filename", pickedFile.FileName }
                         });
+                        Debug.WriteLine(e.Message);
+                        Debug.WriteLine(e.StackTrace);
                         await DisplayAlert("Error", "File failed to open", "OK");
                     }
 

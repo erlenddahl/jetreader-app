@@ -33,7 +33,7 @@ namespace EbookReader {
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
 
             if (App.HasMasterDetailPage) {
-                MainPage = new MasterDetailPage1();
+                MainPage = new MainPage();
 
             } else {
                 MainPage = new NavigationPage(new HomePage());
@@ -53,7 +53,7 @@ namespace EbookReader {
                 return true;
             }
 
-            var masterDetail = currentPage as MasterDetailPage1;
+            var masterDetail = currentPage as MainPage;
             if (masterDetail != null) {
                 var lastDetailPage = masterDetail.Detail.Navigation.NavigationStack.LastOrDefault();
                 if (lastDetailPage != null && lastDetailPage.GetType() == type) {
@@ -83,7 +83,7 @@ namespace EbookReader {
         }
 
         private async void BackPressedMessageSubscriber(BackPressedMessage msg) {
-            var master = MainPage as MasterDetailPage1;
+            var master = MainPage as MainPage;
 
             if (master != null) {
                 var detailPage = master.Detail.Navigation.NavigationStack.LastOrDefault();

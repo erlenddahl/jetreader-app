@@ -10,7 +10,7 @@ namespace EbookReader.Exceptions.Epub {
 
         }
 
-        public UnknownEpubVersionException(string version) : base($"Unknow epub version: {version}") {
+        public UnknownEpubVersionException(string version) : base($"Unknown epub version: {version}") {
         }
     }
 }

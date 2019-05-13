@@ -7,7 +7,7 @@ using Plugin.FilePicker.Abstractions;
 
 namespace EbookReader.Service {
     public interface IBookshelfService {
-        Task<Tuple<Model.Bookshelf.Book, bool>> AddBook(FileData file);
+        Task<(Model.Bookshelf.Book book, bool isNew)> AddBook(FileData file);
         Task<List<Model.Bookshelf.Book>> LoadBooks();
         Task<Model.Bookshelf.Book> LoadBookById(string id);
         void RemoveById(string id);

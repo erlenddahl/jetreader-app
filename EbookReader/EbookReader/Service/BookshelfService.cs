@@ -25,7 +25,7 @@ namespace EbookReader.Service {
             _bookmarkRepository = bookmarkRepository;
         }
 
-        public async Task<Tuple<Book, bool>> AddBook(FileData file) {
+        public async Task<(Book, bool)> AddBook(FileData file) {
 
             var newBook = false;
             var bookLoader = EbookFormatHelper.GetBookLoader(file.FileName);
@@ -42,7 +42,7 @@ namespace EbookReader.Service {
                 newBook = true;
             }
 
-            return new Tuple<Book, bool>(bookshelfBook, newBook);
+            return (bookshelfBook, newBook);
         }
 
         public async Task<List<Book>> LoadBooks() {
