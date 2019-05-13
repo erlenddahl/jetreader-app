@@ -11,7 +11,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Build\reader.css" />
+    <None Remove="Build\reader.css.map" />
+    <None Remove="Build\reader.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Build\layout.html" />
+    <Content Include="Build\reader.css" />
+    <Content Include="Build\reader.css.map" />
+    <Content Include="Build\reader.js" />
     <Content Include="DevTools\Base64.js" />
     <Content Include="Src\js\Base64.js" />
     <Content Include="Src\js\jquery-3.2.1.min.js" />
