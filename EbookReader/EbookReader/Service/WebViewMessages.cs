@@ -98,6 +98,9 @@ namespace EbookReader.Service {
                 case Model.WebViewMessages.KeyStroke.Name:
                     OnKeyStroke?.Invoke(this, msg as Model.WebViewMessages.KeyStroke);
                     break;
+                case "Debug":
+                    Debug.WriteLine(msg);
+                    break;
             }
 
         }

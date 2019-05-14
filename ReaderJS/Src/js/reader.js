@@ -28,6 +28,7 @@ window.Ebook = {
         this.doubleSwipe = doubleSwipe;
         this.nightMode = nightMode;
 
+
         this.htmlHelper.setFontSize();
         this.htmlHelper.setWidth();
         this.htmlHelper.setHeight();
@@ -417,6 +418,9 @@ window.Ebook = {
                     KeyCode: keyCode,
                 });
         },
+        sendDebug: function(data) {
+            Messages.send("Debug", JSON.stringify(data));
+        }
     },
 };
 window.Messages = {
