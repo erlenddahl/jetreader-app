@@ -8,6 +8,7 @@ using EbookReader.Helpers;
 using Newtonsoft.Json;
 using EbookReader.View;
 using Xamarin.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace EbookReader.Service {
     public class WebViewMessages {
@@ -24,6 +25,7 @@ namespace EbookReader.Service {
         public event EventHandler<Model.WebViewMessages.OpenUrl> OnOpenUrl;
         public event EventHandler<Model.WebViewMessages.PanEvent> OnPanEvent;
         public event EventHandler<Model.WebViewMessages.KeyStroke> OnKeyStroke;
+        public event EventHandler<JObject> OnInteraction;
 
         public WebViewMessages(ReaderWebView webView) {
             _webView = webView;
@@ -97,6 +99,9 @@ namespace EbookReader.Service {
                     break;
                 case Model.WebViewMessages.KeyStroke.Name:
                     OnKeyStroke?.Invoke(this, msg as Model.WebViewMessages.KeyStroke);
+                    break;
+                case "Interaction":
+                    OnInteraction?.Invoke(this, msg as JObject);
                     break;
                 case "Debug":
                     Debug.WriteLine(msg);

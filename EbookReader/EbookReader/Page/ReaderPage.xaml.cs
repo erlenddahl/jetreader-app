@@ -14,6 +14,7 @@ using EbookReader.Page.Reader;
 using EbookReader.Provider;
 using EbookReader.Service;
 using Microsoft.AppCenter.Crashes;
+using Newtonsoft.Json.Linq;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -61,6 +62,7 @@ namespace EbookReader.Page {
             WebView.Messages.OnOpenUrl += Messages_OnOpenUrl;
             WebView.Messages.OnPanEvent += Messages_OnPanEvent;
             WebView.Messages.OnKeyStroke += Messages_OnKeyStroke;
+            WebView.Messages.OnInteraction += Messages_OnInteraction;
 
             QuickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
 
@@ -75,6 +77,11 @@ namespace EbookReader.Page {
             ChangeTheme();
 
             NavigationPage.SetHasNavigationBar(this, false);
+        }
+
+        private void Messages_OnInteraction(object sender, JObject e)
+        {
+            _messageBus.Send(new InteractionMessage(e));
         }
 
         private void ChangeTheme(ChangeThemeMessage msg = null)

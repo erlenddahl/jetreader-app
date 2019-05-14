@@ -434,7 +434,6 @@ window.Messages = {
     },
     parse: function(data) {
         var json = JSON.parse(Base64.decode(data));
-        console.log("v4: " + json.Action);
         this.actions[json.Action](json.Data);
     },
     actions: {
@@ -622,7 +621,8 @@ window.Gestures = {
         return false;
     },
     actions: {
-        tap: function(x) {
+        tap: function (x) {
+            Messages.send("Interaction", { type: "tap", event: x });
             if (Ebook.clickEverywhere || x > Math.round(Ebook.pageWidth / 2)) {
                 Ebook.goToNextPage();
             } else {
