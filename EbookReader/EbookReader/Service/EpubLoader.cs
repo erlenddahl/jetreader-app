@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,11 +10,10 @@ using System.Xml.Linq;
 using Autofac;
 using EbookReader.Helpers;
 using EbookReader.Model.Bookshelf;
+using EbookReader.Model.Format;
 using EbookReader.Model.Format.EpubFormat;
 using EbookReader.Service.Epub;
 using HtmlAgilityPack;
-using ICSharpCode.SharpZipLib.Zip;
-using PCLStorage;
 
 namespace EbookReader.Service {
     public class EpubLoader : IBookLoader {
@@ -23,32 +24,29 @@ namespace EbookReader.Service {
             _fileService = fileService;
         }
 
-        public Book CreateBookshelfBook(Model.Format.Ebook book) {
+        public Book CreateBookshelfBook(Ebook book) {
             return new Book {
                 Title = book.Title,
                 Path = book.Folder,
                 Cover = book.Cover,
-                Format = Model.Format.EbookFormat.Epub,
+                Format = EbookFormat.Epub,
             };
         }
 
-        public async Task<Model.Format.Ebook> GetBook(string filename, byte[] filedata, string bookId) {
-            var folder = await LoadEpub(bookId, filedata);
+        public async Task<Ebook> GetBook(string filename, byte[] fileData, string bookId) {
+            var folder = await LoadEpub(bookId, fileData);
 
             return await OpenBook(folder);
         }
 
-        public async Task<Model.Format.Ebook> OpenBook(string path) {
-            var epubFolder = await FileSystem.Current.LocalStorage.GetFolderAsync(path);
-
-            var contentFilePath = await GetContentFilePath(epubFolder);
-            var contentFilePathParts = contentFilePath.Split('/');
-            var contentBasePath = string.Join("/", contentFilePathParts.Take(contentFilePathParts.Length - 1));
-            if (!string.IsNullOrEmpty(contentBasePath)) {
-                contentBasePath += "/";
-            }
-
-            var contentFileData = await _fileService.ReadFileData(contentFilePath, epubFolder);
+        /// <summary>
+        /// Reads an Epub book from the given Epub folder (a folder containing an unzipped epub file).
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+        public async Task<Ebook> OpenBook(string bookId)
+        {
+            var contentFileData = await _fileService.ReadAllTextAsync(await GetContentFilePath(bookId));
 
             var xml = XDocument.Parse(contentFileData);
 
@@ -56,22 +54,16 @@ namespace EbookReader.Service {
 
             var epubVersion = GetEpubVersion(package);
 
-            var epubParser = IocManager.Container.ResolveKeyed<EpubParser>(
-                epubVersion,
-                new NamedParameter("package", package),
-                new NamedParameter("folder", epubFolder),
-                new NamedParameter("contentBasePath", contentBasePath)
-            );
+            var epubParser = IocManager.Container.ResolveKeyed<EpubParser>(epubVersion, new NamedParameter("package", package), new NamedParameter("path", bookId));
 
-            var epub = new Model.Format.Ebook() {
+            var epub = new Ebook() {
                 Title = epubParser.GetTitle(),
                 Author = epubParser.GetAuthor(),
                 Description = epubParser.GetDescription(),
                 Language = epubParser.GetLanguage(),
                 Spines = epubParser.GetSpines(),
                 Files = epubParser.GetFiles(),
-                Folder = path,
-                ContentBasePath = contentBasePath,
+                Folder = bookId,
                 Navigation = await epubParser.GetNavigation(),
                 Cover = epubParser.GetCover()
             };
@@ -79,24 +71,23 @@ namespace EbookReader.Service {
             return epub;
         }
 
-        public async Task<string> GetChapter(Model.Format.Ebook epub, Model.Format.Spine chapter) {
-            var filename = epub.Files.Where(o => o.Id == chapter.Idref).First();
-            var folder = await FileSystem.Current.LocalStorage.GetFolderAsync(epub.Folder);
-            return await _fileService.ReadFileData($"{epub.ContentBasePath}{filename.Href}", folder);
+        public async Task<string> GetChapter(Ebook epub, Spine chapter) {
+            var filename = epub.Files.First(o => o.Id == chapter.Idref);
+            return await _fileService.ReadAllTextAsync(Path.Combine(epub.Folder, filename.Href));
         }
 
-        public async Task<Model.EpubLoader.HtmlResult> PrepareHtml(string html, Model.Format.Ebook epub, Model.Format.File chapter) {
+        public async Task<Model.EpubLoader.HtmlResult> PrepareHtml(string html, Ebook epub, Model.Format.File chapter) {
 
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
             StripHtmlTags(doc);
 
-            var images = await PrepareHtmlImages(doc, epub, chapter);
+            var images = await GetImages(epub, doc, chapter);
 
             var result = new Model.EpubLoader.HtmlResult {
                 Html = doc.DocumentNode.Descendants("body").First().InnerHtml,
-                Images = images,
+                Images = images
             };
 
             return result;
@@ -114,63 +105,60 @@ namespace EbookReader.Service {
             }
         }
 
-        private async Task<List<Model.EpubLoader.Image>> PrepareHtmlImages(HtmlDocument doc, Model.Format.Ebook epub, Model.Format.File chapter) {
-            var imagesModel = GetImages(doc, chapter);
+        /// <summary>
+        /// Enumerates all img tags and svg.image tags and extracts image paths. Each tag is given an ID, and
+        /// unique images are read as base64 encoded images encoded with the same id. The returned list of 
+        /// Image models contains the base64 data and the id.
+        /// </summary>
+        /// <param name="epub"></param>
+        /// <param name="doc"></param>
+        /// <param name="chapter"></param>
+        /// <returns></returns>
+        private async Task<List<Model.EpubLoader.Image>> GetImages(Ebook epub, HtmlDocument doc, Model.Format.File chapter) {
 
-            return await ReplaceImagesWithBase64(imagesModel, epub);
-        }
+            // Find all img and image nodes, and extract their source path
+            var images = doc.DocumentNode.Descendants("img")
+                .Select(p => new { Node = p, Src = p.Attributes.FirstOrDefault(c => c.Name == "src") })
+                .Union(doc.DocumentNode.Descendants("image")
+                .Select(p => new { Node = p, Src = p.Attributes.FirstOrDefault(c => c.Name == "xlink:href") }))
+                // Remove images without source
+                .Where(p => p.Src != null)
+                // Convert the relative HTML path to an absolute (inside local folder) path
+                .Select(p => new
+                {
+                    p.Node,
+                    p.Src,
+                    Path = PathHelper.NormalizePath(PathHelper.CombinePath(chapter.Href, p.Src.Value).Replace("../", ""))
+                })
+                // Group by image path to avoid loading and transfering the same image more than once
+                .GroupBy(p=>p.Path);
 
-        private async Task<List<Model.EpubLoader.Image>> ReplaceImagesWithBase64(List<Model.EpubLoader.Image> imagesModel, Model.Format.Ebook epub) {
-            var epubFolder = await FileSystem.Current.LocalStorage.GetFolderAsync(epub.Folder);
+            var models = new List<Model.EpubLoader.Image>();
+            foreach (var image in images)
+            {
+                // Create a new image model
+                var img = new Model.EpubLoader.Image
+                {
+                    Id = models.Count + 1,
+                    FileName = Path.Combine(epub.Folder, image.Key)
+                };
 
-            foreach (var imageModel in imagesModel) {
-                var extension = imageModel.FileName.Split('.').Last();
-
-                var fileName = PathHelper.NormalizePath($"{epub.ContentBasePath}/{imageModel.FileName.Replace("../", "")}");
-                var file = await _fileService.OpenFile(fileName, epubFolder);
-
-                using (var stream = await file.OpenAsync(PCLStorage.FileAccess.Read)) {
+                // Load the base64 image
+                using (var stream = await _fileService.LoadFileStreamAsync(img.FileName))
+                {
                     var base64 = Base64Helper.GetFileBase64(stream);
-
-                    imageModel.Data = $"data:image/{extension};base64,{base64}";
+                    img.Data = $"data:image/{Path.GetExtension(img.FileName).Replace(".", "")};base64,{base64}";
                 }
 
+                // Give each HTML node the current image id in order to let the JS reader load the
+                // base64 image into the node after the HTML has been transferred.
+                foreach (var element in image)
+                    element.Node.Attributes.Add(doc.CreateAttribute("data-js-ebook-image-id", img.Id.ToString()));
+
+                models.Add(img);
             }
 
-            return imagesModel;
-        }
-
-        private List<Model.EpubLoader.Image> GetImages(HtmlDocument doc, Model.Format.File chapter) {
-            var images = doc.DocumentNode.Descendants("img").ToList();
-            var imagesModel = new List<Model.EpubLoader.Image>();
-
-            var cnt = 1;
-            foreach (var image in images) {
-                var srcAttribute = image.Attributes.FirstOrDefault(o => o.Name == "src");
-
-                if (srcAttribute != null) {
-                    int id;
-
-                    var existingImageModel = imagesModel.FirstOrDefault(o => o.FileName == srcAttribute.Value);
-
-                    if (existingImageModel != null) {
-                        id = existingImageModel.Id;
-                    } else {
-                        id = cnt;
-                        var path = PathHelper.CombinePath(chapter.Href, srcAttribute.Value);
-                        imagesModel.Add(new Model.EpubLoader.Image {
-                            Id = id,
-                            FileName = path,
-                        });
-
-                        cnt++;
-                    }
-
-                    image.Attributes.Add(doc.CreateAttribute("data-js-ebook-image-id", id.ToString()));
-                }
-            }
-
-            return imagesModel;
+            return models;
         }
 
         private EpubVersion GetEpubVersion(XElement package) {
@@ -178,9 +166,14 @@ namespace EbookReader.Service {
             return EpubVersionHelper.ParseVersion(version);
         }
 
-        private async Task<string> GetContentFilePath(IFolder epubFolder) {
-            var containerFile = await _fileService.OpenFile("META-INF/container.xml", epubFolder);
-            var containerFileContent = await containerFile.ReadAllTextAsync();
+        /// <summary>
+        /// Reads the Epub's meta data and extracts the filename of the content file (for example "content.opf").
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+        private async Task<string> GetContentFilePath(string bookId)
+        {
+            var containerFileContent = await _fileService.ReadAllTextAsync(Path.Combine(bookId, "META-INF", "container.xml"));
             var xmlContainer = XDocument.Parse(containerFileContent);
             var contentFilePath = xmlContainer.Root
                 .Descendants()
@@ -190,37 +183,27 @@ namespace EbookReader.Service {
                 .Attributes()
                 .First(o => o.Name.LocalName == "full-path")
                 .Value;
-            return contentFilePath;
+            return Path.Combine(bookId, contentFilePath);
         }
 
-        private async Task<string> LoadEpub(string bookId, byte[] filedata) {
-            var rootFolder = FileSystem.Current.LocalStorage;
-            var folder = await rootFolder.CreateFolderAsync(bookId, CreationCollisionOption.ReplaceExisting);
-            var file = await folder.CreateFileAsync("temp.zip", CreationCollisionOption.OpenIfExists);
+        /// <summary>
+        /// Stores the fileData byte array as a zip file, and unpacks it in a local folder using the bookId as name.
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="fileData"></param>
+        /// <returns></returns>
+        private async Task<string> LoadEpub(string bookId, byte[] fileData) {
+            var folder = await _fileService.CreateDirectoryAsync(bookId, true);
 
-            using (var stream = await file.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
-                await stream.WriteAsync(filedata, 0, filedata.Length);
-                using (var zf = new ZipFile(stream)) {
-                    foreach (ZipEntry zipEntry in zf) {
+            var zipFile = await _fileService.WriteBytesAsync(Path.Combine(bookId, "temp.zip"), fileData);
 
-                        if (zipEntry.IsFile) {
-                            var zipEntryStream = zf.GetInputStream(zipEntry);
+            ZipFile.ExtractToDirectory(zipFile, folder);
 
-                            var name = _fileService.GetLocalFileName(zipEntry.Name);
+            var files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
+            foreach (var file in files)
+                Debug.WriteLine(file);
 
-                            var fileFolder = await _fileService.GetFileFolder(zipEntry.Name, folder);
-
-                            var zipEntryFile = await fileFolder.CreateFileAsync(name, CreationCollisionOption.OpenIfExists);
-                            var str = zf.GetInputStream(zipEntry);
-                            using (var outPutFileStream = await zipEntryFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
-                                await str.CopyToAsync(outPutFileStream);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return folder.Name;
+            return bookId;
         }
     }
 }

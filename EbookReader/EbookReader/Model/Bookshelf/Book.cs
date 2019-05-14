@@ -11,6 +11,10 @@ namespace EbookReader.Model.Bookshelf {
         [PrimaryKey]
         public string Id { get; set; }
         public string Title { get; set; }
+
+        /// <summary>
+        /// The relative path (to the local storage folder) of the unzipped book folder
+        /// </summary>
         public string Path { get; set; }
         public string Cover { get; set; }
         public DateTime? BookmarksSyncLastChange { get; set; }

@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PCLStorage;
 
 namespace EbookReader.Service {
     public interface IFileService {
-        Task<IFile> OpenFile(string name, IFolder folder);
-        Task<IFolder> GetFileFolder(string name, IFolder folder);
-        string GetLocalFileName(string path);
-        Task<string> ReadFileData(string filename);
-        Task<string> ReadFileData(string filename, IFolder folder);
-        void Save(string path, string content);
-        Task<bool> Checkfile(string filename);
-        void DeleteFolder(string path);
+        Task<bool> FileExists(string filename);
+        Task DeleteFolder(string path);
+        string StorageFolder { get; }
+        Task<string> ReadAllTextAsync(string filename);
+        Task WriteAllTextAsync(string filename, string contents);
+        Task<string> CreateDirectoryAsync(string directory, bool clean = false);
+        Task<string> WriteBytesAsync(string fileName, byte[] dataBytes);
+        Task<Stream> LoadFileStreamAsync(string filePath);
     }
 }

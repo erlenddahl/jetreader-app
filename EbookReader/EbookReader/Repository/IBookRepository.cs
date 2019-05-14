@@ -11,5 +11,6 @@ namespace EbookReader.Repository {
         Task<Book> GetBookByIdAsync(string id);
         Task<int> DeleteBookAsync(Book book);
         Task<int> SaveBookAsync(Book item);
+        Task<int> DeleteAllBooksAsync();
     }
 }

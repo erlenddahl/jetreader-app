@@ -8,7 +8,6 @@ using EbookReader.Model.Bookshelf;
 using EbookReader.Model.EpubLoader;
 using EbookReader.Model.Format;
 using HtmlAgilityPack;
-using PCLStorage;
 
 namespace EbookReader.Service {
     public abstract class OneFileLoader : IBookLoader {
@@ -35,22 +34,19 @@ namespace EbookReader.Service {
             };
         }
 
-        public virtual async Task<Ebook> GetBook(string filename, byte[] filedata, string bookId) {
-            var folder = await LoadEpub(filename, filedata, bookId);
+        public virtual async Task<Ebook> GetBook(string filename, byte[] fileData, string bookId) {
+            var folder = await LoadEpub(filename, fileData, bookId);
 
             return await OpenBook(folder);
         }
 
         public virtual async Task<string> GetChapter(Ebook book, Spine chapter) {
-            var folder = await FileSystem.Current.LocalStorage.GetFolderAsync(book.Folder);
-            return await _fileService.ReadFileData(ContentPath, folder);
+            return await _fileService.ReadAllTextAsync(Path.Combine(book.Folder, ContentPath));
         }
 
-        public virtual async Task<Ebook> OpenBook(string path) {
-            var folder = await FileSystem.Current.LocalStorage.GetFolderAsync(path);
-
-            var titleFile = await folder.GetFileAsync(TitlePath);
-            var title = await titleFile.ReadAllTextAsync();
+        public virtual async Task<Ebook> OpenBook(string path)
+        {
+            var title = await _fileService.ReadAllTextAsync(Path.Combine(path, TitlePath));
 
             var epub = new Ebook() {
                 Title = title,
@@ -82,18 +78,13 @@ namespace EbookReader.Service {
             });
         }
 
-        protected virtual async Task<string> LoadEpub(string filename, byte[] filedata, string bookId) {
-            var rootFolder = FileSystem.Current.LocalStorage;
-            var folder = await rootFolder.CreateFolderAsync(bookId, CreationCollisionOption.ReplaceExisting);
-            var contentFile = await folder.CreateFileAsync(ContentPath, CreationCollisionOption.ReplaceExisting);
-            using (var stream = await contentFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
-                await stream.WriteAsync(filedata, 0, filedata.Length);
-            }
+        protected virtual async Task<string> LoadEpub(string filename, byte[] fileData, string bookId) {
+            await _fileService.CreateDirectoryAsync(bookId, true);
 
-            var titleFile = await folder.CreateFileAsync(TitlePath, CreationCollisionOption.ReplaceExisting);
-            await titleFile.WriteAllTextAsync(filename.Split('.').First());
+            await _fileService.WriteBytesAsync(Path.Combine(bookId, ContentPath), fileData);
+            await _fileService.WriteAllTextAsync(Path.Combine(bookId, TitlePath), Path.GetFileNameWithoutExtension(filename));
 
-            return folder.Name;
+            return bookId;
         }
 
         protected virtual void StripHtmlTags(HtmlDocument doc) {

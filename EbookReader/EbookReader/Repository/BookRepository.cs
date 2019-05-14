@@ -30,5 +30,10 @@ namespace EbookReader.Repository {
         public Task<int> SaveBookAsync(Book item) {
             return _connection.InsertOrReplaceAsync(item);
         }
+
+        public Task<int> DeleteAllBooksAsync()
+        {
+            return _connection.Table<Book>().DeleteAsync(p => true);
+        }
     }
 }

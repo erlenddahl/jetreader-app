@@ -4,19 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using PCLStorage;
 
 namespace EbookReader.Service.Epub {
     public abstract class EpubParser {
 
         protected XElement Package { get; set; }
-        protected IFolder Folder { get; set; }
-        protected string ContentBasePath { get; set; }
+        protected string BookPath { get; set; }
 
-        public EpubParser(XElement package, IFolder folder, string contentBasePath) {
+        public EpubParser(XElement package, string path) {
             Package = package;
-            Folder = folder;
-            ContentBasePath = contentBasePath;
+            BookPath = path;
         }
 
         public virtual string GetTitle() {
@@ -40,7 +37,7 @@ namespace EbookReader.Service.Epub {
                 .Descendants()
                 .Where(o => o.Name.LocalName == "itemref")
                 .Select(o => new Model.Format.Spine {
-                    Idref = o.Attributes().Where(i => i.Name.LocalName == "idref").First().Value
+                    Idref = o.Attributes().First(i => i.Name.LocalName == "idref").Value
                 })
                 .ToList();
         }
@@ -50,9 +47,9 @@ namespace EbookReader.Service.Epub {
                 .Descendants()
                 .Where(o => o.Name.LocalName == "item")
                 .Select(o => new Model.Format.File {
-                    Id = o.Attributes().Where(i => i.Name.LocalName == "id").First().Value,
-                    Href = o.Attributes().Where(i => i.Name.LocalName == "href").First().Value,
-                    MediaType = o.Attributes().Where(i => i.Name.LocalName == "media-type").First().Value
+                    Id = o.Attributes().First(i => i.Name.LocalName == "id").Value,
+                    Href = o.Attributes().First(i => i.Name.LocalName == "href").Value,
+                    MediaType = o.Attributes().First(i => i.Name.LocalName == "media-type").Value
                 })
                 .ToList();
         }
@@ -62,23 +59,23 @@ namespace EbookReader.Service.Epub {
         public abstract string GetCover();
 
         protected XElement GetMetadata() {
-            return Package.Descendants().Where(o => o.Name.LocalName == "metadata").First();
+            return Package.Descendants().First(o => o.Name.LocalName == "metadata");
         }
 
         protected XElement GetManifest() {
-            return Package.Descendants().Where(o => o.Name.LocalName == "manifest").First();
+            return Package.Descendants().First(o => o.Name.LocalName == "manifest");
         }
 
         private XElement GetSpine() {
-            return Package.Descendants().Where(o => o.Name.LocalName == "spine").First();
+            return Package.Descendants().First(o => o.Name.LocalName == "spine");
         }
 
         private string GetMandatoryElementValue(string localName, IEnumerable<XElement> elements) {
-            return elements.Where(o => o.Name.LocalName == localName).First().Value;
+            return elements.First(o => o.Name.LocalName == localName).Value;
         }
 
         private string GetOptionalElementValue(string localName, IEnumerable<XElement> elements) {
-            var element = elements.Where(o => o.Name.LocalName == localName).FirstOrDefault();
+            var element = elements.FirstOrDefault(o => o.Name.LocalName == localName);
             return element != null ? element.Value : string.Empty;
         }
 

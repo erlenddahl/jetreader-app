@@ -257,9 +257,6 @@
     <PackageReference Include="PCLAppConfig">
       <Version>1.0.1</Version>
     </PackageReference>
-    <PackageReference Include="PCLStorage">
-      <Version>1.0.2</Version>
-    </PackageReference>
     <PackageReference Include="Plugin.Permissions">
       <Version>3.0.0.12</Version>
     </PackageReference>

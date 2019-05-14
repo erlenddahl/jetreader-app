@@ -217,8 +217,9 @@ window.Ebook = {
         }
     },
     loadImages: function(images) {
-        images.forEach(function(item) {
-            $("[data-js-ebook-image-id=" + item.ID + "]").attr("src", item.Data);
+        images.forEach(function (item) {
+            $("img[data-js-ebook-image-id=" + item.Id + "]").attr("src", item.Data);
+            $("image[data-js-ebook-image-id=" + item.Id + "]").attr("xlink:href", item.Data);
         });
     },
     resizeImages: function() {

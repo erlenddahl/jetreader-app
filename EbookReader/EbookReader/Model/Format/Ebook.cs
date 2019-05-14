@@ -13,8 +13,11 @@ namespace EbookReader.Model.Format {
         public string Language { get; set; }
         public List<Spine> Spines { get; set; }
         public IEnumerable<File> Files { get; set; }
+        
+        /// <summary>
+        /// The relative path (to the local storage folder) of the unzipped epub folder.
+        /// </summary>
         public string Folder { get; set; }
-        public string ContentBasePath { get; set; }
         public List<Navigation.Item> Navigation { get; set; }
         public string Cover { get; set; }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,6 @@ using Autofac;
 using EbookReader.DependencyService;
 using EbookReader.Model.Messages;
 using EbookReader.Service;
-using PCLStorage;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -37,27 +37,24 @@ namespace EbookReader.Page.Home {
 
             DeleteIcon.GestureRecognizers.Add(
                 new TapGestureRecognizer {
-                    Command = new Command(() => { Delete(); })
+                    Command = new Command(Delete)
                 }
             );
 
             GestureRecognizers.Add(
                 new TapGestureRecognizer {
-                    Command = new Command(() => { Open(); }),
+                    Command = new Command(Open),
                 });
         }
 
         private async void LoadImage() {
-            if (!string.IsNullOrEmpty(_book.Cover)) {
-                var fileService = IocManager.Container.Resolve<IFileService>();
-                var file = await fileService.OpenFile($"{_book.Path}/{_book.Cover}", FileSystem.Current.LocalStorage);
-                var stream = await file.OpenAsync(FileAccess.Read);
+            if (string.IsNullOrEmpty(_book.Cover)) return;
 
-                Cover.Source = ImageSource.FromStream(() => stream);
-                Cover.Aspect = Aspect.Fill;
-                Cover.WidthRequest = Card.CardWidth;
-                Cover.HeightRequest = Card.CardHeight;
-            }
+            var fileService = IocManager.Container.Resolve<IFileService>();
+            Cover.Source = ImageSource.FromFile(Path.Combine(fileService.StorageFolder, _book.Path, _book.Cover));
+            Cover.Aspect = Aspect.Fill;
+            Cover.WidthRequest = Card.CardWidth;
+            Cover.HeightRequest = Card.CardHeight;
         }
 
         private void Open() {

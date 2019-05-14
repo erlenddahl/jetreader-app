@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using EbookReader.Model.Navigation;
-using PCLStorage;
 
 namespace EbookReader.Service.Epub {
     public class Epub200Parser : EpubParser {
 
         private readonly IFileService _fileService;
 
-        public Epub200Parser(IFileService fileService, XElement package, IFolder folder, string contentBasePath) : base(package, folder, contentBasePath) {
+        public Epub200Parser(IFileService fileService, XElement package, string path) : base(package, path) {
             _fileService = fileService;
         }
 
@@ -20,9 +20,9 @@ namespace EbookReader.Service.Epub {
             var navigation = new List<Item>();
             var tocFilename = GetTocFilename();
 
-            if (!string.IsNullOrEmpty(tocFilename)) {
-                var tocFile = await _fileService.OpenFile($"{ContentBasePath}{tocFilename}", Folder);
-                var tocFileData = await tocFile.ReadAllTextAsync();
+            if (!string.IsNullOrEmpty(tocFilename))
+            {
+                var tocFileData = await _fileService.ReadAllTextAsync(Path.Combine(BookPath, tocFilename));
                 var xmlContainer = XDocument.Parse(tocFileData);
                 var items = xmlContainer.Root.Descendants().First(o => o.Name.LocalName == "navMap").Elements();
 
@@ -38,7 +38,7 @@ namespace EbookReader.Service.Epub {
             var id = GetAttributeOnElementWithAttributeValue(GetMetadata(), "content", "name", "cover", "meta");
 
             if (!string.IsNullOrEmpty(id)) {
-                cover = $"{ContentBasePath}{GetFiles().First(o => o.Id == id).Href}";
+                cover = Path.Combine(BookPath, GetFiles().First(o => o.Id == id).Href);
             }
 
             return cover;
@@ -91,8 +91,7 @@ namespace EbookReader.Service.Epub {
 
             var attr = Package
                 .Descendants()
-                .Where(o => o.Name.LocalName == "spine")
-                .First()
+                .First(o => o.Name.LocalName == "spine")
                 .Attributes()
                 .Where(o => o.Name.LocalName == "toc")
                 .Select(o => o.Value)

@@ -50,18 +50,23 @@ namespace EbookReader.Service {
         
         public async void RemoveById(string id) {
             var book = await _bookRepository.GetBookByIdAsync(id);
-            if (book != null) {
-                _fileService.DeleteFolder(book.Path);
-                var bookmarks = await _bookmarkRepository.GetBookmarksByBookIdAsync(id);
-                foreach(var bookmark in bookmarks) {
-                    await _bookmarkRepository.DeleteBookmarkAsync(bookmark);
-                }
-                await _bookRepository.DeleteBookAsync(book);
+            if (book == null) return;
+
+            _fileService.DeleteFolder(book.Path);
+            var bookmarks = await _bookmarkRepository.GetBookmarksByBookIdAsync(id);
+            foreach(var bookmark in bookmarks) {
+                await _bookmarkRepository.DeleteBookmarkAsync(bookmark);
             }
+            await _bookRepository.DeleteBookAsync(book);
         }
 
         public async void SaveBook(Book book) {
             await _bookRepository.SaveBookAsync(book);
+        }
+
+        public void Clear()
+        {
+            _bookRepository.DeleteAllBooksAsync();
         }
 
         public async Task<Book> LoadBookById(string id) {

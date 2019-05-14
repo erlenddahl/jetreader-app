@@ -2292,8 +2292,6 @@ namespace EbookReader.Droid
 			global::PCLAppConfig.FileSystemStream.Resource.Styleable.ViewStubCompat_android_id = global::EbookReader.Droid.Resource.Styleable.ViewStubCompat_android_id;
 			global::PCLAppConfig.FileSystemStream.Resource.Styleable.ViewStubCompat_android_inflatedId = global::EbookReader.Droid.Resource.Styleable.ViewStubCompat_android_inflatedId;
 			global::PCLAppConfig.FileSystemStream.Resource.Styleable.ViewStubCompat_android_layout = global::EbookReader.Droid.Resource.Styleable.ViewStubCompat_android_layout;
-			global::PCLStorage.Resource.String.ApplicationName = global::EbookReader.Droid.Resource.String.ApplicationName;
-			global::PCLStorage.Resource.String.Hello = global::EbookReader.Droid.Resource.String.Hello;
 			global::Xamarin.Auth.Resource.Animation.slide_in_right = global::EbookReader.Droid.Resource.Animation.slide_in_right;
 			global::Xamarin.Auth.Resource.Animation.slide_out_left = global::EbookReader.Droid.Resource.Animation.slide_out_left;
 			global::Xamarin.Auth.Resource.Attribute.font = global::EbookReader.Droid.Resource.Attribute.font;

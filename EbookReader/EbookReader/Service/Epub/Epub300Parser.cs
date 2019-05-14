@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using EbookReader.Model.Navigation;
-using PCLStorage;
 
 namespace EbookReader.Service.Epub {
     public class Epub300Parser : EpubParser {
         readonly IFileService _fileService;
 
-        public Epub300Parser(IFileService fileService, XElement package, IFolder folder, string contentBasePath) : base(package, folder, contentBasePath) {
+        public Epub300Parser(IFileService fileService, XElement package, string path) : base(package, path) {
             _fileService = fileService;
         }
 
@@ -20,9 +20,9 @@ namespace EbookReader.Service.Epub {
             var navigation = new List<Item>();
             var tocFilename = GetAttributeOnElementWithAttributeValue(GetManifest(), "href", "properties", "nav", "item");
 
-            if (!string.IsNullOrEmpty(tocFilename)) {
-                var tocFile = await _fileService.OpenFile($"{ContentBasePath}{tocFilename}", Folder);
-                var tocFileData = await tocFile.ReadAllTextAsync();
+            if (!string.IsNullOrEmpty(tocFilename))
+            {
+                var tocFileData = await _fileService.ReadAllTextAsync(Path.Combine(BookPath, tocFilename));
                 var xmlContainer = XDocument.Parse(tocFileData);
 
                 var navItem = xmlContainer.Root.Descendants()
@@ -58,7 +58,7 @@ namespace EbookReader.Service.Epub {
             var href = GetAttributeOnElementWithAttributeValue(GetManifest(), "href", "properties", "cover-image", "item");
 
             if (!string.IsNullOrEmpty(href)) {
-                cover = $"{ContentBasePath}{href}";
+                cover = Path.Combine(BookPath, href);
             }
 
             return cover;

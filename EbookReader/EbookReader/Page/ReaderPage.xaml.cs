@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -350,7 +351,7 @@ namespace EbookReader.Page {
             var id = path.First();
             var marker = path.Skip(1).FirstOrDefault() ?? string.Empty;
 
-            var normalizedId = PathHelper.NormalizePath(PathHelper.CombinePath(_ebook.ContentBasePath, id));
+            var normalizedId = PathHelper.NormalizePath(Path.Combine(_ebook.Folder, id));
 
             var file = _ebook.Files.FirstOrDefault(o => o.Href.Contains(id) || o.Href.Contains(normalizedId));
             if (file == null) return;
