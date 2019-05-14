@@ -8,16 +8,11 @@ using System.Threading.Tasks;
 using EbookReader.Provider;
 
 namespace EbookReader.Model.View {
-    public class QuickPanelSettingsVM {
-
-        public QuickPanelSettingsVM() {
-            FontSize = new FontSizeVM();
-            Margin = new MarginVM();
-        }
-
-        public FontSizeVM FontSize { get; set; }
-
-        public MarginVM Margin { get; set; }
+    public class QuickPanelSettingsVM
+    {
+        public FontSizeVM FontSize { get; set; } = new FontSizeVM();
+        public MarginVM Margin { get; set; } = new MarginVM();
+        public NightModeVM NightMode { get; set; } = new NightModeVM();
 
     }
 }

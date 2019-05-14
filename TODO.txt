@@ -1,0 +1,12 @@
+Active
+
+Inactive
+ - Automatically open last book
+ - Clean MessageBus system
+ - Clean file structure
+ - Fix grunt so that it actually works
+ - Change nightmode to general theme system
+    - Make sure it also (can) affect the app itself, and not only the reader
+ - Rework status bar (more info, customizable info, smaller, position)
+ - Implement statistics
+ - Implement easy syncing using erlenddahl.net (or custom url)

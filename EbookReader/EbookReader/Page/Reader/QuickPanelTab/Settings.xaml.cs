@@ -51,5 +51,9 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
             }
         }
 
+        private void Switch_OnToggled(object sender, ToggledEventArgs e)
+        {
+            _messageBus.Send(new ChangeThemeMessage());
+        }
     }
 }

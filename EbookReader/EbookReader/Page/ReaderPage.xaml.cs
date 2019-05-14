@@ -71,14 +71,28 @@ namespace EbookReader.Page {
 
             _messageBus.Send(new FullscreenRequestMessage(true));
 
-            if (UserSettings.Reader.NightMode) {
-                BackgroundColor = Color.FromRgb(24, 24, 25);
-            }
+            ChangeTheme();
 
             NavigationPage.SetHasNavigationBar(this, false);
         }
 
-        private void SubscribeMessages() {
+        private void ChangeTheme(ChangeThemeMessage msg = null)
+        {
+            if (UserSettings.Reader.NightMode)
+            {
+                BackgroundColor = Color.FromRgb(24, 24, 25);
+            }
+            else
+            {
+                BackgroundColor = Color.FromRgb(0, 0, 0);
+            }
+
+            SendNightMode(UserSettings.Reader.NightMode);
+        }
+
+        private void SubscribeMessages()
+        {
+            _messageBus.Subscribe<ChangeThemeMessage>(ChangeTheme, new string[] { nameof(ReaderPage) });
             _messageBus.Subscribe<ChangeMarginMessage>(ChangeMargin, new string[] { nameof(ReaderPage) });
             _messageBus.Subscribe<ChangeFontSizeMessage>(ChangeFontSize, new string[] { nameof(ReaderPage) });
             _messageBus.Subscribe<AppSleepMessage>(AppSleepSubscriber, new string[] { nameof(ReaderPage) });
@@ -476,14 +490,26 @@ namespace EbookReader.Page {
             WebView.Messages.Send("goToPosition", json);
         }
 
-        private void SendGoToPage(int page, bool next, bool previous) {
-            var json = new {
+        private void SendGoToPage(int page, bool next, bool previous)
+        {
+            var json = new
+            {
                 Page = page,
                 Next = next,
                 Previous = previous,
             };
 
             WebView.Messages.Send("goToPage", json);
+        }
+
+        private void SendNightMode(bool nightmode)
+        {
+            var json = new
+            {
+                NightMode = nightmode
+            };
+
+            WebView.Messages.Send("setNightMode", json);
         }
         #endregion
     }

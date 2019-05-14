@@ -28,6 +28,16 @@
                 <Setter Property="VerticalOptions" Value="Center" />
                 <Setter Property="TextColor" Value="White" />
             </Style>
+
+            <Style TargetType="Label" x:Key="note">
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+                <Setter Property="TextColor" Value="White" />
+            </Style>
+
+            <Style TargetType="View" x:Key="control">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="VerticalOptions" Value="CenterAndExpand" />
+            </Style>
         </ResourceDictionary>
     </StackLayout.Resources>
 
@@ -46,5 +56,13 @@
             <Picker x:Name="MarginPicker" ItemsSource="{Binding Margin.Items}" SelectedItem="{Binding Margin.Value}">
             </Picker>
         </StackLayout>
+
+        <StackLayout Style="{StaticResource settingsWrapper}">
+            <StackLayout Orientation="Horizontal" CompressedLayout.IsHeadless="true">
+                <Label Text="Night mode" FontSize="Medium" />
+                <Switch IsToggled="{Binding NightMode.Enabled}" Style="{StaticResource control}" Toggled="Switch_OnToggled" />
+            </StackLayout>
+        </StackLayout>
+
     </StackLayout.Children>
 </StackLayout>
