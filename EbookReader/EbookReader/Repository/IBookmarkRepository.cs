@@ -7,7 +7,7 @@ using EbookReader.Model.Bookshelf;
 
 namespace EbookReader.Repository {
     public interface IBookmarkRepository {
-        Task<List<Bookmark>> GetBookmarksByBookIDAsync(string bookID);
+        Task<List<Bookmark>> GetBookmarksByBookIdAsync(string bookId);
         Task<int> DeleteBookmarkAsync(Bookmark book);
         Task<int> SaveBookmarkAsync(Bookmark item);
     }

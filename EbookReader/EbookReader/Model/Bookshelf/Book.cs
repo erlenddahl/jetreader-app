@@ -9,7 +9,7 @@ using SQLite;
 namespace EbookReader.Model.Bookshelf {
     public class Book {
         [PrimaryKey]
-        public string ID { get; set; }
+        public string Id { get; set; }
         public string Title { get; set; }
         public string Path { get; set; }
         public string Cover { get; set; }
@@ -22,9 +22,7 @@ namespace EbookReader.Model.Bookshelf {
 
         [Ignore]
         public virtual Position Position {
-            get {
-                return new Position(Spine, SpinePosition);
-            }
+            get => new Position(Spine, SpinePosition);
             set {
                 Spine = value.Spine;
                 SpinePosition = value.SpinePosition;

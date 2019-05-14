@@ -22,7 +22,7 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer(typeof(OAuth2LoginPage), typeof(OAuth2LoginPageRenderer))]
 namespace EbookReader.Droid {
     public class OAuth2LoginPageRenderer : PageRenderer {
-        bool done = false;
+        bool _done = false;
 
         public OAuth2LoginPageRenderer(Context context) : base(context) {
         }
@@ -30,40 +30,40 @@ namespace EbookReader.Droid {
         protected override void OnElementChanged(ElementChangedEventArgs<Xamarin.Forms.Page> e) {
             base.OnElementChanged(e);
 
-            if (!done) {
+            if (!_done) {
 
                 var activity = Context as Activity;
 
-                var OAuth2Data = Xamarin.Forms.Application.Current.Properties["OAuth2Data"] as OAuth2RequestData;
+                var oAuth2Data = Xamarin.Forms.Application.Current.Properties["OAuth2Data"] as OAuth2RequestData;
 
                 var auth = new OAuth2Authenticator(
-                    OAuth2Data.ClientID,
-                    OAuth2Data.Scope,
-                    new Uri(OAuth2Data.AuthorizeUrl),
-                    new Uri(OAuth2Data.RedirectUrl)
+                    oAuth2Data.ClientId,
+                    oAuth2Data.Scope,
+                    new Uri(oAuth2Data.AuthorizeUrl),
+                    new Uri(oAuth2Data.RedirectUrl)
                 );
 
                 auth.Completed += (sender, arg) => {
                     if (arg.IsAuthenticated) {
                         IocManager.Container.Resolve<IMessageBus>().Send(new OAuth2AccessTokenObtainedMessage {
                             AccessToken = arg.Account.Properties["access_token"],
-                            Provider = OAuth2Data.Provider,
+                            Provider = oAuth2Data.Provider,
                         });
                     }
 
                     IocManager.Container.Resolve<IMessageBus>().Send(new OAuth2LoginPageClosed {
-                        Provider = OAuth2Data.Provider,
+                        Provider = oAuth2Data.Provider,
                     });
                 };
 
                 auth.Error += (sender, arg) => {
                     IocManager.Container.Resolve<IMessageBus>().Send(new OAuth2LoginPageClosed {
-                        Provider = OAuth2Data.Provider,
+                        Provider = oAuth2Data.Provider,
                     });
                 };
 
                 activity.StartActivity(auth.GetUI(activity));
-                done = true;
+                _done = true;
             }
         }
     }

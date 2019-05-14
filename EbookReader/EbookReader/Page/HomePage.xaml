@@ -33,7 +33,7 @@
                                         HeightRequest="60"
                                         AbsoluteLayout.LayoutBounds="1,1,-1,-1" 
                                         AbsoluteLayout.LayoutFlags="PositionProportional" 
-                                        Clicked="MyFloatButton_Clicked" />
+                                        OnClicked="MyFloatButton_Clicked" />
                 </OnPlatform.Android>
                 <OnPlatform.WinPhone>
                     <Label IsVisible="False" />

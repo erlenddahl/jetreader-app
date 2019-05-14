@@ -14,7 +14,7 @@ using Plugin.Connectivity;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class FirebaseVM : BaseVM {
+    public class FirebaseVm : BaseVm {
         public string Email {
             get => UserSettings.Synchronization.Firebase.Email;
             set {
@@ -79,7 +79,7 @@ namespace EbookReader.Model.View {
         public ICommand DisconnectCommand { get; set; }
         public ICommand ResetCommand { get; set; }
 
-        public FirebaseVM() {
+        public FirebaseVm() {
             ConnectCommand = new Command(Connect);
             DisconnectCommand = new Command(Disconnect);
             ResetCommand = new Command(Reset);

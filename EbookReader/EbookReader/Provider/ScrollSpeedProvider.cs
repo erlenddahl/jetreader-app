@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 
 namespace EbookReader.Provider {
     public class ScrollSpeedProvider {
-        public static List<int> Items {
-            get {
-                return new List<int>() {
-                    0,
-                    200,
-                    500,
-                };
-            }
-        }
+        public static List<int> Items =>
+            new List<int>() {
+                0,
+                200,
+                500,
+            };
     }
 }

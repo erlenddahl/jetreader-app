@@ -9,7 +9,7 @@ using Microsoft.AppCenter.Crashes;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class SettingsApplicationVM : BaseVM {
+    public class SettingsApplicationVm : BaseVm {
         public bool AnalyticsAgreement {
             get => UserSettings.AnalyticsAgreement;
             set {
@@ -23,8 +23,8 @@ namespace EbookReader.Model.View {
 
         public ICommand OpenUrlCommand { get; set; }
 
-        public SettingsApplicationVM() {
-            OpenUrlCommand = new Command((url) => OpenUrl(url));
+        public SettingsApplicationVm() {
+            OpenUrlCommand = new Command(OpenUrl);
         }
 
         private void OpenUrl(object url) {

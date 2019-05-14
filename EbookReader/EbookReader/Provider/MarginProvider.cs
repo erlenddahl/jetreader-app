@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 
 namespace EbookReader.Provider {
     public static class MarginProvider {
-        public static List<int> Items {
-            get {
-                return new List<int> {
-                    15,
-                    30,
-                    45,
-                };
-            }
-        }
+        public static List<int> Items =>
+            new List<int> {
+                15,
+                30,
+                45,
+            };
     }
 }

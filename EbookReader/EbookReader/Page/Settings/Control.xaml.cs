@@ -18,7 +18,7 @@ namespace EbookReader.Page.Settings {
                 Content.WidthRequest = 500;
             }
 
-            BindingContext = new SettingsControlVM();
+            BindingContext = new SettingsControlVm();
         }
     }
 }

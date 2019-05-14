@@ -10,13 +10,13 @@ namespace EbookReader.Service {
     public class TxtLoader : OneFileLoader {
         
         public TxtLoader(IFileService fileService) : base(fileService) {
-            Extensions = new string[] { "txt" };
+            Extensions = new[] { "txt" };
             EbookFormat = EbookFormat.Txt;
         }
 
-        public override async Task<HtmlResult> PrepareHTML(string html, Ebook book, File chapter) {
+        public override async Task<HtmlResult> PrepareHtml(string html, Ebook book, File chapter) {
             html = $"<body><p>{html}</p></body>".Replace("\n","</p><p>");
-            return await base.PrepareHTML(html, book, chapter);
+            return await base.PrepareHtml(html, book, chapter);
         }
     }
 }

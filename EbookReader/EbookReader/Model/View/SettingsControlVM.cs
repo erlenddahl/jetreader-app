@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace EbookReader.Model.View {
-    public class SettingsControlVM : BaseVM {
+    public class SettingsControlVm : BaseVm {
 
-        public PanBrightnessChangeVM PanBrightnessChange { get; set; }
-        public VolumeButtonVM VolumeButton { get; set; }
+        public PanBrightnessChangeVm PanBrightnessChange { get; set; }
+        public VolumeButtonVm VolumeButton { get; set; }
 
-        public SettingsControlVM() {
-            PanBrightnessChange = new PanBrightnessChangeVM();
-            VolumeButton = new VolumeButtonVM();
+        public SettingsControlVm() {
+            PanBrightnessChange = new PanBrightnessChangeVm();
+            VolumeButton = new VolumeButtonVm();
         }
 
         public bool ClickEverywhere {

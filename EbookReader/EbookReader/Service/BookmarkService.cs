@@ -9,10 +9,9 @@ using EbookReader.Repository;
 
 namespace EbookReader.Service {
     public class BookmarkService : IBookmarkService {
-
-        IBookmarkRepository _bookmarkRepository;
+        readonly IBookmarkRepository _bookmarkRepository;
         IBookRepository _bookRepository;
-        ISyncService _syncService;
+        readonly ISyncService _syncService;
 
         public BookmarkService(IBookmarkRepository bookmarkRepository, IBookRepository bookRepository, ISyncService syncService) {
             _bookmarkRepository = bookmarkRepository;
@@ -20,29 +19,29 @@ namespace EbookReader.Service {
             _syncService = syncService;
         }
 
-        public void CreateBookmark(string name, string bookID, Position position) {
+        public void CreateBookmark(string name, string bookId, Position position) {
             var bookmark = new Bookmark {
-                ID = BookmarkIdProvider.ID,
+                Id = BookmarkIdProvider.Id,
                 Name = name,
                 Position = new Position(position),
-                BookID = bookID,
+                BookId = bookId,
             };
 
             SaveBookmark(bookmark);
-            _syncService.SaveBookmark(bookID, bookmark);
+            _syncService.SaveBookmark(bookId, bookmark);
         }
 
-        public async void DeleteBookmark(Bookmark bookmark, string bookID) {
+        public async void DeleteBookmark(Bookmark bookmark, string bookId) {
             bookmark.Deleted = true;
             bookmark.Name = string.Empty;
             bookmark.Position = new Position();
 
             await _bookmarkRepository.SaveBookmarkAsync(bookmark);
-            _syncService.SaveBookmark(bookID, bookmark);
+            _syncService.SaveBookmark(bookId, bookmark);
         }
 
-        public async Task<List<Bookmark>> LoadBookmarksByBookID(string bookID) {
-            return await _bookmarkRepository.GetBookmarksByBookIDAsync(bookID);
+        public async Task<List<Bookmark>> LoadBookmarksByBookId(string bookId) {
+            return await _bookmarkRepository.GetBookmarksByBookIdAsync(bookId);
         }
 
         public async void SaveBookmark(Bookmark bookmark) {

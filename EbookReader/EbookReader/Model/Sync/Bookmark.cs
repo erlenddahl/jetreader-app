@@ -8,67 +8,48 @@ using Newtonsoft.Json;
 
 namespace EbookReader.Model.Sync {
     public class Bookmark {
-        [JsonIgnore]
-        public long ID {
-            get {
-                return I;
-            }
-            set {
-                I = value;
-            }
+
+        [JsonProperty("I")]
+        public long Id { get; set; }
+
+        [JsonProperty("D")]
+        public bool Deleted { get; set; }
+
+        [JsonProperty("S")]
+        public int Spine { get; set; }
+
+        [JsonProperty("P")]
+        public int Position { get; set; }
+
+        [JsonProperty("N")]
+        public string Name { get; set; }
+
+        [JsonProperty("C")]
+        public DateTime LastChange { get; set; }
+
+        public static Bookmark FromDbBookmark(Bookshelf.Bookmark bm)
+        {
+            return new Bookmark()
+            {
+                Id = bm.Id,
+                Name = bm.Name,
+                Position = bm.Position.SpinePosition,
+                Spine = bm.Position.Spine,
+                Deleted = bm.Deleted,
+                LastChange = bm.LastChange,
+            };
         }
 
-        [JsonIgnore]
-        public bool Deleted {
-            get {
-                return D;
-            }
-            set {
-                D = value;
-            }
+        public Bookshelf.Bookmark ToDbBookmark(string bookId)
+        {
+            return new Bookshelf.Bookmark()
+            {
+                Id = Id,
+                BookId = bookId,
+                Name = Name,
+                Position = new Position(Spine, Position),
+                LastChange = DateTime.UtcNow,
+            };
         }
-
-        [JsonIgnore]
-        public Position Position {
-            get {
-                return new Position(S, P);
-            }
-            set {
-                S = value.Spine;
-                P = value.SpinePosition;
-            }
-        }
-
-        [JsonIgnore]
-        public string Name {
-            get {
-                return N;
-            }
-            set {
-                N = value;
-            }
-        }
-
-        [JsonIgnore]
-        public DateTime LastChange {
-            get {
-                return C;
-            }
-            set {
-                C = value;
-            }
-        } 
-
-        public long I { get; set; }
-
-        public bool D { get; set; }
-
-        public int S { get; set; }
-
-        public int P { get; set; }
-
-        public string N { get; set; }
-
-        public DateTime C { get; set; }
     }
 }

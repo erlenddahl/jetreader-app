@@ -22,7 +22,7 @@ namespace EbookReader.Droid {
     [Preserve]
     public class FloatingActionButtonRenderer : ViewRenderer<MyFloatButton, FloatingActionButton> {
 
-        private FloatingActionButton fab;
+        private FloatingActionButton _fab;
 
         public FloatingActionButtonRenderer(Context context) : base(context) {
         }
@@ -32,20 +32,20 @@ namespace EbookReader.Droid {
 
 
             if (Control == null) {
-                fab = new FloatingActionButton(Context);
-                fab.LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent);
-                fab.Clickable = true;
-                fab.SetImageDrawable(ContextCompat.GetDrawable(Context, Resource.Drawable.add));
-                fab.BackgroundTintList = new ColorStateList(new int[][] { new int[0] }, new int[] { Android.Graphics.Color.ParseColor(e.NewElement.ButtonBackgroundColor) });
-                SetNativeControl(fab);
+                _fab = new FloatingActionButton(Context);
+                _fab.LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent);
+                _fab.Clickable = true;
+                _fab.SetImageDrawable(ContextCompat.GetDrawable(Context, Resource.Drawable.add));
+                _fab.BackgroundTintList = new ColorStateList(new[] { new int[0] }, new int[] { Android.Graphics.Color.ParseColor(e.NewElement.ButtonBackgroundColor) });
+                SetNativeControl(_fab);
             }
 
             if (e.NewElement != null) {
-                fab.Click += Fab_Click;
+                _fab.Click += Fab_Click;
             }
 
             if (e.OldElement != null) {
-                fab.Click -= Fab_Click;
+                _fab.Click -= Fab_Click;
             }
         }
 

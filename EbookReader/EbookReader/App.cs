@@ -17,15 +17,11 @@ using PCLAppConfig;
 namespace EbookReader {
     public class App : Application {
 
-        private IMessageBus _messageBus;
+        private readonly IMessageBus _messageBus;
 
-        private bool doubleBackToExitPressedOnce = false;
+        private bool _doubleBackToExitPressedOnce = false;
 
-        public static bool HasMasterDetailPage {
-            get {
-                return Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.Android;
-            }
-        }
+        public static bool HasMasterDetailPage => Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.Android;
 
         public App() {
             LoadConfig();
@@ -66,11 +62,11 @@ namespace EbookReader {
 
         protected override void OnStart() {
             // Handle when your app starts
-            AppCenter.Start($"android={AppSettings.AppCenter.Android};uwp={AppSettings.AppCenter.UWP};", typeof(Analytics), typeof(Crashes));
+            AppCenter.Start($"android={AppSettings.AppCenter.Android};uwp={AppSettings.AppCenter.Uwp};", typeof(Analytics), typeof(Crashes));
             Analytics.SetEnabledAsync(UserSettings.AnalyticsAgreement);
 
             _messageBus.UnSubscribe("App");
-            _messageBus.Subscribe<BackPressedMessage>(BackPressedMessageSubscriber, new string[] { "App" });
+            _messageBus.Subscribe<BackPressedMessage>(BackPressedMessageSubscriber, new[] { "App" });
         }
 
         protected override void OnSleep() {
@@ -91,13 +87,13 @@ namespace EbookReader {
                 if (detailPage is ReaderPage readerPage && readerPage.IsQuickPanelVisible()) {
                     _messageBus.Send(new CloseQuickPanelMessage());
                 } else if (detailPage is HomePage) {
-                    if (doubleBackToExitPressedOnce) {
+                    if (_doubleBackToExitPressedOnce) {
                         _messageBus.Send(new CloseAppMessage());
                     } else {
                         IocManager.Container.Resolve<IToastService>().Show("Press once again to exit!");
-                        doubleBackToExitPressedOnce = true;
+                        _doubleBackToExitPressedOnce = true;
                         Xamarin.Forms.Device.StartTimer(new TimeSpan(0, 0, 2), () => {
-                            doubleBackToExitPressedOnce = false;
+                            _doubleBackToExitPressedOnce = false;
                             return false;
                         });
                     }

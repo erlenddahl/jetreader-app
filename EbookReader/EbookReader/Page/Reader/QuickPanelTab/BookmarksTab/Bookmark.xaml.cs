@@ -13,7 +13,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab.BookmarksTab {
         public Bookmark(Model.Bookshelf.Bookmark bookmark) {
             InitializeComponent();
 
-            BindingContext = new Model.View.BookmarkVM(bookmark);
+            BindingContext = new Model.View.BookmarkVm(bookmark);
         }
     }
 }

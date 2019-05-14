@@ -9,27 +9,26 @@ using EbookReader.Service;
 
 namespace EbookReader.Repository {
     public class BookRepository : IBookRepository {
-
-        SQLiteAsyncConnection connection;
+        readonly SQLiteAsyncConnection _connection;
 
         public BookRepository(IDatabaseService databaseService) {
-            connection = databaseService.Connection;
+            _connection = databaseService.Connection;
         }
 
         public Task<List<Book>> GetAllBooksAsync() {
-            return connection.Table<Book>().ToListAsync();
+            return _connection.Table<Book>().ToListAsync();
         }
 
-        public Task<Book> GetBookByIDAsync(string id) {
-            return connection.Table<Book>().Where(i => i.ID == id).FirstOrDefaultAsync();
+        public Task<Book> GetBookByIdAsync(string id) {
+            return _connection.Table<Book>().Where(i => i.Id == id).FirstOrDefaultAsync();
         }
 
         public Task<int> DeleteBookAsync(Book book) {
-            return connection.DeleteAsync(book);
+            return _connection.DeleteAsync(book);
         }
 
         public Task<int> SaveBookAsync(Book item) {
-            return connection.InsertOrReplaceAsync(item);
+            return _connection.InsertOrReplaceAsync(item);
         }
     }
 }

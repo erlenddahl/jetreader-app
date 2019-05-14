@@ -7,26 +7,20 @@ using EbookReader.Provider;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class PanBrightnessChangeVM : BaseVM {
+    public class PanBrightnessChangeVm : BaseVm {
 
-        public bool Show {
-            get {
-                return Device.RuntimePlatform == Device.Android;
-            }
-        }
+        public bool Show => Device.RuntimePlatform == Device.Android;
 
         public List<string> Items => BrightnessChangeProvider.Items;
 
         public string Value {
             get => UserSettings.Control.BrightnessChange.ToString();
             set {
-                if (Enum.TryParse(value, out BrightnessChange enumValue)) {
-                    if (UserSettings.Control.BrightnessChange == enumValue)
-                        return;
+                if (!Enum.TryParse(value, out BrightnessChange enumValue)) return;
+                if (UserSettings.Control.BrightnessChange == enumValue) return;
 
-                    UserSettings.Control.BrightnessChange = enumValue;
-                    OnPropertyChanged();
-                }
+                UserSettings.Control.BrightnessChange = enumValue;
+                OnPropertyChanged();
             }
         }
     }

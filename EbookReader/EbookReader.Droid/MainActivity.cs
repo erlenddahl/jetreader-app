@@ -21,7 +21,7 @@ namespace EbookReader.Droid {
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity {
 
         BatteryBroadcastReceiver _batteryBroadcastReceiver;
-        private bool disposed = false;
+        private bool _disposed = false;
 
         protected override void OnCreate(Bundle bundle) {
             TabLayoutResource = Resource.Layout.Tabbar;
@@ -97,9 +97,9 @@ namespace EbookReader.Droid {
 
         private void SetUpSubscribers() {
             var messageBus = IocManager.Container.Resolve<IMessageBus>();
-            messageBus.Subscribe<ChangesBrightnessMessage>(ChangeBrightness, new string[] { "MainActivity" });
-            messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, new string[] { "MainActivity" });
-            messageBus.Subscribe<CloseAppMessage>(CloseAppMessageSubscriber, new string[] { "MainActivity" });
+            messageBus.Subscribe<ChangesBrightnessMessage>(ChangeBrightness, new[] { "MainActivity" });
+            messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, new[] { "MainActivity" });
+            messageBus.Subscribe<CloseAppMessage>(CloseAppMessageSubscriber, new[] { "MainActivity" });
         }
 
         private void CloseAppMessageSubscriber(CloseAppMessage msg) {
@@ -132,14 +132,14 @@ namespace EbookReader.Droid {
 
         protected override void Dispose(bool disposing) {
 
-            if (!disposed) {
+            if (!_disposed) {
                 if (disposing) {
                     if (_batteryBroadcastReceiver != null) {
                         Application.Context.UnregisterReceiver(_batteryBroadcastReceiver);
                     }
                 }
 
-                disposed = true;
+                _disposed = true;
             }
 
             base.Dispose(disposing);

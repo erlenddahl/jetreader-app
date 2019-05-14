@@ -10,12 +10,12 @@ using EbookReader.Service;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class BookmarkVM : BaseVM {
+    public class BookmarkVm : BaseVm {
         public Bookshelf.Bookmark Bookmark { get; set; }
 
         bool _editMode;
         public bool EditMode {
-            get { return _editMode; }
+            get => _editMode;
             set {
                 _editMode = value;
                 OnPropertyChanged();
@@ -27,12 +27,12 @@ namespace EbookReader.Model.View {
         public ICommand ShowEditCommand { get; set; }
         public ICommand SaveCommand { get; set; }
 
-        public BookmarkVM(Bookshelf.Bookmark bookmark) {
+        public BookmarkVm(Bookshelf.Bookmark bookmark) {
             Bookmark = bookmark;
 
             OpenBookmarkCommand = new Command(OpenBookmark);
             DeleteBookmarkCommand = new Command(DeleteBookmark);
-            ShowEditCommand = new Command((entry) => ShowEdit(entry));
+            ShowEditCommand = new Command(ShowEdit);
             SaveCommand = new Command(ChangeName);
         }
 

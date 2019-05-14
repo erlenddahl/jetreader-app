@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace EbookReader.Model.View {
-    public abstract class BaseVM : INotifyPropertyChanged {
+    public abstract class BaseVm : INotifyPropertyChanged {
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string name = "") =>

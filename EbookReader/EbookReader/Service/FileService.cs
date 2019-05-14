@@ -18,7 +18,7 @@ namespace EbookReader.Service {
                 name = name.Substring(1);
             }
             while (name.Contains("/")) {
-                var path = name.Split(new char[] { '/' }, 2);
+                var path = name.Split(new[] { '/' }, 2);
                 var folderName = path[0];
                 name = path[1];
                 folder = await folder.CreateFolderAsync(folderName, CreationCollisionOption.OpenIfExists);
@@ -44,7 +44,7 @@ namespace EbookReader.Service {
             var folder = FileSystem.Current.LocalStorage;
             var file = await folder.CreateFileAsync(path, CreationCollisionOption.ReplaceExisting);
             var bytes = Encoding.UTF8.GetBytes(content);
-            using (Stream stream = await file.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
+            using (var stream = await file.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
                 await stream.WriteAsync(bytes, 0, bytes.Length);
             }
         }

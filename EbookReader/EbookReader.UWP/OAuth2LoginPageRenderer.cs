@@ -27,12 +27,12 @@ namespace EbookReader.UWP {
             _isShown = true;
 
             if (Control == null) {
-                WindowsPage windowsPage = new WindowsPage();
+                var windowsPage = new WindowsPage();
 
                 var OAuth2Data = Xamarin.Forms.Application.Current.Properties["OAuth2Data"] as OAuth2RequestData;
 
                 var auth = new OAuth2Authenticator(
-                    OAuth2Data.ClientID,
+                    OAuth2Data.ClientId,
                     OAuth2Data.Scope,
                     new Uri(OAuth2Data.AuthorizeUrl),
                     new Uri(OAuth2Data.RedirectUrl)

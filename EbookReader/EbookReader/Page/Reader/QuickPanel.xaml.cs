@@ -12,8 +12,7 @@ using Xamarin.Forms.Xaml;
 namespace EbookReader.Page.Reader {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class QuickPanel : StackLayout {
-
-        IMessageBus _messageBus;
+        readonly IMessageBus _messageBus;
 
         public QuickPanel() {
 
@@ -21,7 +20,7 @@ namespace EbookReader.Page.Reader {
 
             InitializeComponent();
 
-            BindingContext = new Model.View.QuickPanelVM();
+            BindingContext = new Model.View.QuickPanelVm();
 
             _messageBus.Subscribe<CloseQuickPanelMessage>((msg) => Hide());
         }

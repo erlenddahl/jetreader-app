@@ -9,11 +9,11 @@ using EbookReader.Provider;
 using EbookReader.Service;
 
 namespace EbookReader.Model.View {
-    public class ScrollSpeedVM : BaseVM {
+    public class ScrollSpeedVm : BaseVm {
 
         IMessageBus _messageBus;
 
-        public ScrollSpeedVM() {
+        public ScrollSpeedVm() {
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
         }
 

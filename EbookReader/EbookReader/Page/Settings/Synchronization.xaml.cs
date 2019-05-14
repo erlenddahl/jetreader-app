@@ -14,8 +14,7 @@ using Xamarin.Forms.Xaml;
 namespace EbookReader.Page.Settings {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Synchronization : ContentPage {
-
-        SettingsSynchronizationVM vm;
+        readonly SettingsSynchronizationVm _vm;
 
         public Synchronization() {
             InitializeComponent();
@@ -25,9 +24,9 @@ namespace EbookReader.Page.Settings {
                 Content.WidthRequest = 500;
             }
 
-            vm = new SettingsSynchronizationVM();
+            _vm = new SettingsSynchronizationVm();
 
-            BindingContext = vm;
+            BindingContext = _vm;
 
             IocManager.Container.Resolve<IMessageBus>().Subscribe<OpenDropboxLoginMessage>(OpenDropboxLogin);
 
@@ -40,14 +39,14 @@ namespace EbookReader.Page.Settings {
 
         private async void OpenDropboxLogin(OpenDropboxLoginMessage msg) {
 
-            var OAuth2Data = new OAuth2RequestData {
+            var oAuth2Data = new OAuth2RequestData {
                 Provider = "Dropbox",
-                ClientID = AppSettings.Synchronization.Dropbox.ClientID,
+                ClientId = AppSettings.Synchronization.Dropbox.ClientId,
                 AuthorizeUrl = "https://www.dropbox.com/oauth2/authorize",
                 RedirectUrl = AppSettings.Synchronization.Dropbox.RedirectUrl,
             };
 
-            Xamarin.Forms.Application.Current.Properties["OAuth2Data"] = OAuth2Data;
+            Xamarin.Forms.Application.Current.Properties["OAuth2Data"] = oAuth2Data;
 
             await Navigation.PushModalAsync(new OAuth2LoginPage());
         }
@@ -57,8 +56,8 @@ namespace EbookReader.Page.Settings {
         }
 
         private void Password_Completed(object sender, EventArgs e) {
-            if (vm != null && vm.Firebase != null && vm.Firebase.ConnectCommand != null && !string.IsNullOrEmpty(vm.Firebase.Email) && !string.IsNullOrEmpty(vm.Firebase.Password)) {
-                vm.Firebase.ConnectCommand.Execute(null);
+            if (_vm != null && _vm.Firebase != null && _vm.Firebase.ConnectCommand != null && !string.IsNullOrEmpty(_vm.Firebase.Email) && !string.IsNullOrEmpty(_vm.Firebase.Password)) {
+                _vm.Firebase.ConnectCommand.Execute(null);
             }
         }
     }

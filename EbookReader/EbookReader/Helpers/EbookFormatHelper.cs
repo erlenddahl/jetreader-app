@@ -12,22 +12,20 @@ namespace EbookReader.Helpers {
     public static class EbookFormatHelper {
 
         public static IBookLoader GetBookLoader(string filename) {
-            if (!string.IsNullOrEmpty(filename)) {
+            if (string.IsNullOrEmpty(filename)) throw new UnknownFileFormatException(filename);
 
-                EbookFormat ebookFormat = EbookFormat.Epub;
+            var ebookFormat = EbookFormat.Epub;
 
-                if (filename.EndsWith(".txt")) {
-                    ebookFormat = EbookFormat.Txt;
-                }
-
-                if (filename.EndsWith(".html") || filename.EndsWith(".htm") || filename.EndsWith(".xhtml") || filename.EndsWith(".xhtm")) {
-                    ebookFormat = EbookFormat.Html;
-                }
-
-                return GetBookLoader(ebookFormat);
+            if (filename.EndsWith(".txt")) {
+                ebookFormat = EbookFormat.Txt;
             }
 
-            throw new UnknownFileFormatException(filename);
+            if (filename.EndsWith(".html") || filename.EndsWith(".htm") || filename.EndsWith(".xhtml") || filename.EndsWith(".xhtm")) {
+                ebookFormat = EbookFormat.Html;
+            }
+
+            return GetBookLoader(ebookFormat);
+
         }
 
         public static IBookLoader GetBookLoader(EbookFormat format) {

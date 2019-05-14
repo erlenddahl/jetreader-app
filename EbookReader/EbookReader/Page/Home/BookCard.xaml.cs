@@ -15,13 +15,13 @@ namespace EbookReader.Page.Home {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class BookCard : StackLayout {
 
-        private Model.Bookshelf.Book _book;
+        private readonly Model.Bookshelf.Book _book;
 
         public BookCard(Model.Bookshelf.Book book) {
 
             _book = book;
 
-            StyleId = book.ID;
+            StyleId = book.Id;
 
             BindingContext = new {
                 book.Title,

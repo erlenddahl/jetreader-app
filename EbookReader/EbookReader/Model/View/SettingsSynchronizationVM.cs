@@ -14,11 +14,11 @@ using Plugin.Connectivity;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class SettingsSynchronizationVM : BaseVM {
+    public class SettingsSynchronizationVm : BaseVm {
 
-        public SynchronizationServiceVM SynchronizationService { get; set; }
+        public SynchronizationServiceVm SynchronizationService { get; set; }
 
-        public FirebaseVM Firebase { get; set; }
+        public FirebaseVm Firebase { get; set; }
 
         public bool Enabled {
             get => UserSettings.Synchronization.Enabled;
@@ -65,16 +65,14 @@ namespace EbookReader.Model.View {
             }
         }
         
-        public bool IsConnected {
-            get => !string.IsNullOrEmpty(DropboxAccessToken);
-        }
+        public bool IsConnected => !string.IsNullOrEmpty(DropboxAccessToken);
 
         public ICommand ConnectToDropboxCommand { get; set; }
         public ICommand DisconnectDropboxCommand { get; set; }
 
-        public SettingsSynchronizationVM() {
-            SynchronizationService = new SynchronizationServiceVM();
-            Firebase = new FirebaseVM();
+        public SettingsSynchronizationVm() {
+            SynchronizationService = new SynchronizationServiceVm();
+            Firebase = new FirebaseVm();
             ConnectToDropboxCommand = new Command(ConnectToDropbox);
             DisconnectDropboxCommand = new Command(DisconnectDropboxAsync);
 

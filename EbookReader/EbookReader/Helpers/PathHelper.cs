@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace EbookReader.Helpers {
     public static class PathHelper {
         public static string CombinePath(string path1, string path2) {
-            string dummyDriveLetter = "C:/";
-            string absolutePath1 = dummyDriveLetter + path1;
+            var dummyDriveLetter = "C:/";
+            var absolutePath1 = dummyDriveLetter + path1;
 
             var path1Uri = new Uri(absolutePath1, UriKind.Absolute);
             var path2Uri = new Uri(path2, UriKind.Relative);

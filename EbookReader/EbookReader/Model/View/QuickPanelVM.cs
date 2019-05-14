@@ -10,10 +10,10 @@ using EbookReader.Service;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class QuickPanelVM : BaseVM {
+    public class QuickPanelVm : BaseVm {
         bool _tabContentVisible;
         public bool TabContentVisible {
-            get { return _tabContentVisible; }
+            get => _tabContentVisible;
             set {
                 _tabContentVisible = value;
                 OnPropertyChanged();
@@ -22,7 +22,7 @@ namespace EbookReader.Model.View {
 
         bool _tabBookmarksVisible;
         public bool TabBookmarksVisible {
-            get { return _tabBookmarksVisible; }
+            get => _tabBookmarksVisible;
             set {
                 _tabBookmarksVisible = value;
                 OnPropertyChanged();
@@ -33,7 +33,7 @@ namespace EbookReader.Model.View {
         public ICommand TabBookmarksTappedCommand { get; set; }
         public ICommand CloseCommand { get; set; }
 
-        public QuickPanelVM() {
+        public QuickPanelVm() {
             TabContentVisible = true;
 
             TabContentTappedCommand = new Command(() => {

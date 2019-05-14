@@ -14,10 +14,10 @@ namespace EbookReader.Page {
         public AboutPage() {
             InitializeComponent();
 
-            BindingContext = new AboutVM();
+            BindingContext = new AboutVm();
 
             var source = new HtmlWebViewSource {
-                Html = GetFlaticonHTML()
+                Html = GetFlaticonHtml()
             };
 
             Flaticon.Source = source;
@@ -39,7 +39,7 @@ namespace EbookReader.Page {
             }
         }
 
-        private string GetFlaticonHTML() {
+        private string GetFlaticonHtml() {
             return @"
 <div style='text-align: center'>
     <div>Icons made by <a href='https://www.flaticon.com/authors/gregor-cresnar' title='Gregor Cresnar'>Gregor Cresnar</a> from <a href='https://www.flaticon.com/' title='Flaticon'>www.flaticon.com</a> is licensed by <a href='http://creativecommons.org/licenses/by/3.0/' title='Creative Commons BY 3.0'>CC 3.0 BY</a></div>

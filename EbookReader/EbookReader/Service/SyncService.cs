@@ -18,9 +18,9 @@ namespace EbookReader.Service {
         const string BookmarksNode = "bookmarks";
         const string BookmarksLastChangeNode = "bookmarkslastchange";
 
-        ICloudStorageService _cloudStorageService;
-        IBookshelfService _bookshelfService;
-        IMessageBus _messageBus;
+        readonly ICloudStorageService _cloudStorageService;
+        readonly IBookshelfService _bookshelfService;
+        readonly IMessageBus _messageBus;
 
         public SyncService(IBookshelfService bookshelfService, IMessageBus messageBus) {
             _bookshelfService = bookshelfService;
@@ -30,16 +30,16 @@ namespace EbookReader.Service {
             _cloudStorageService = IocManager.Container.ResolveKeyed<ICloudStorageService>(service);
         }
 
-        public async Task<Progress> LoadProgress(string bookID) {
+        public async Task<Progress> LoadProgress(string bookId) {
 
             if (!CanSync()) return null;
 
-            var path = PathGenerator(bookID, ProgressNode);
+            var path = PathGenerator(bookId, ProgressNode);
 
             return await _cloudStorageService.LoadJson<Progress>(path);
         }
 
-        public void SaveProgress(string bookID, Position position) {
+        public void SaveProgress(string bookId, Position position) {
 
             if (!CanSync()) return;
 
@@ -48,34 +48,28 @@ namespace EbookReader.Service {
                 Position = position,
             };
 
-            var path = PathGenerator(bookID, ProgressNode);
+            var path = PathGenerator(bookId, ProgressNode);
 
             _cloudStorageService.SaveJson(progress, path);
         }
 
-        public void DeleteBook(string bookID) {
+        public void DeleteBook(string bookId) {
 
             if (!CanSync()) return;
 
-            _cloudStorageService.DeleteNode(PathGenerator(bookID));
+            _cloudStorageService.DeleteNode(PathGenerator(bookId));
         }
 
-        public void SaveBookmark(string bookID, Model.Bookshelf.Bookmark bookmark) {
+        public void SaveBookmark(string bookId, Model.Bookshelf.Bookmark bookmark) {
 
             if (!CanSync()) return;
 
-            var syncBookmark = new Model.Sync.Bookmark {
-                ID = bookmark.ID,
-                Name = bookmark.Name,
-                Position = bookmark.Position,
-                Deleted = bookmark.Deleted,
-                LastChange = bookmark.LastChange,
-            };
+            var syncBookmark = Model.Sync.Bookmark.FromDbBookmark(bookmark);
 
-            var path = PathGenerator(bookID, BookmarksNode, bookmark.ID.ToString());
+            var path = PathGenerator(bookId, BookmarksNode, bookmark.Id.ToString());
 
             _cloudStorageService.SaveJson(syncBookmark, path);
-            SaveBookmarksLastChange(bookID);
+            SaveBookmarksLastChange(bookId);
         }
 
         public async void SynchronizeBookmarks(Book book) {
@@ -84,74 +78,67 @@ namespace EbookReader.Service {
 
             var bookmarkService = IocManager.Container.Resolve<IBookmarkService>();
 
-            var data = await _cloudStorageService.LoadJson<DateTime?>(PathGenerator(book.ID, BookmarksLastChangeNode));
+            var data = await _cloudStorageService.LoadJson<DateTime?>(PathGenerator(book.Id, BookmarksLastChangeNode));
 
-            if (!data.HasValue || !book.BookmarksSyncLastChange.HasValue || book.BookmarksSyncLastChange.Value < data.Value) {
+            if (data.HasValue && book.BookmarksSyncLastChange.HasValue && book.BookmarksSyncLastChange.Value >= data.Value) return;
 
-                var cloudBookmarks = await _cloudStorageService.LoadJsonList<Model.Sync.Bookmark>(PathGenerator(book.ID, BookmarksNode));
-                var deviceBookmarks = await bookmarkService.LoadBookmarksByBookID(book.ID);
+            var cloudBookmarks = await _cloudStorageService.LoadJsonList<Model.Sync.Bookmark>(PathGenerator(book.Id, BookmarksNode));
+            var deviceBookmarks = await bookmarkService.LoadBookmarksByBookId(book.Id);
 
-                var change = false;
+            var change = false;
 
-                foreach (var cloudBookmark in cloudBookmarks) {
-                    var deviceBookmark = deviceBookmarks.FirstOrDefault(o => o.ID == cloudBookmark.ID);
-                    if (deviceBookmark == null && !cloudBookmark.Deleted) {
-                        deviceBookmark = new Model.Bookshelf.Bookmark {
-                            ID = cloudBookmark.ID,
-                            BookID = book.ID,
-                            Name = cloudBookmark.Name,
-                            Position = cloudBookmark.Position,
-                            LastChange = DateTime.UtcNow,
-                        };
+            foreach (var cloudBookmark in cloudBookmarks) {
+                var deviceBookmark = deviceBookmarks.FirstOrDefault(o => o.Id == cloudBookmark.Id);
+                if (deviceBookmark == null && !cloudBookmark.Deleted) {
+                    deviceBookmark = cloudBookmark.ToDbBookmark(book.Id);
 
-                        deviceBookmarks.Add(deviceBookmark);
+                    deviceBookmarks.Add(deviceBookmark);
 
-                        change = true;
-                        bookmarkService.SaveBookmark(deviceBookmark);
-                    } else if (deviceBookmark != null && deviceBookmark.LastChange < cloudBookmark.LastChange) {
-                        deviceBookmark.Name = cloudBookmark.Name;
-                        deviceBookmark.Deleted = cloudBookmark.Deleted;
-                        deviceBookmark.LastChange = DateTime.UtcNow;
-
-                        change = true;
-                        bookmarkService.SaveBookmark(deviceBookmark);
-                    }
-                }
-
-                var cloudMissingBookmarks = deviceBookmarks.Select(o => o.ID).Except(cloudBookmarks.Select(o => o.ID));
-
-                if (cloudMissingBookmarks.Any()) {
                     change = true;
+                    bookmarkService.SaveBookmark(deviceBookmark);
+                } else if (deviceBookmark != null && deviceBookmark.LastChange < cloudBookmark.LastChange) {
+                    deviceBookmark.Name = cloudBookmark.Name;
+                    deviceBookmark.Deleted = cloudBookmark.Deleted;
+                    deviceBookmark.LastChange = DateTime.UtcNow;
+
+                    change = true;
+                    bookmarkService.SaveBookmark(deviceBookmark);
                 }
-
-                foreach (var deviceBookmark in deviceBookmarks.Where(o => cloudMissingBookmarks.Contains(o.ID))) {
-                    SaveBookmark(book.ID, deviceBookmark);
-                }
-
-                _bookshelfService.SaveBook(book);
-
-                if (change) {
-                    SaveBookmarksLastChange(book.ID);
-                }
-
-                var bookmarks = await bookmarkService.LoadBookmarksByBookID(book.ID);
-                _messageBus.Send(new BookmarksChangedMessage {
-                    Bookmarks = bookmarks
-                });
             }
+
+            var cloudMissingBookmarks = deviceBookmarks.Select(o => o.Id).Except(cloudBookmarks.Select(o => o.Id)).ToList();
+
+            if (cloudMissingBookmarks.Any()) {
+                change = true;
+            }
+
+            foreach (var deviceBookmark in deviceBookmarks.Where(o => cloudMissingBookmarks.Contains(o.Id))) {
+                SaveBookmark(book.Id, deviceBookmark);
+            }
+
+            _bookshelfService.SaveBook(book);
+
+            if (change) {
+                SaveBookmarksLastChange(book.Id);
+            }
+
+            var bookmarks = await bookmarkService.LoadBookmarksByBookId(book.Id);
+            _messageBus.Send(new BookmarksChangedMessage {
+                Bookmarks = bookmarks
+            });
 
         }
 
-        private async void SaveBookmarksLastChange(string bookID) {
+        private async void SaveBookmarksLastChange(string bookId) {
             var datetime = DateTime.UtcNow;
-            _cloudStorageService.SaveJson(datetime, PathGenerator(bookID, BookmarksLastChangeNode));
-            var book = await _bookshelfService.LoadBookById(bookID);
+            _cloudStorageService.SaveJson(datetime, PathGenerator(bookId, BookmarksLastChangeNode));
+            var book = await _bookshelfService.LoadBookById(bookId);
             book.BookmarksSyncLastChange = datetime;
             _bookshelfService.SaveBook(book);
         }
 
-        private string[] PathGenerator(string bookID, params string[] nodes) {
-            return new string[] { "data", bookID }.Union(nodes).Where(o => !string.IsNullOrEmpty(o)).ToArray();
+        private string[] PathGenerator(string bookId, params string[] nodes) {
+            return new[] { "data", bookId }.Union(nodes).Where(o => !string.IsNullOrEmpty(o)).ToArray();
         }
 
         private bool CanSync() {

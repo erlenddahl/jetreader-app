@@ -9,12 +9,12 @@ using Windows.UI.Notifications;
 namespace EbookReader.UWP.DependencyService {
     public class ToastService : IToastService {
         public void Show(string message) {
-            ToastNotifier ToastNotifier = ToastNotificationManager.CreateToastNotifier();
-            Windows.Data.Xml.Dom.XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
-            Windows.Data.Xml.Dom.XmlNodeList toastNodeList = toastXml.GetElementsByTagName("text");
+            var ToastNotifier = ToastNotificationManager.CreateToastNotifier();
+            var toastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
+            var toastNodeList = toastXml.GetElementsByTagName("text");
             toastNodeList.Item(0).AppendChild(toastXml.CreateTextNode(message));
 
-            ToastNotification toast = new ToastNotification(toastXml);
+            var toast = new ToastNotification(toastXml);
             toast.ExpirationTime = DateTime.Now.AddSeconds(4);
             ToastNotifier.Show(toast);
         }

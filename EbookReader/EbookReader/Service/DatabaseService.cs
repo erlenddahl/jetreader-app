@@ -9,14 +9,9 @@ using SQLite;
 
 namespace EbookReader.Service {
     public class DatabaseService : IDatabaseService {
+        readonly SQLiteAsyncConnection _database;
 
-        SQLiteAsyncConnection _database;
-
-        public SQLiteAsyncConnection Connection {
-            get {
-                return _database;
-            }
-        }
+        public SQLiteAsyncConnection Connection => _database;
 
         public DatabaseService(IFileHelper fileHelper) {
             var dbPath = fileHelper.GetLocalFilePath(AppSettings.Bookshelft.SqlLiteFilename);

@@ -13,7 +13,7 @@ namespace EbookReader.Page.Reader {
         public InfoPanel() {
             InitializeComponent();
 
-            BindingContext = new Model.View.InfoPanelVM();
+            BindingContext = new Model.View.InfoPanelVm();
         }
     }
 }

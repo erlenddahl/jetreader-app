@@ -9,8 +9,7 @@ using PCLStorage;
 
 namespace EbookReader.Service.Epub {
     public class Epub300Parser : EpubParser {
-
-        IFileService _fileService;
+        readonly IFileService _fileService;
 
         public Epub300Parser(IFileService fileService, XElement package, IFolder folder, string contentBasePath) : base(package, folder, contentBasePath) {
             _fileService = fileService;

@@ -29,11 +29,7 @@ namespace EbookReader {
         }
 
         private static IContainer _container;
-        public static IContainer Container {
-            get {
-                return _container;
-            }
-        }
+        public static IContainer Container => _container;
 
         public static void Build() {
             if(_container == null) {

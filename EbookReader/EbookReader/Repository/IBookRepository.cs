@@ -8,7 +8,7 @@ using EbookReader.Model.Bookshelf;
 namespace EbookReader.Repository {
     public interface IBookRepository {
         Task<List<Book>> GetAllBooksAsync();
-        Task<Book> GetBookByIDAsync(string id);
+        Task<Book> GetBookByIdAsync(string id);
         Task<int> DeleteBookAsync(Book book);
         Task<int> SaveBookAsync(Book item);
     }

@@ -12,11 +12,10 @@ using Plugin.FilePicker.Abstractions;
 
 namespace EbookReader.Service {
     public class BookshelfService : IBookshelfService {
-
-        IFileService _fileService;
-        ICryptoService _cryptoService;
-        IBookRepository _bookRepository;
-        IBookmarkRepository _bookmarkRepository;
+        readonly IFileService _fileService;
+        readonly ICryptoService _cryptoService;
+        readonly IBookRepository _bookRepository;
+        readonly IBookmarkRepository _bookmarkRepository;
 
         public BookshelfService(IFileService fileService, ICryptoService cryptoService, IBookRepository bookRepository, IBookmarkRepository bookmarkRepository) {
             _fileService = fileService;
@@ -32,12 +31,12 @@ namespace EbookReader.Service {
 
             var id = _cryptoService.GetMd5(file.DataArray);
 
-            var bookshelfBook = await _bookRepository.GetBookByIDAsync(id);
+            var bookshelfBook = await _bookRepository.GetBookByIdAsync(id);
 
             if (bookshelfBook == null) {
                 var ebook = await bookLoader.GetBook(file.FileName, file.DataArray, id);
                 bookshelfBook = bookLoader.CreateBookshelfBook(ebook);
-                bookshelfBook.ID = id;
+                bookshelfBook.Id = id;
                 await _bookRepository.SaveBookAsync(bookshelfBook);
                 newBook = true;
             }
@@ -50,10 +49,10 @@ namespace EbookReader.Service {
         }
         
         public async void RemoveById(string id) {
-            var book = await _bookRepository.GetBookByIDAsync(id);
+            var book = await _bookRepository.GetBookByIdAsync(id);
             if (book != null) {
                 _fileService.DeleteFolder(book.Path);
-                var bookmarks = await _bookmarkRepository.GetBookmarksByBookIDAsync(id);
+                var bookmarks = await _bookmarkRepository.GetBookmarksByBookIdAsync(id);
                 foreach(var bookmark in bookmarks) {
                     await _bookmarkRepository.DeleteBookmarkAsync(bookmark);
                 }
@@ -66,7 +65,7 @@ namespace EbookReader.Service {
         }
 
         public async Task<Book> LoadBookById(string id) {
-            return await _bookRepository.GetBookByIDAsync(id);
+            return await _bookRepository.GetBookByIdAsync(id);
         }
     }
 }

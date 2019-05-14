@@ -10,10 +10,10 @@ using EbookReader.Service;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class BookmarksVM {
+    public class BookmarksVm {
         public ICommand AddBookmarkCommand { get; set; }
 
-        public BookmarksVM() {
+        public BookmarksVm() {
             AddBookmarkCommand = new Command(AddBookmark);
         }
 

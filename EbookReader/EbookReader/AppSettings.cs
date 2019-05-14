@@ -17,14 +17,14 @@ namespace EbookReader {
             }
 
             public static class Dropbox {
-                public static string ClientID => ConfigurationManager.AppSettings["Dropbox_ClientID"];
+                public static string ClientId => ConfigurationManager.AppSettings["Dropbox_ClientID"];
                 public static string RedirectUrl = "https://bares43.github.io/onesync-reader/oauth2_success.html";
             }
         }
 
         public static class AppCenter {
             public static string Android => ConfigurationManager.AppSettings["AppCenter_Android"];
-            public static string UWP => ConfigurationManager.AppSettings["AppCenter_UWP"];
+            public static string Uwp => ConfigurationManager.AppSettings["AppCenter_UWP"];
         }
 
         public static class Bookshelft {

@@ -7,10 +7,6 @@ using Xamarin.Forms;
 
 namespace EbookReader.Provider {
     public static class DeviceNameProvider {
-        public static string Name {
-            get {
-                return Device.RuntimePlatform == Device.UWP ? "Computer" : "Phone";
-            }
-        }
+        public static string Name => Device.RuntimePlatform == Device.UWP ? "Computer" : "Phone";
     }
 }

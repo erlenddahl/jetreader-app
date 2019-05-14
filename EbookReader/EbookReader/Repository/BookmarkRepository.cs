@@ -9,23 +9,22 @@ using SQLite;
 
 namespace EbookReader.Repository {
     public class BookmarkRepository : IBookmarkRepository {
-
-        SQLiteAsyncConnection connection;
+        readonly SQLiteAsyncConnection _connection;
 
         public BookmarkRepository(IDatabaseService databaseService) {
-            connection = databaseService.Connection;
+            _connection = databaseService.Connection;
         }
 
-        public Task<List<Bookmark>> GetBookmarksByBookIDAsync(string bookID) {
-            return connection.Table<Bookmark>().Where(o => o.BookID == bookID).ToListAsync();
+        public Task<List<Bookmark>> GetBookmarksByBookIdAsync(string bookId) {
+            return _connection.Table<Bookmark>().Where(o => o.BookId == bookId).ToListAsync();
         }
         
         public Task<int> DeleteBookmarkAsync(Bookmark bookmark) {
-            return connection.DeleteAsync(bookmark);
+            return _connection.DeleteAsync(bookmark);
         }
 
         public Task<int> SaveBookmarkAsync(Bookmark bookmark) {
-            return connection.InsertOrReplaceAsync(bookmark);
+            return _connection.InsertOrReplaceAsync(bookmark);
         }
     }
 }

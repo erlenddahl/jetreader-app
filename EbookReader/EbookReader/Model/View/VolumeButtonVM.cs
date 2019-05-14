@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class VolumeButtonVM : BaseVM {
-        public bool Show {
-            get {
-                return Device.RuntimePlatform == Device.Android;
-            }
-        }
+    public class VolumeButtonVm : BaseVm {
+        public bool Show => Device.RuntimePlatform == Device.Android;
 
         public bool Enabled {
             get => UserSettings.Control.VolumeButtons;

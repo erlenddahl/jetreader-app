@@ -11,11 +11,10 @@ using Xamarin.Forms;
 
 namespace EbookReader.Service {
     public class WebViewMessages {
-
-        ReaderWebView _webView;
-        bool webViewLoaded = false;
-        bool webViewReaderInit = false;
-        List<Model.WebViewMessages.Message> _queue;
+        readonly ReaderWebView _webView;
+        bool _webViewLoaded = false;
+        bool _webViewReaderInit = false;
+        readonly List<Model.WebViewMessages.Message> _queue;
 
         public event EventHandler<Model.WebViewMessages.PageChange> OnPageChange;
         public event EventHandler<Model.WebViewMessages.NextChapterRequest> OnNextChapterRequest;
@@ -49,23 +48,22 @@ namespace EbookReader.Service {
         }
 
         private void DoSendMessage(Model.WebViewMessages.Message message) {
-            if (webViewLoaded && (message.Action == "init" || webViewReaderInit)) {
-                message.IsSent = true;
+            if (!_webViewLoaded || (message.Action != "init" && !_webViewReaderInit)) return;
 
-                var json = JsonConvert.SerializeObject(new {
-                    Action = message.Action,
-                    Data = message.Data,
-                });
+            message.IsSent = true;
 
-                var toSend = Base64Helper.Encode(json);
+            var json = JsonConvert.SerializeObject(new {
+                message.Action, message.Data,
+            });
 
-                Device.BeginInvokeOnMainThread(async () => {
-                    await _webView.InjectJavascriptAsync($"Messages.parse('{toSend}')");
-                });
+            var toSend = Base64Helper.Encode(json);
 
-                if (message.Action == "init") {
-                    webViewReaderInit = true;
-                }
+            Device.BeginInvokeOnMainThread(async () => {
+                await _webView.InjectJavascriptAsync($"Messages.parse('{toSend}')");
+            });
+
+            if (message.Action == "init") {
+                _webViewReaderInit = true;
             }
         }
 
@@ -117,7 +115,7 @@ namespace EbookReader.Service {
         }
 
         private void WebView_OnContentLoaded(object sender, EventArgs e) {
-            webViewLoaded = true;
+            _webViewLoaded = true;
             ProcessQueue();
         }
 

@@ -13,7 +13,7 @@ using PCLStorage;
 namespace EbookReader.Service {
     public abstract class OneFileLoader : IBookLoader {
 
-        private IFileService _fileService;
+        private readonly IFileService _fileService;
 
         protected string[] Extensions;
 
@@ -35,8 +35,8 @@ namespace EbookReader.Service {
             };
         }
 
-        public virtual async Task<Ebook> GetBook(string filename, byte[] filedata, string bookID) {
-            var folder = await LoadEpub(filename, filedata, bookID);
+        public virtual async Task<Ebook> GetBook(string filename, byte[] filedata, string bookId) {
+            var folder = await LoadEpub(filename, filedata, bookId);
 
             return await OpenBook(folder);
         }
@@ -63,7 +63,7 @@ namespace EbookReader.Service {
             return epub;
         }
 
-        public virtual async Task<HtmlResult> PrepareHTML(string html, Ebook book, Model.Format.File chapter) {
+        public virtual async Task<HtmlResult> PrepareHtml(string html, Ebook book, Model.Format.File chapter) {
 
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
@@ -82,11 +82,11 @@ namespace EbookReader.Service {
             });
         }
 
-        protected virtual async Task<string> LoadEpub(string filename, byte[] filedata, string bookID) {
+        protected virtual async Task<string> LoadEpub(string filename, byte[] filedata, string bookId) {
             var rootFolder = FileSystem.Current.LocalStorage;
-            var folder = await rootFolder.CreateFolderAsync(bookID, CreationCollisionOption.ReplaceExisting);
+            var folder = await rootFolder.CreateFolderAsync(bookId, CreationCollisionOption.ReplaceExisting);
             var contentFile = await folder.CreateFileAsync(ContentPath, CreationCollisionOption.ReplaceExisting);
-            using (Stream stream = await contentFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
+            using (var stream = await contentFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
                 await stream.WriteAsync(filedata, 0, filedata.Length);
             }
 
@@ -97,7 +97,7 @@ namespace EbookReader.Service {
         }
 
         protected virtual void StripHtmlTags(HtmlDocument doc) {
-            var tagsToRemove = new string[] { "script", "style", "iframe" };
+            var tagsToRemove = new[] { "script", "style", "iframe" };
             var nodesToRemove = doc.DocumentNode
                 .Descendants()
                 .Where(o => tagsToRemove.Contains(o.Name))

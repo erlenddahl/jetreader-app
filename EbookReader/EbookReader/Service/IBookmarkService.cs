@@ -7,9 +7,9 @@ using EbookReader.Model.Bookshelf;
 
 namespace EbookReader.Service {
     public interface IBookmarkService {
-        void DeleteBookmark(Bookmark bookmark, string bookID);
-        Task<List<Bookmark>> LoadBookmarksByBookID(string bookID);
-        void CreateBookmark(string name, string bookID, Position position);
+        void DeleteBookmark(Bookmark bookmark, string bookId);
+        Task<List<Bookmark>> LoadBookmarksByBookId(string bookId);
+        void CreateBookmark(string name, string bookId, Position position);
         void SaveBookmark(Bookmark bookmark);
     }
 }

@@ -7,16 +7,12 @@ using System.Threading.Tasks;
 namespace EbookReader.Model.Messages {
     public class FullscreenRequestMessage {
 
-        public bool Fullscreen {
-            get {
-                return setFullscreen && UserSettings.Reader.Fullscreen;
-            }
-        }
+        public bool Fullscreen => _setFullscreen && UserSettings.Reader.Fullscreen;
 
-        bool setFullscreen;
+        readonly bool _setFullscreen;
 
         public FullscreenRequestMessage(bool setFullscreen) {
-            this.setFullscreen = setFullscreen;
+            this._setFullscreen = setFullscreen;
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using EbookReader.Provider;
 
 namespace EbookReader.Model.View {
-    public class SynchronizationServiceVM : BaseVM {
+    public class SynchronizationServiceVm : BaseVm {
         
         public List<string> Items => SynchronizationServicesProvider.Items;
 

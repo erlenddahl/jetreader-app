@@ -10,22 +10,14 @@ using Microsoft.AppCenter.Crashes;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class AboutVM : BaseVM {
-        public string Version {
-            get {
-                return IocManager.Container.Resolve<IVersionProvider>().AppVersion;
-            }
-        }
+    public class AboutVm : BaseVm {
+        public string Version => IocManager.Container.Resolve<IVersionProvider>().AppVersion;
 
-        public string Copyright {
-            get {
-                return $"Created by Jan Bareš, 2017-{DateTime.Now.Year}";
-            }
-        }
+        public string Copyright => $"Created by Jan Bareš, 2017-{DateTime.Now.Year}";
 
         public ICommand OpenUrlCommand { get; set; }
 
-        public AboutVM() {
+        public AboutVm() {
             OpenUrlCommand = new Command((url) => OpenUrl(url));
         }
 

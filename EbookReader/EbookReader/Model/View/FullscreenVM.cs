@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class FullscreenVM : BaseVM {
+    public class FullscreenVm : BaseVm {
 
         public bool Enabled {
             get => UserSettings.Reader.Fullscreen;

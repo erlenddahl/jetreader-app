@@ -18,7 +18,7 @@ namespace EbookReader.Helpers {
         }
 
         public static string GetFileBase64(Stream stream) {
-            byte[] imageData = new byte[stream.Length];
+            var imageData = new byte[stream.Length];
             stream.Read(imageData, 0, Convert.ToInt32(stream.Length));
             return Convert.ToBase64String(imageData);
         }

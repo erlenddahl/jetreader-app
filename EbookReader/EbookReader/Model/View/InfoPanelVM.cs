@@ -10,9 +10,8 @@ using EbookReader.Service;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class InfoPanelVM : BaseVM {
-
-        IBatteryProvider _batteryProvider;
+    public class InfoPanelVm : BaseVm {
+        readonly IBatteryProvider _batteryProvider;
 
         string _pages;
 
@@ -44,19 +43,11 @@ namespace EbookReader.Model.View {
             }
         }
 
-        public bool ShowBattery {
-            get {
-                return Device.RuntimePlatform == Device.Android;
-            }
-        }
-        
-        public string TextColor {
-            get {
-                return UserSettings.Reader.NightMode ? "#eff2f7" : "#000000";
-            }
-        }
+        public bool ShowBattery => Device.RuntimePlatform == Device.Android;
 
-        public InfoPanelVM() {
+        public string TextColor => UserSettings.Reader.NightMode ? "#eff2f7" : "#000000";
+
+        public InfoPanelVm() {
             IocManager.Container.Resolve<IMessageBus>().Subscribe<PageChangeMessage>(HandlePageChange);
             IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>(HandleBatteryChange);
             _batteryProvider = IocManager.Container.Resolve<IBatteryProvider>();

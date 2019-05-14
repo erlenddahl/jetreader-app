@@ -16,7 +16,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
         public Bookmarks() {
             InitializeComponent();
 
-            BindingContext = new BookmarksVM();
+            BindingContext = new BookmarksVm();
 
             IocManager.Container.Resolve<IMessageBus>().Subscribe<BookmarksChangedMessage>(BookmarksChangedSubsciber);
         }

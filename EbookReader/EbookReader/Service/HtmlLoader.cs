@@ -10,7 +10,7 @@ using HtmlAgilityPack;
 namespace EbookReader.Service {
     public class HtmlLoader : OneFileLoader {
         public HtmlLoader(IFileService fileService) : base(fileService) {
-            Extensions = new string[] { "html", "xhtml", "htm", "xhtm" };
+            Extensions = new[] { "html", "xhtml", "htm", "xhtm" };
             EbookFormat = EbookFormat.Html;
         }
     }

@@ -9,11 +9,10 @@ using EbookReader.Provider;
 using EbookReader.Service;
 
 namespace EbookReader.Model.View {
-    public class FontSizeVM : BaseVM {
+    public class FontSizeVm : BaseVm {
+        readonly IMessageBus _messageBus;
 
-        IMessageBus _messageBus;
-
-        public FontSizeVM() {
+        public FontSizeVm() {
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
         }
 

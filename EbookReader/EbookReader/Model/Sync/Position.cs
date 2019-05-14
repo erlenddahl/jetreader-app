@@ -11,29 +11,23 @@ namespace EbookReader.Model.Sync {
 
         [JsonIgnore]
         public string DeviceName {
-            get {
-                return D;
-            }
-            set {
-                D = value;
-            }
+            get => D;
+            set => D = value;
         }
 
         [JsonIgnore]
         public Position Position {
-            get {
-                return new Position(S, P);
-            }
+            get => new Position(S, P);
             set {
                 S = value.Spine;
                 P = value.SpinePosition;
             }
         }
 
-        public string D { get; set; }
+        public string D { get; private set; }
 
-        public int S { get; set; }
+        public int S { get; private set; }
 
-        public int P { get; set; }
+        public int P { get; private set; }
     }
 }

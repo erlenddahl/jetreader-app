@@ -17,7 +17,7 @@ using PCLStorage;
 namespace EbookReader.Service {
     public class EpubLoader : IBookLoader {
 
-        private IFileService _fileService;
+        private readonly IFileService _fileService;
 
         public EpubLoader(IFileService fileService) {
             _fileService = fileService;
@@ -32,8 +32,8 @@ namespace EbookReader.Service {
             };
         }
 
-        public async Task<Model.Format.Ebook> GetBook(string filename, byte[] filedata, string bookID) {
-            var folder = await LoadEpub(bookID, filedata);
+        public async Task<Model.Format.Ebook> GetBook(string filename, byte[] filedata, string bookId) {
+            var folder = await LoadEpub(bookId, filedata);
 
             return await OpenBook(folder);
         }
@@ -85,7 +85,7 @@ namespace EbookReader.Service {
             return await _fileService.ReadFileData($"{epub.ContentBasePath}{filename.Href}", folder);
         }
 
-        public async Task<Model.EpubLoader.HtmlResult> PrepareHTML(string html, Model.Format.Ebook epub, Model.Format.File chapter) {
+        public async Task<Model.EpubLoader.HtmlResult> PrepareHtml(string html, Model.Format.Ebook epub, Model.Format.File chapter) {
 
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
@@ -103,7 +103,7 @@ namespace EbookReader.Service {
         }
 
         private void StripHtmlTags(HtmlDocument doc) {
-            var tagsToRemove = new string[] { "script", "style", "iframe" };
+            var tagsToRemove = new[] { "script", "style", "iframe" };
             var nodesToRemove = doc.DocumentNode
                 .Descendants()
                 .Where(o => tagsToRemove.Contains(o.Name))
@@ -154,12 +154,12 @@ namespace EbookReader.Service {
                     var existingImageModel = imagesModel.FirstOrDefault(o => o.FileName == srcAttribute.Value);
 
                     if (existingImageModel != null) {
-                        id = existingImageModel.ID;
+                        id = existingImageModel.Id;
                     } else {
                         id = cnt;
                         var path = PathHelper.CombinePath(chapter.Href, srcAttribute.Value);
                         imagesModel.Add(new Model.EpubLoader.Image {
-                            ID = id,
+                            Id = id,
                             FileName = path,
                         });
 
@@ -193,12 +193,12 @@ namespace EbookReader.Service {
             return contentFilePath;
         }
 
-        private async Task<string> LoadEpub(string bookID, byte[] filedata) {
+        private async Task<string> LoadEpub(string bookId, byte[] filedata) {
             var rootFolder = FileSystem.Current.LocalStorage;
-            var folder = await rootFolder.CreateFolderAsync(bookID, CreationCollisionOption.ReplaceExisting);
+            var folder = await rootFolder.CreateFolderAsync(bookId, CreationCollisionOption.ReplaceExisting);
             var file = await folder.CreateFileAsync("temp.zip", CreationCollisionOption.OpenIfExists);
 
-            using (Stream stream = await file.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
+            using (var stream = await file.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
                 await stream.WriteAsync(filedata, 0, filedata.Length);
                 using (var zf = new ZipFile(stream)) {
                     foreach (ZipEntry zipEntry in zf) {
@@ -210,9 +210,9 @@ namespace EbookReader.Service {
 
                             var fileFolder = await _fileService.GetFileFolder(zipEntry.Name, folder);
 
-                            IFile zipEntryFile = await fileFolder.CreateFileAsync(name, CreationCollisionOption.OpenIfExists);
+                            var zipEntryFile = await fileFolder.CreateFileAsync(name, CreationCollisionOption.OpenIfExists);
                             var str = zf.GetInputStream(zipEntry);
-                            using (Stream outPutFileStream = await zipEntryFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
+                            using (var outPutFileStream = await zipEntryFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite)) {
                                 await str.CopyToAsync(outPutFileStream);
                             }
                         }

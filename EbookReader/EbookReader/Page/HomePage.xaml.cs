@@ -19,10 +19,9 @@ using Xamarin.Forms.Xaml;
 namespace EbookReader.Page {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class HomePage : ContentPage {
-
-        IBookshelfService _bookshelfService;
-        IMessageBus _messageBus;
-        ISyncService _syncService;
+        readonly IBookshelfService _bookshelfService;
+        readonly IMessageBus _messageBus;
+        readonly ISyncService _syncService;
 
         public HomePage() {
 
@@ -147,14 +146,14 @@ namespace EbookReader.Page {
             var deleteSyncButton = "Delete including all synchronizations";
             var confirm = await DisplayActionSheet("Delete book?", deleteButton, "No", deleteSyncButton);
             if (confirm == deleteButton || confirm == deleteSyncButton) {
-                var card = Bookshelf.Children.FirstOrDefault(o => o.StyleId == msg.Book.ID);
+                var card = Bookshelf.Children.FirstOrDefault(o => o.StyleId == msg.Book.Id);
                 if (card != null) {
                     Bookshelf.Children.Remove(card);
                 }
-                _bookshelfService.RemoveById(msg.Book.ID);
+                _bookshelfService.RemoveById(msg.Book.Id);
 
                 if (confirm == deleteSyncButton) {
-                    _syncService.DeleteBook(msg.Book.ID);
+                    _syncService.DeleteBook(msg.Book.Id);
                 }
             }
         }

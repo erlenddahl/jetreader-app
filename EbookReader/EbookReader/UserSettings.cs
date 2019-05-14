@@ -29,14 +29,14 @@ namespace EbookReader {
             }
         }
 
-        private async static void SetAnalytics(bool enabled) {
+        private static async void SetAnalytics(bool enabled) {
             await Analytics.SetEnabledAsync(enabled);
         }
 
         public static class Reader {
-            private static int FontSizeDefault = Device.RuntimePlatform == Device.Android ? 20 : 40;
-            private static int MarginDefault = 30;
-            private static int ScrollSpeedDefault = 200;
+            private static readonly int FontSizeDefault = Device.RuntimePlatform == Device.Android ? 20 : 40;
+            private static readonly int MarginDefault = 30;
+            private static readonly int ScrollSpeedDefault = 200;
 
             public static int FontSize {
                 get => AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(FontSize)), FontSizeDefault);
@@ -54,7 +54,7 @@ namespace EbookReader {
             }
 
             public static bool NightMode {
-                get => AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(NightMode)), true);
+                get => AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(NightMode)), false);
                 set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Reader), nameof(NightMode)), value);
             }
 
@@ -71,12 +71,12 @@ namespace EbookReader {
                 set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Synchronization), nameof(Enabled)), value);
             }
 
-            public static long DeviceID {
+            public static long DeviceId {
                 get {
-                    var id = AppSettings.GetValueOrDefault(CreateKey(nameof(Synchronization), nameof(DeviceID)), default(long));
+                    var id = AppSettings.GetValueOrDefault(CreateKey(nameof(Synchronization), nameof(DeviceId)), default(long));
                     if (id == default(long)) {
-                        id = DeviceIdProvider.ID;
-                        AppSettings.AddOrUpdateValue(CreateKey(nameof(Synchronization), nameof(DeviceID)), id);
+                        id = DeviceIdProvider.Id;
+                        AppSettings.AddOrUpdateValue(CreateKey(nameof(Synchronization), nameof(DeviceId)), id);
                     }
                     return id;
                 }

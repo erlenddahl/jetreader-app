@@ -15,7 +15,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Settings : StackLayout {
 
-        private IMessageBus _messageBus;
+        private readonly IMessageBus _messageBus;
 
         public Settings() {
 
@@ -24,7 +24,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
 
             InitializeComponent();
 
-            BindingContext = new QuickPanelSettingsVM();
+            BindingContext = new QuickPanelSettingsVm();
 
             if (Device.RuntimePlatform == Device.Android) {
                 FontPicker.WidthRequest = 75;

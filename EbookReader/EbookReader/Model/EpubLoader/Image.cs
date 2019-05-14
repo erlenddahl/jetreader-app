@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EbookReader.Model.EpubLoader {
     public class Image {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string FileName { get; set; }
         public string Data { get; set; }
     }

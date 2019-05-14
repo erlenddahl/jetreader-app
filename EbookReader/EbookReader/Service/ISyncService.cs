@@ -8,10 +8,10 @@ using EbookReader.Model.Sync;
 
 namespace EbookReader.Service {
     public interface ISyncService {
-        void SaveProgress(string bookID, Position position);
-        Task<Progress> LoadProgress(string bookID);
-        void DeleteBook(string bookID);
-        void SaveBookmark(string bookID, Model.Bookshelf.Bookmark bookmark);
+        void SaveProgress(string bookId, Position position);
+        Task<Progress> LoadProgress(string bookId);
+        void DeleteBook(string bookId);
+        void SaveBookmark(string bookId, Model.Bookshelf.Bookmark bookmark);
         void SynchronizeBookmarks(Book book);
     }
 }

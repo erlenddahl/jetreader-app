@@ -53,9 +53,7 @@ namespace EbookReader.Service {
 
                     return _tags;
                 }
-                set {
-                    _tags = value;
-                }
+                set => _tags = value;
             }
         }
     }

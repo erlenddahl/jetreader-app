@@ -9,16 +9,16 @@ using EbookReader.Provider;
 using Xamarin.Forms;
 
 namespace EbookReader.Model.View {
-    public class SettingsReaderVM {
+    public class SettingsReaderVm {
 
-        public FontSizeVM FontSize { get; set; } = new FontSizeVM();
+        public FontSizeVm FontSize { get; set; } = new FontSizeVm();
 
-        public MarginVM Margin { get; set; } = new MarginVM();
+        public MarginVm Margin { get; set; } = new MarginVm();
 
-        public ScrollSpeedVM ScrollSpeed { get; set; } = new ScrollSpeedVM();
+        public ScrollSpeedVm ScrollSpeed { get; set; } = new ScrollSpeedVm();
 
-        public NightModeVM NightMode { get; set; } = new NightModeVM();
+        public NightModeVm NightMode { get; set; } = new NightModeVm();
 
-        public FullscreenVM Fullscreen { get; set; } = new FullscreenVM();
+        public FullscreenVm Fullscreen { get; set; } = new FullscreenVm();
     }
 }

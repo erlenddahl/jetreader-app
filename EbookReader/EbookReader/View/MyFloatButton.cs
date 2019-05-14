@@ -8,7 +8,7 @@ using Xamarin.Forms;
 namespace EbookReader.View {
     public class MyFloatButton : Xamarin.Forms.View {
 
-        public event EventHandler Clicked;
+        public event EventHandler OnClicked;
 
         public string ButtonBackgroundColor { get; set; }
 
@@ -18,7 +18,7 @@ namespace EbookReader.View {
         }
 
         public void TriggerClicked() {
-            Clicked?.Invoke(this, new EventArgs());
+            OnClicked?.Invoke(this, new EventArgs());
         }
     }
 }

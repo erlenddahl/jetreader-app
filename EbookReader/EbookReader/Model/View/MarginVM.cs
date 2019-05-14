@@ -9,11 +9,10 @@ using EbookReader.Service;
 using Autofac;
 
 namespace EbookReader.Model.View {
-    public class MarginVM : BaseVM {
+    public class MarginVm : BaseVm {
+        readonly IMessageBus _messageBus;
 
-        IMessageBus _messageBus;
-
-        public MarginVM() {
+        public MarginVm() {
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
         }
 

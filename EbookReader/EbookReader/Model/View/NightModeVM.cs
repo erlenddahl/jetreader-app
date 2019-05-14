@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace EbookReader.Model.View {
-    public class NightModeVM : BaseVM {
+    public class NightModeVm : BaseVm {
 
         public bool Enabled {
             get => UserSettings.Reader.NightMode;
