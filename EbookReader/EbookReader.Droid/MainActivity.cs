@@ -100,6 +100,12 @@ namespace EbookReader.Droid {
             messageBus.Subscribe<ChangesBrightnessMessage>(ChangeBrightness, new[] { "MainActivity" });
             messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, new[] { "MainActivity" });
             messageBus.Subscribe<CloseAppMessage>(CloseAppMessageSubscriber, new[] { "MainActivity" });
+            messageBus.Subscribe<InteractionMessage>(OnInteraction, new[] { "MainActivity" });
+        }
+
+        private void OnInteraction(InteractionMessage msg)
+        {
+            ToggleFullscreen(new FullscreenRequestMessage(true));
         }
 
         private void CloseAppMessageSubscriber(CloseAppMessage msg) {
@@ -118,16 +124,29 @@ namespace EbookReader.Droid {
             });
         }
 
-        private void ToggleFullscreen(FullscreenRequestMessage msg) {
-            if (msg.Fullscreen) {
-                RunOnUiThread(() => {
-                    Window.AddFlags(WindowManagerFlags.Fullscreen);
-                });
-            } else {
-                RunOnUiThread(() => {
-                    Window.ClearFlags(WindowManagerFlags.Fullscreen);
-                });
-            }
+        private void ToggleFullscreen(FullscreenRequestMessage msg)
+        {
+            //TODO: See https://stackoverflow.com/questions/7692789/toggle-fullscreen-mode for more robust function (for more Android versions)
+            RunOnUiThread(() =>
+            {
+                var decorView = Window.DecorView;
+                var newUiOptions = (int)decorView.SystemUiVisibility;
+
+                if (msg.Fullscreen)
+                {
+                    newUiOptions |= (int)SystemUiFlags.Fullscreen;
+                    newUiOptions |= (int)SystemUiFlags.HideNavigation;
+                    newUiOptions |= (int)SystemUiFlags.Immersive;
+                }
+                else
+                {
+                    newUiOptions &= ~(int)SystemUiFlags.Fullscreen;
+                    newUiOptions &= ~(int)SystemUiFlags.HideNavigation;
+                    newUiOptions &= ~(int)SystemUiFlags.Immersive;
+                }
+
+                decorView.SystemUiVisibility = (StatusBarVisibility)newUiOptions;
+            });
         }
 
         protected override void Dispose(bool disposing) {
