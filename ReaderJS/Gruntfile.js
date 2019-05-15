@@ -22,6 +22,9 @@ module.exports = function(grunt) {
           'Build/reader.js': ['Src/js/jquery-3.2.1.min.js', 'Src/js/hammer.min.js', 'Src/js/Base64.js', 'Src/js/reader.js'],
         },
       },
+      options: {
+        beautify: true
+      },
     },
     watch: {
       css: {
