@@ -232,7 +232,8 @@ window.Ebook = {
             Ebook.panEventCounter = 0;
         }
 
-        if (Ebook.panEventCounter % 10 === 0) {
+        if (Ebook.panEventCounter % 10 === 0 || isFinal) {
+            Messages.send("Interaction", { type: "panupdown" });
             Ebook.messagesHelper.sendPanEvent(x, y);
         }
         Ebook.panEventCounter++;
@@ -511,101 +512,106 @@ window.Gestures = {
         var hammer = new Hammer.Manager(element);
 
         var tap = new Hammer.Tap({
-            event: "singletap",
+            event: "singletap"
         });
         var doubleTap = new Hammer.Tap({
             event: "doubletap",
-            taps: 2,
-        });
-        var press = new Hammer.Press({
-            event: "press",
-        });
-        var panleft = new Hammer.Pan({
-            event: "panleft",
-            direction: Hammer.DIRECTION_LEFT,
-        });
-        var panright = new Hammer.Pan({
-            event: "panright",
-            direction: Hammer.DIRECTION_RIGHT,
-        });
-        var swipeleftdouble = new Hammer.Swipe({
-            event: "swipeleftdouble",
-            direction: Hammer.DIRECTION_LEFT,
-            pointers: 2,
-        });
-        var swiperightdouble = new Hammer.Swipe({
-            event: "swiperightdouble",
-            direction: Hammer.DIRECTION_RIGHT,
-            pointers: 2,
-        });
-        var panbottom = new Hammer.Pan({
-            event: "panbottom",
-            direction: Hammer.DIRECTION_DOWN,
-        });
-        var pantop = new Hammer.Pan({
-            event: "pantop",
-            direction: Hammer.DIRECTION_UP,
+            taps: 2
         });
 
-        hammer.add([doubleTap, tap, press, panleft, panright, swipeleftdouble, swiperightdouble, panbottom, pantop]);
+        hammer.add([
+            doubleTap, tap,
+            new Hammer.Press({
+                event: "press",
+            }),
+            new Hammer.Pan({
+                event: "panleft",
+                direction: Hammer.DIRECTION_LEFT
+            }),
+            new Hammer.Pan({
+                event: "panright",
+                direction: Hammer.DIRECTION_RIGHT
+            }),
+            new Hammer.Swipe({
+                event: "swipeleftdouble",
+                direction: Hammer.DIRECTION_LEFT,
+                pointers: 2
+            }),
+            new Hammer.Swipe({
+                event: "swiperightdouble",
+                direction: Hammer.DIRECTION_RIGHT,
+                pointers: 2
+            }),
+            new Hammer.Pan({
+                event: "pandown",
+                direction: Hammer.DIRECTION_DOWN
+            }),
+            new Hammer.Pan({
+                event: "panup",
+                direction: Hammer.DIRECTION_UP
+            })
+        ]);
 
         doubleTap.recognizeWith(tap);
         tap.requireFailure([doubleTap]);
 
-        hammer.on("singletap",
-            function(e) {
-                if (!Gestures.isLink(e)) {
-                    Gestures.actions.tap(e.center.x, e.center.y);
-                }
-            });
+        hammer.on("singletap", function (e) {
+            if (Gestures.isLink(e)) return;
 
-        hammer.on("doubletap",
-            function(e) {
-                if (!Gestures.isLink(e)) {
-                    Gestures.actions.doubleTap();
-                }
-            });
+            Messages.send("Interaction", { type: "tap", event: e.center });
+            if (Ebook.clickEverywhere || e.center.x > Math.round(Ebook.pageWidth / 2)) {
+                Ebook.goToNextPage();
+            } else {
+                Ebook.goToPreviousPage();
+            }
 
-        hammer.on("press",
-            function(e) {
-                if (!Gestures.isLink(e)) {
-                    Gestures.actions.press();
-                }
-            });
+        });
 
-        hammer.on("panleft",
-            function(e) {
-                if (e.isFinal) {
-                    Gestures.actions.panLeft();
-                }
-            });
+        hammer.on("doubletap", function (e) {
+            Messages.send("Interaction", { type: "doubletap", event: e.center });
+            if (Gestures.isLink(e)) return;
+            Ebook.messagesHelper.sendOpenQuickPanelRequest();
+        });
 
-        hammer.on("panright",
-            function(e) {
-                if (e.isFinal) {
-                    Gestures.actions.panRight();
-                }
-            });
+        hammer.on("press", function (e) {
+            Messages.send("Interaction", { type: "press", event: e.center });
+            if (Gestures.isLink(e)) return;
+            Ebook.messagesHelper.sendOpenQuickPanelRequest();
+        });
 
-        hammer.on("swipeleftdouble",
-            function() {
-                Gestures.actions.swipeLeftDouble();
-            });
+        hammer.on("panleft", function (e) {
+            if (!e.isFinal) return;
+            Messages.send("Interaction", { type: "panleft" });
+            Ebook.goToNextPage();
+        });
 
-        hammer.on("swiperightdouble",
-            function() {
-                Gestures.actions.swipeRightDouble();
-            });
+        hammer.on("panright", function (e) {
+            if (!e.isFinal) return;
+            Messages.send("Interaction", { type: "panright" });
+            Ebook.goToPreviousPage();
+        });
 
-        hammer.on("panbottom",
-            function(e) {
-                Gestures.actions.panBottom(e.center.x, e.center.y, e.isFinal);
-            });
+        hammer.on("swipeleftdouble", function () {
+            Messages.send("Interaction", { type: "swipeleftdouble" });
+            if (Ebook.doubleSwipe) {
+                Ebook.messagesHelper.nextChapterRequest();
+            }
+        });
 
-        hammer.on("pantop",
-            function(e) {
-                Gestures.actions.panTop(e.center.x, e.center.y, e.isFinal);
-            });
+        hammer.on("swiperightdouble", function () {
+            Messages.send("Interaction", { type: "swiperightdouble" });
+            if (Ebook.doubleSwipe) {
+                Ebook.goToPage(1);
+            }
+        });
+
+        hammer.on("pandown", function(e) {
+            Ebook.panEventHandler(e.center.x, e.center.y, e.isFinal);
+        });
+
+        hammer.on("panup", function(e) {
+            Ebook.panEventHandler(e.center.x, e.center.y, e.isFinal);
+        });
     },
     isLink: function(e) {
         if (e && e.target) {
@@ -619,45 +625,7 @@ window.Gestures = {
             }
         }
         return false;
-    },
-    actions: {
-        tap: function (x) {
-            Messages.send("Interaction", { type: "tap", event: x });
-            if (Ebook.clickEverywhere || x > Math.round(Ebook.pageWidth / 2)) {
-                Ebook.goToNextPage();
-            } else {
-                Ebook.goToPreviousPage();
-            }
-        },
-        doubleTap: function() {
-            Ebook.messagesHelper.sendOpenQuickPanelRequest();
-        },
-        press: function() {
-            Ebook.messagesHelper.sendOpenQuickPanelRequest();
-        },
-        panLeft: function() {
-            Ebook.goToNextPage();
-        },
-        panRight: function() {
-            Ebook.goToPreviousPage();
-        },
-        swipeLeftDouble: function() {
-            if (Ebook.doubleSwipe) {
-                Ebook.messagesHelper.nextChapterRequest();
-            }
-        },
-        swipeRightDouble: function() {
-            if (Ebook.doubleSwipe) {
-                Ebook.goToPage(1);
-            }
-        },
-        panBottom: function(x, y, isFinal) {
-            Ebook.panEventHandler(x, y, isFinal);
-        },
-        panTop: function(x, y, isFinal) {
-            Ebook.panEventHandler(x, y, isFinal);
-        },
-    },
+    }
 };
 
 window.KeyStrokes = {

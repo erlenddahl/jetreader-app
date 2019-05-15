@@ -22,7 +22,10 @@ namespace EbookReader.Page.Reader {
 
             BindingContext = new Model.View.QuickPanelVm();
 
-            _messageBus.Subscribe<CloseQuickPanelMessage>((msg) => Hide());
+            _messageBus.Subscribe<CloseQuickPanelMessage>(msg =>
+            {
+                Hide();
+            });
         }
         
         private void PanelContent_OnChapterChange(object sender, Model.Navigation.Item e) {
@@ -32,12 +35,14 @@ namespace EbookReader.Page.Reader {
         public void Show() {
             Device.BeginInvokeOnMainThread(() => {
                 IsVisible = true;
+                _messageBus.Send(new FullscreenRequestMessage(false));
             });
         }
 
         public void Hide() {
             Device.BeginInvokeOnMainThread(() => {
                 IsVisible = false;
+                _messageBus.Send(new FullscreenRequestMessage(true));
             });
         }
     }

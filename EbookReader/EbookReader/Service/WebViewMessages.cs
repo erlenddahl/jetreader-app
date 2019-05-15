@@ -31,9 +31,7 @@ namespace EbookReader.Service {
             _webView = webView;
             _queue = new List<Model.WebViewMessages.Message>();
 
-            _webView.AddLocalCallback("csCallback", (data) => {
-                Parse(data);
-            });
+            _webView.AddLocalCallback("csCallback", Parse);
 
             _webView.OnContentLoaded += WebView_OnContentLoaded;
         }
@@ -101,6 +99,7 @@ namespace EbookReader.Service {
                     OnKeyStroke?.Invoke(this, msg as Model.WebViewMessages.KeyStroke);
                     break;
                 case "Interaction":
+                    Debug.WriteLine(msg as JObject);
                     OnInteraction?.Invoke(this, msg as JObject);
                     break;
                 case "Debug":

@@ -43,6 +43,12 @@ namespace EbookReader.Droid {
 
             global::Xamarin.Forms.Forms.SetFlags("FastRenderers_Experimental");
             global::Xamarin.Forms.Forms.Init(this, bundle);
+
+            //TODO: Make sure to compile for all Android versions: https://forums.xamarin.com/discussion/382/suggestions-on-how-to-support-multiple-api-levels-from-a-single-application-apk
+#if __ANDROID_28__
+            Window.Attributes.LayoutInDisplayCutoutMode = LayoutInDisplayCutoutMode.ShortEdges;
+#endif
+
             LoadApplication(new App());
 
             Window.SetSoftInputMode(SoftInput.AdjustResize);
@@ -100,12 +106,6 @@ namespace EbookReader.Droid {
             messageBus.Subscribe<ChangesBrightnessMessage>(ChangeBrightness, new[] { "MainActivity" });
             messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, new[] { "MainActivity" });
             messageBus.Subscribe<CloseAppMessage>(CloseAppMessageSubscriber, new[] { "MainActivity" });
-            messageBus.Subscribe<InteractionMessage>(OnInteraction, new[] { "MainActivity" });
-        }
-
-        private void OnInteraction(InteractionMessage msg)
-        {
-            ToggleFullscreen(new FullscreenRequestMessage(true));
         }
 
         private void CloseAppMessageSubscriber(CloseAppMessage msg) {
@@ -134,15 +134,23 @@ namespace EbookReader.Droid {
 
                 if (msg.Fullscreen)
                 {
+                    newUiOptions |= (int)SystemUiFlags.LayoutStable;
+                    newUiOptions |= (int)SystemUiFlags.LayoutHideNavigation;
+                    newUiOptions |= (int)SystemUiFlags.LayoutFullscreen;
                     newUiOptions |= (int)SystemUiFlags.Fullscreen;
                     newUiOptions |= (int)SystemUiFlags.HideNavigation;
                     newUiOptions |= (int)SystemUiFlags.Immersive;
+                    newUiOptions |= (int)SystemUiFlags.LowProfile;
                 }
                 else
                 {
+                    newUiOptions |= (int)SystemUiFlags.LayoutStable;
+                    newUiOptions &= ~(int)SystemUiFlags.LayoutHideNavigation;
+                    newUiOptions &= ~(int)SystemUiFlags.LayoutFullscreen;
                     newUiOptions &= ~(int)SystemUiFlags.Fullscreen;
                     newUiOptions &= ~(int)SystemUiFlags.HideNavigation;
                     newUiOptions &= ~(int)SystemUiFlags.Immersive;
+                    newUiOptions &= ~(int)SystemUiFlags.LowProfile;
                 }
 
                 decorView.SystemUiVisibility = (StatusBarVisibility)newUiOptions;

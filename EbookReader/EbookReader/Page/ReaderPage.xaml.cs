@@ -81,7 +81,8 @@ namespace EbookReader.Page {
 
         private void Messages_OnInteraction(object sender, JObject e)
         {
-            _messageBus.Send(new InteractionMessage(e));
+            if (IsQuickPanelVisible()) return;
+            _messageBus.Send(new FullscreenRequestMessage(true));
         }
 
         private void ChangeTheme(ChangeThemeMessage msg = null)

@@ -15,7 +15,7 @@
                               SizeChanged="WebView_SizeChanged"
                               ContentType="LocalFile"
                               Source="layout.html"
-                              Margin="0,40,0,0" 
+                              Margin="0,0,0,0" 
                               AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
                               AbsoluteLayout.LayoutFlags="SizeProportional" />
             <local:InfoPanel AbsoluteLayout.LayoutFlags="WidthProportional" AbsoluteLayout.LayoutBounds="0,0,1,40" />
