@@ -25,7 +25,20 @@ window.Ebook = {
         this.scrollSpeed = scrollSpeed;
         this.doubleSwipe = doubleSwipe;
         this.nightMode = nightMode;
+        this.debugging = false;
         this.commands = [
+            [
+                {
+                    tap: "prevPage"
+                },
+                {
+                    tap: "visualizeCommandCells",
+                    press: "openQuickSettings"
+                },
+                {
+                    tap: "nextPage"
+                }
+            ],
             [
                 {
                     tap: "prevPage"
@@ -33,6 +46,14 @@ window.Ebook = {
                 {
                     tap: "toggleFullscreen",
                     press: "openQuickSettings"
+                },
+                {
+                    tap: "nextPage"
+                }
+            ],
+            [
+                {
+                    tap: "prevPage"
                 },
                 {
                     tap: "nextPage"
@@ -49,6 +70,29 @@ window.Ebook = {
         this.setUpColumns();
         this.setUpEvents();
     },
+    visualizeCommandCells: function() {
+        if ($(".command-cells").length) {
+            $(".command-cells").remove();
+            return;
+        }
+
+        var grid = Ebook.commands; 
+        var visualization = $("<div>").addClass("command-cells");
+        var h = Ebook.webViewHeight / grid.length;
+        for (var i = 0; i < grid.length; i++) {
+            var row = $("<div>").addClass("row").css("height", h + "px");
+            var w = Ebook.webViewWidth / grid[i].length;
+            for (var j = 0; j < grid[i].length; j++) {
+                var cell = grid[i][j];
+                row.append($("<div>")
+                    .addClass("cell")
+                    .css("width", w + "px")
+                    .append($("<div>").html("Tap: " + cell["tap"] + "<br />" + "Long press: " + cell["press"])));
+            }
+            visualization.append(row);
+        }
+        $("body").append(visualization);
+    },
     getCommandCell: function(center) {
         var grid = Ebook.commands; 
 
@@ -61,13 +105,16 @@ window.Ebook = {
         return grid[row][col];
     },
     performCommand: function(cmd) {
-        Ebook.messagesHelper.sendDebug(cmd);
+        Ebook.messagesHelper.sendDebug("Touch command: " + cmd);
         switch (cmd) {
         case "nextPage":
             Ebook.goToNextPage();
             break;
         case "prevPage":
             Ebook.goToPreviousPage();
+            break;
+        case "visualizeCommandCells":
+            Ebook.visualizeCommandCells();
             break;
         case "openQuickSettings":
             Ebook.messagesHelper.sendOpenQuickPanelRequest();
@@ -454,7 +501,8 @@ window.Ebook = {
                 });
         },
         sendDebug: function(data) {
-            Messages.send("Debug", JSON.stringify(data));
+            if (Ebook.debugging)
+                Messages.send("Debug", JSON.stringify(data));
         }
     },
 };

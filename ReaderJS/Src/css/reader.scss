@@ -34,3 +34,39 @@
       white-space: pre-wrap;
     }
 }
+
+.command-cells {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+
+    .row {
+        width: 100%;
+
+        .cell {
+            text-align: center;
+            background-color: rgba(255, 206, 95, 0.55);
+            float: left;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            border: 1px solid gray;
+            height: 100%;
+            position: relative;
+
+            div {
+                position: absolute;
+                top: 50%;
+                height: 50%;
+                width: 100%;
+                transform: translateY(-50%);
+                text-align: center;
+            }
+        }
+    }
+}
