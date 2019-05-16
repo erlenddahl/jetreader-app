@@ -72,11 +72,10 @@ namespace EbookReader.Page {
                 quickPanelPosition = new Rectangle(0, 0, 0.33, 1);
             }
 
+            NavigationPage.SetHasNavigationBar(this, false);
             _messageBus.Send(new FullscreenRequestMessage(true));
 
             ChangeTheme();
-
-            NavigationPage.SetHasNavigationBar(this, false);
         }
 
         private void Messages_OnInteraction(object sender, JObject e)
@@ -111,6 +110,9 @@ namespace EbookReader.Page {
             _messageBus.Subscribe<ChangedBookmarkNameMessage>(ChangedBookmarkName, new[] { nameof(ReaderPage) });
             _messageBus.Subscribe<GoToPageMessage>(GoToPageHandler, new[] { nameof(ReaderPage) });
             _messageBus.Subscribe<KeyStrokeMessage>(KeyStrokeHandler, new[] { nameof(ReaderPage) });
+
+            var ctrl = this;
+            _messageBus.Subscribe<FullscreenRequestMessage>((e)=> NavigationPage.SetHasNavigationBar(ctrl, !e.Fullscreen), new []{nameof(ReaderPage)});
         }
 
         private void UnSubscribeMessages() {
@@ -208,6 +210,7 @@ namespace EbookReader.Page {
             _ebook = await EbookFormatHelper.GetBookLoader(book.Format).OpenBook(book.Path);
             var position = _bookshelfBook.Position;
 
+            Title = _ebook.Title + " - " + _ebook.Author;
             QuickPanel.PanelContent.SetNavigation(_ebook.Navigation);
             RefreshBookmarks();
 
