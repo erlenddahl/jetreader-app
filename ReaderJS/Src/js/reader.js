@@ -28,7 +28,6 @@ window.Ebook = {
         this.doubleSwipe = doubleSwipe;
         this.nightMode = nightMode;
 
-
         this.htmlHelper.setFontSize();
         this.htmlHelper.setWidth();
         this.htmlHelper.setHeight();
@@ -74,10 +73,9 @@ window.Ebook = {
         Ebook.setUpEbook();
 
         setTimeout(function() {
-                Ebook.goToPositionFast(position);
-                Ebook.htmlHelper.showContent();
-            },
-            5);
+            Ebook.goToPositionFast(position);
+            Ebook.htmlHelper.showContent();
+        }, 5);
     },
     changeFontSize: function(fontSize) {
         Ebook.htmlHelper.hideContent();
@@ -91,10 +89,9 @@ window.Ebook = {
         Ebook.setUpEbook();
 
         setTimeout(function() {
-                Ebook.goToPositionFast(position);
-                Ebook.htmlHelper.showContent();
-            },
-            5);
+            Ebook.goToPositionFast(position);
+            Ebook.htmlHelper.showContent();
+        }, 5);
     },
     changeMargin: function(margin) {
         Ebook.htmlHelper.hideContent();
@@ -110,10 +107,9 @@ window.Ebook = {
         Ebook.setUpEbook();
 
         setTimeout(function() {
-                Ebook.goToPositionFast(position);
-                Ebook.htmlHelper.showContent();
-            },
-            5);
+            Ebook.goToPositionFast(position);
+            Ebook.htmlHelper.showContent();
+        }, 5);
     },
     goToNextPage: function() {
         var page = this.currentPage + 1;
@@ -151,9 +147,8 @@ window.Ebook = {
         this.currentPage = page;
 
         $('#columns-outer').animate({
-                scrollLeft: (page - 1) * this.pageWidth,
-            },
-            duration);
+            scrollLeft: (page - 1) * this.pageWidth,
+        }, duration);
     },
     goToPosition: function(position, duration) {
         Ebook.pagerHelper.computeLengthOfAllPages();
@@ -181,27 +176,25 @@ window.Ebook = {
     setUpLinksListener: function() {
         var links = document.getElementById("content").getElementsByTagName("a");
         for (var i = 0; i < links.length; i++) {
-            links[i].addEventListener("click",
-                function(e) {
-                    e.stopImmediatePropagation();
-                    e.stopPropagation();
-                    e.preventDefault();
-                    e.cancelBubble = true;
-                    var link = this;
-                    var href = link.getAttribute("href");
-                    if (href) {
-                        if (href.startsWith("#")) {
-                            Ebook.goToMarker(href.slice(1));
-                        } else if (link.hostname) {
-                            Ebook.messagesHelper.sendOpenUrl(href);
-                        } else {
-                            Ebook.messagesHelper.sendChapterRequest(href);
-                        }
+            links[i].addEventListener("click", function(e) {
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+                e.preventDefault();
+                e.cancelBubble = true;
+                var link = this;
+                var href = link.getAttribute("href");
+                if (href) {
+                    if (href.startsWith("#")) {
+                        Ebook.goToMarker(href.slice(1));
+                    } else if (link.hostname) {
+                        Ebook.messagesHelper.sendOpenUrl(href);
+                    } else {
+                        Ebook.messagesHelper.sendChapterRequest(href);
                     }
+                }
 
-                    return false;
-                },
-                false);
+                return false;
+            }, false);
         }
     },
     getPageOfMarker: function(marker) {
@@ -211,14 +204,14 @@ window.Ebook = {
         this.goToPageFast(currentPage);
         return Math.ceil(position / this.pageWidth);
     },
-    goToMarker: function (marker, duration) {
+    goToMarker: function(marker, duration) {
         var page = this.getPageOfMarker(marker);
         if (page > 0) {
             this.goToPage(page, duration);
         }
     },
     loadImages: function(images) {
-        images.forEach(function (item) {
+        images.forEach(function(item) {
             $("img[data-js-ebook-image-id=" + item.Id + "]").attr("src", item.Data);
             $("image[data-js-ebook-image-id=" + item.Id + "]").attr("xlink:href", item.Data);
         });
@@ -315,10 +308,7 @@ window.Ebook = {
                 var previousNode = mark.previousSibling;
                 var nextNode = mark.nextSibling;
 
-                if (previousNode !== null &&
-                    nextNode !== null &&
-                    previousNode.nodeType === Node.TEXT_NODE &&
-                    nextNode.nodeType === Node.TEXT_NODE) {
+                if (previousNode !== null && nextNode !== null && previousNode.nodeType === Node.TEXT_NODE && nextNode.nodeType === Node.TEXT_NODE) {
                     var text = previousNode.nodeValue + nextNode.nodeValue;
                     var textNode = document.createTextNode(text);
 
@@ -346,30 +336,30 @@ window.Ebook = {
         },
     },
     htmlHelper: {
-        setFontSize: function () {
+        setFontSize: function() {
             $("body").css({
                 "font-size": Ebook.fontSize + "px"
             });
         },
-        setWidth: function () {
+        setWidth: function() {
             $("#columns-outer").css("width", (Ebook.webViewWidth - (2 * Ebook.webViewMargin)) + "px");
         },
-        setHeight: function () {
+        setHeight: function() {
             $("#columns-outer").css("height", (Ebook.webViewHeight - (2 * Ebook.webViewMargin)) + "px");
         },
-        setMargin: function () {
+        setMargin: function() {
             $("#columns-outer").css({
                 "left": Ebook.webViewMargin + "px",
                 "top": Ebook.webViewMargin + "px"
             });
         },
-        showContent: function () {
+        showContent: function() {
             $("#content").css("opacity", 1);
         },
-        hideContent: function () {
+        hideContent: function() {
             $("#content").css("opacity", 0);
         },
-        setNightMode: function () {
+        setNightMode: function() {
             $("body").css({
                 "background-color": Ebook.nightMode ? "#181819" : "#ffffff",
                 "color": Ebook.nightMode ? "#eff2f7" : "#000000"
@@ -457,24 +447,24 @@ window.Messages = {
             Ebook.setUpEbook();
 
             setTimeout(function() {
-                    if (data.Position > 0) {
-                        Ebook.goToPositionFast(data.Position);
-                    } else if (data.LastPage) {
-                        Ebook.goToPageFast(Ebook.totalPages);
-                        Ebook.messagesHelper.sendPageChange();
-                    } else if (data.Marker) {
-                        Ebook.goToMarker(data.Marker);
-                    } else {
-                        Ebook.goToPageFast(1);
-                        Ebook.messagesHelper.sendPageChange();
-                    }
-                },
-                5);
+                if (data.Position > 0) {
+                    Ebook.goToPositionFast(data.Position);
+                } else if (data.LastPage) {
+                    Ebook.goToPageFast(Ebook.totalPages);
+                    Ebook.messagesHelper.sendPageChange();
+                } else if (data.Marker) {
+                    Ebook.goToMarker(data.Marker);
+                } else {
+                    Ebook.goToPageFast(1);
+                    Ebook.messagesHelper.sendPageChange();
+                }
+            },
+            5);
 
             setTimeout(function() {
-                    Ebook.htmlHelper.showContent();
-                },
-                5);
+                Ebook.htmlHelper.showContent();
+            },
+            5);
         },
         goToPosition: function(data) {
             Ebook.goToPositionFast(data.Position);
@@ -497,11 +487,11 @@ window.Messages = {
                 Ebook.goToPreviousPage();
             }
         },
-        setNightMode: function (data) {
+        setNightMode: function(data) {
             Ebook.nightMode = data.NightMode;
             Ebook.htmlHelper.setNightMode();
         },
-        setTheme: function (data) {
+        setTheme: function(data) {
             Ebook.setTheme(data);
         }
     },
@@ -510,7 +500,6 @@ window.Messages = {
 window.Gestures = {
     init: function(element) {
         var hammer = new Hammer.Manager(element);
-
 
         hammer.add([
             new Hammer.Tap({
@@ -565,26 +554,26 @@ window.Gestures = {
             Ebook.messagesHelper.sendOpenQuickPanelRequest();
         });
 
-        hammer.on("panleft", function (e) {
+        hammer.on("panleft", function(e) {
             if (!e.isFinal) return;
             Messages.send("Interaction", { type: "panleft" });
             Ebook.goToNextPage();
         });
 
-        hammer.on("panright", function (e) {
+        hammer.on("panright", function(e) {
             if (!e.isFinal) return;
             Messages.send("Interaction", { type: "panright" });
             Ebook.goToPreviousPage();
         });
 
-        hammer.on("swipeleftdouble", function () {
+        hammer.on("swipeleftdouble", function() {
             Messages.send("Interaction", { type: "swipeleftdouble" });
             if (Ebook.doubleSwipe) {
                 Ebook.messagesHelper.nextChapterRequest();
             }
         });
 
-        hammer.on("swiperightdouble", function () {
+        hammer.on("swiperightdouble", function() {
             Messages.send("Interaction", { type: "swiperightdouble" });
             if (Ebook.doubleSwipe) {
                 Ebook.goToPage(1);
