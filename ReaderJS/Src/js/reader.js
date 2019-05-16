@@ -511,16 +511,11 @@ window.Gestures = {
     init: function(element) {
         var hammer = new Hammer.Manager(element);
 
-        var tap = new Hammer.Tap({
-            event: "singletap"
-        });
-        var doubleTap = new Hammer.Tap({
-            event: "doubletap",
-            taps: 2
-        });
 
         hammer.add([
-            doubleTap, tap,
+            new Hammer.Tap({
+                event: "singletap",
+            }),
             new Hammer.Press({
                 event: "press",
             }),
@@ -552,9 +547,6 @@ window.Gestures = {
             })
         ]);
 
-        doubleTap.recognizeWith(tap);
-        tap.requireFailure([doubleTap]);
-
         hammer.on("singletap", function (e) {
             if (Gestures.isLink(e)) return;
 
@@ -565,12 +557,6 @@ window.Gestures = {
                 Ebook.goToPreviousPage();
             }
 
-        });
-
-        hammer.on("doubletap", function (e) {
-            Messages.send("Interaction", { type: "doubletap", event: e.center });
-            if (Gestures.isLink(e)) return;
-            Ebook.messagesHelper.sendOpenQuickPanelRequest();
         });
 
         hammer.on("press", function (e) {
