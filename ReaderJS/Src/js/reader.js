@@ -14,19 +14,31 @@ window.Ebook = {
     webViewHeight: 0,
     webViewMargin: 0,
     scrollSpeed: 0,
-    clickEverywhere: false,
     doubleSwipe: false,
     nightMode: false,
     panEventCounter: 0,
-    init: function(width, height, margin, fontSize, scrollSpeed, clickEverywhere, doubleSwipe, nightMode) {
+    init: function(width, height, margin, fontSize, scrollSpeed, doubleSwipe, nightMode) {
         this.webViewWidth = width;
         this.webViewHeight = height;
         this.webViewMargin = margin;
         this.fontSize = fontSize;
         this.scrollSpeed = scrollSpeed;
-        this.clickEverywhere = clickEverywhere;
         this.doubleSwipe = doubleSwipe;
         this.nightMode = nightMode;
+        this.commands = [
+            [
+                {
+                    tap: "prevPage"
+                },
+                {
+                    tap: "toggleFullscreen",
+                    press: "openQuickSettings"
+                },
+                {
+                    tap: "nextPage"
+                }
+            ]
+        ];
 
         this.htmlHelper.setFontSize();
         this.htmlHelper.setWidth();
@@ -36,6 +48,34 @@ window.Ebook = {
 
         this.setUpColumns();
         this.setUpEvents();
+    },
+    getCommandCell: function(center) {
+        var grid = Ebook.commands; 
+
+        var rowHeight = Ebook.pageHeight / grid.length;
+        var row = Math.min(parseInt(center.y / rowHeight), grid.length - 1);
+
+        var colWidth = Ebook.pageWidth / grid[row].length;
+        var col = Math.min(parseInt(center.x / colWidth), grid[row].length - 1);
+
+        return grid[row][col];
+    },
+    performCommand: function(cmd) {
+        Ebook.messagesHelper.sendDebug(cmd);
+        switch (cmd) {
+        case "nextPage":
+            Ebook.goToNextPage();
+            break;
+        case "prevPage":
+            Ebook.goToPreviousPage();
+            break;
+        case "openQuickSettings":
+            Ebook.messagesHelper.sendOpenQuickPanelRequest();
+            break;
+        default:
+            Messages.send("CommandRequest", { Command: cmd });
+            break;
+        }
     },
     setUpEvents: function() {
         var wrapper = document.getElementsByTagName("body")[0];
@@ -56,7 +96,11 @@ window.Ebook = {
     },
     setUpColumns: function() {
         var columnsInner = document.getElementById("columns-inner");
-        this.pageWidth = columnsInner.getBoundingClientRect().width;
+
+        var rect = columnsInner.getBoundingClientRect();
+        this.pageWidth = rect.width;
+        this.pageHeight = rect.height;
+
         columnsInner.style["column-width"] = this.pageWidth + "px";
     },
     resize: function(width, height) {
@@ -434,7 +478,6 @@ window.Messages = {
                 data.Margin,
                 data.FontSize,
                 data.ScrollSpeed,
-                data.ClickEverywhere,
                 data.DoubleSwipe,
                 data.NightMode);
         },
@@ -536,22 +579,21 @@ window.Gestures = {
             })
         ]);
 
-        hammer.on("singletap", function (e) {
+        function perform(action, center) {
+            var cell = Ebook.getCommandCell(center);
+            Ebook.performCommand(cell[action]);
+        }
+
+        hammer.on("singletap", function(e) {
+            Messages.send("Interaction", { type: "tap" });
             if (Gestures.isLink(e)) return;
-
-            Messages.send("Interaction", { type: "tap", event: e.center });
-            if (Ebook.clickEverywhere || e.center.x > Math.round(Ebook.pageWidth / 2)) {
-                Ebook.goToNextPage();
-            } else {
-                Ebook.goToPreviousPage();
-            }
-
+            perform("tap", e.center);
         });
 
-        hammer.on("press", function (e) {
-            Messages.send("Interaction", { type: "press", event: e.center });
+        hammer.on("press", function(e) {
+            Messages.send("Interaction", { type: "press" });
             if (Gestures.isLink(e)) return;
-            Ebook.messagesHelper.sendOpenQuickPanelRequest();
+            perform("press", e.center);
         });
 
         hammer.on("panleft", function(e) {
