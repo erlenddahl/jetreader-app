@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using EbookReader.Helpers;
+using EbookReader.Model.Messages;
 using Newtonsoft.Json;
 using EbookReader.View;
 using Xamarin.Forms;
@@ -25,6 +27,7 @@ namespace EbookReader.Service {
         public event EventHandler<Model.WebViewMessages.OpenUrl> OnOpenUrl;
         public event EventHandler<Model.WebViewMessages.PanEvent> OnPanEvent;
         public event EventHandler<Model.WebViewMessages.KeyStroke> OnKeyStroke;
+        public event EventHandler<Model.WebViewMessages.CommandRequest> OnCommandRequest;
         public event EventHandler<JObject> OnInteraction;
 
         public WebViewMessages(ReaderWebView webView) {
@@ -67,39 +70,30 @@ namespace EbookReader.Service {
             }
         }
 
+        private void Raise<T>(object source, string eventName, T eventArgs)
+        {
+            var eventDelegate = (MulticastDelegate)source.GetType().GetField(eventName, BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(source);
+            if (eventDelegate != null)
+                eventDelegate.Method.Invoke(eventDelegate.Target, new[] { source, eventArgs });
+        }
+
         private void Parse(string data) {
             var json = JsonConvert.DeserializeObject<Model.WebViewMessages.Message>(Base64Helper.Decode(data));
 
             var messageType = Type.GetType($"EbookReader.Model.WebViewMessages.{json.Action}");
             var msg = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(json.Data), messageType);
 
+            // Use reflection to enumerate all webview messages, and call the appropriate event.
+            foreach (var cls in Assembly.GetExecutingAssembly().GetTypes().Where(p => p.IsClass && p.Namespace == "EbookReader.Model.WebViewMessages"))
+                if (cls.Name == json.Action)
+                {
+                    Raise(this, "On" + cls.Name, msg);
+                    return;
+                }
+
+            // If no existing webview messages were found, this is a manual event. Handle it accordingly.
             switch (json.Action) {
-                case Model.WebViewMessages.PageChange.Name:
-                    OnPageChange?.Invoke(this, msg as Model.WebViewMessages.PageChange);
-                    break;
-                case Model.WebViewMessages.NextChapterRequest.Name:
-                    OnNextChapterRequest?.Invoke(this, msg as Model.WebViewMessages.NextChapterRequest);
-                    break;
-                case Model.WebViewMessages.PrevChapterRequest.Name:
-                    OnPrevChapterRequest?.Invoke(this, msg as Model.WebViewMessages.PrevChapterRequest);
-                    break;
-                case Model.WebViewMessages.OpenQuickPanelRequest.Name:
-                    OnOpenQuickPanelRequest?.Invoke(this, msg as Model.WebViewMessages.OpenQuickPanelRequest);
-                    break;
-                case Model.WebViewMessages.ChapterRequest.Name:
-                    OnChapterRequest?.Invoke(this, msg as Model.WebViewMessages.ChapterRequest);
-                    break;
-                case Model.WebViewMessages.OpenUrl.Name:
-                    OnOpenUrl?.Invoke(this, msg as Model.WebViewMessages.OpenUrl);
-                    break;
-                case Model.WebViewMessages.PanEvent.Name:
-                    OnPanEvent?.Invoke(this, msg as Model.WebViewMessages.PanEvent);
-                    break;
-                case Model.WebViewMessages.KeyStroke.Name:
-                    OnKeyStroke?.Invoke(this, msg as Model.WebViewMessages.KeyStroke);
-                    break;
                 case "Interaction":
-                    Debug.WriteLine(msg as JObject);
                     OnInteraction?.Invoke(this, msg as JObject);
                     break;
                 case "Debug":

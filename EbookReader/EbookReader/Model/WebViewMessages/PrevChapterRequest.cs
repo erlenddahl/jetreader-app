@@ -6,6 +6,5 @@ using System.Threading.Tasks;
 
 namespace EbookReader.Model.WebViewMessages {
     public class PrevChapterRequest {
-        public const string Name = "PrevChapterRequest";
     }
 }

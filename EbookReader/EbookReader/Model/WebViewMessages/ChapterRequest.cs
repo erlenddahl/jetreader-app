@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace EbookReader.Model.WebViewMessages {
     public class ChapterRequest {
-        public const string Name = "ChapterRequest";
-        
         public string Chapter { get; set; }
     }
 }
