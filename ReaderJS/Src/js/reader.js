@@ -17,7 +17,7 @@ window.Ebook = {
     doubleSwipe: false,
     nightMode: false,
     panEventCounter: 0,
-    init: function(width, height, margin, fontSize, scrollSpeed, doubleSwipe, nightMode) {
+    init: function (width, height, margin, fontSize, scrollSpeed, doubleSwipe, nightMode) {
         this.webViewWidth = width;
         this.webViewHeight = height;
         this.webViewMargin = margin;
@@ -27,38 +27,59 @@ window.Ebook = {
         this.nightMode = nightMode;
         this.debugging = false;
         this.commands = [
-            [
-                {
-                    tap: "prevPage"
-                },
-                {
-                    tap: "visualizeCommandCells",
-                    press: "openQuickSettings"
-                },
-                {
-                    tap: "nextPage"
-                }
-            ],
-            [
-                {
-                    tap: "prevPage"
-                },
-                {
-                    tap: "toggleFullscreen",
-                    press: "openQuickSettings"
-                },
-                {
-                    tap: "nextPage"
-                }
-            ],
-            [
-                {
-                    tap: "prevPage"
-                },
-                {
-                    tap: "nextPage"
-                }
-            ]
+            {
+                height: 1/3,
+                cells: [
+                    {
+                        tap: "prevPage",
+                        width: 1 / 3
+                    },
+                    {
+                        tap: "visualizeCommandCells",
+                        press: "openQuickSettings",
+                        width: 1 / 3,
+                        showText: true
+                    },
+                    {
+                        tap: "nextPage",
+                        width: 1 / 3
+                    }
+                ]
+            },
+            {
+                height: 1 / 3,
+                cells: [
+                    {
+                        tap: "prevPage",
+                        width: 1 / 3
+                    },
+                    {
+                        tap: "toggleFullscreen",
+                        press: "openQuickSettings",
+                        width: 1 / 3,
+                        showText: true
+                    },
+                    {
+                        tap: "nextPage",
+                        width: 1 / 3
+                    }
+                ]
+            },
+            {
+                height: 1 / 3,
+                cells: [
+                    {
+                        tap: "prevPage",
+                        width: 1 / 2,
+                        showText: true
+                    },
+                    {
+                        tap: "nextPage",
+                        width: 1 / 2,
+                        showText: true
+                    }
+                ]
+            }
         ];
 
         this.htmlHelper.setFontSize();
@@ -76,33 +97,75 @@ window.Ebook = {
             return;
         }
 
+        //TODO: Make sure colors are nice
+        //TODO: Test new color system. Extract this function into utility class that can be used in a separate web view for configuring the grid
+
+        var colors = [
+            "rgba(255, 206, 95, 0.85)",
+            "rgba(215, 236, 95, 0.85)",
+            "rgba(255, 176, 95, 0.85)",
+            "rgba(255, 46, 95, 0.85)",
+            "rgba(255, 106, 95, 0.85)",
+            "rgba(205, 206, 95, 0.85)",
+            "rgba(155, 206, 95, 0.85)",
+            "rgba(55, 206, 95, 0.85)",
+            "rgba(255, 206, 105, 0.85)",
+            "rgba(255, 206, 235, 0.85)"
+        ];
+
+        var commandColors = {};
+
         var grid = Ebook.commands; 
         var visualization = $("<div>").addClass("command-cells");
-        var h = Ebook.webViewHeight / grid.length;
         for (var i = 0; i < grid.length; i++) {
+            var h = Ebook.webViewHeight  * grid[i].height;
             var row = $("<div>").addClass("row").css("height", h + "px");
-            var w = Ebook.webViewWidth / grid[i].length;
-            for (var j = 0; j < grid[i].length; j++) {
-                var cell = grid[i][j];
-                row.append($("<div>")
+            for (var j = 0; j < grid[i].cells.length; j++) {
+
+                var cell = grid[i].cells[j];
+                var w = Ebook.webViewWidth * cell.width;
+                var cmd = cell["tap"] || cell["press"];
+
+                if (!commandColors[cmd])
+                    commandColors[cmd] = colors[Object.keys(commandColors).length % colors.length];
+
+                var viz = $("<div>")
                     .addClass("cell")
                     .css("width", w + "px")
-                    .append($("<div>").html("Tap: " + cell["tap"] + "<br />" + "Long press: " + cell["press"])));
+                    .css("background-color", commandColors[cmd]);
+
+                if (cell.showText)
+                    viz.append($("<div>").html("<span class='header'>Tap:</span><br />" + cell["tap"] + "<br /><br />" + "<span class='header'>Long press:</span><br />" + cell["press"]));
+
+                row.append(viz);
             }
             visualization.append(row);
         }
         $("body").append(visualization);
     },
     getCommandCell: function(center) {
-        var grid = Ebook.commands; 
+        var grid = Ebook.commands;
 
-        var rowHeight = Ebook.pageHeight / grid.length;
-        var row = Math.min(parseInt(center.y / rowHeight), grid.length - 1);
+        var y = 0;
+        for (var i = 0; i < grid.length; i++) {
 
-        var colWidth = Ebook.pageWidth / grid[row].length;
-        var col = Math.min(parseInt(center.x / colWidth), grid[row].length - 1);
+            var row = grid[i];
+            y += Ebook.webViewHeight * row.height;
 
-        return grid[row][col];
+            if (center.y <= y) {
+
+                var x = 0;
+                for (var j = 0; j < row.cells.length; j++) {
+
+                    var cell = row.cells[j];
+                    x += Ebook.webViewWidth * cell.width;
+                    if (center.x <= x)
+                        return cell;
+                }
+            }
+        }
+
+        return null;
     },
     performCommand: function(cmd) {
         Ebook.messagesHelper.sendDebug("Touch command: " + cmd);
@@ -629,6 +692,8 @@ window.Gestures = {
 
         function perform(action, center) {
             var cell = Ebook.getCommandCell(center);
+            if (!cell) return;
+            if (!cell[action]) return;
             Ebook.performCommand(cell[action]);
         }
 

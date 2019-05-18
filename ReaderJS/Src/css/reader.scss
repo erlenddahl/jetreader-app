@@ -50,12 +50,10 @@
 
         .cell {
             text-align: center;
-            background-color: rgba(255, 206, 95, 0.55);
             float: left;
             box-sizing: border-box;
             -moz-box-sizing: border-box;
             -webkit-box-sizing: border-box;
-            border: 1px solid gray;
             height: 100%;
             position: relative;
 
@@ -66,6 +64,13 @@
                 width: 100%;
                 transform: translateY(-50%);
                 text-align: center;
+                color: black;
+                font-size: 18px;
+                font-weight: bold;
+                //text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+                .header {
+                    font-size: 22px;
+                }
             }
         }
     }
