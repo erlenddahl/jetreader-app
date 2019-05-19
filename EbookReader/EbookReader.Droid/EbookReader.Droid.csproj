@@ -142,6 +142,12 @@
     <Reference Include="Plugin.Settings.Abstractions, Version=3.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xam.Plugins.Settings.3.1.1\lib\MonoAndroid10\Plugin.Settings.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Rg.Plugins.Popup, Version=1.1.5.188, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Rg.Plugins.Popup.1.1.5.188\lib\MonoAndroid\Rg.Plugins.Popup.dll</HintPath>
+    </Reference>
+    <Reference Include="Rg.Plugins.Popup.Droid, Version=1.1.5.188, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Rg.Plugins.Popup.1.1.5.188\lib\MonoAndroid\Rg.Plugins.Popup.Droid.dll</HintPath>
+    </Reference>
     <Reference Include="SQLite-net, Version=1.5.231.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\sqlite-net-pcl.1.5.231\lib\netstandard1.1\SQLite-net.dll</HintPath>
     </Reference>

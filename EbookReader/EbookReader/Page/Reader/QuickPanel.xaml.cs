@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using Autofac;
 using EbookReader.Model.Messages;
 using EbookReader.Service;
+using Rg.Plugins.Popup.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace EbookReader.Page.Reader {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class QuickPanel : StackLayout {
+    public partial class QuickPanel : Rg.Plugins.Popup.Pages.PopupPage
+    {
         readonly IMessageBus _messageBus;
 
         public QuickPanel() {
@@ -24,12 +26,12 @@ namespace EbookReader.Page.Reader {
 
             _messageBus.Subscribe<CloseQuickPanelMessage>(msg =>
             {
-                Hide();
+                PopupNavigation.Instance.RemovePageAsync(this, false);
             });
         }
         
         private void PanelContent_OnChapterChange(object sender, Model.Navigation.Item e) {
-            Hide();
+            PopupNavigation.Instance.RemovePageAsync(this, false);
         }
 
         public void Show() {

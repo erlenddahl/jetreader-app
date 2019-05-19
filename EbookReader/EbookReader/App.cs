@@ -81,23 +81,29 @@ namespace EbookReader {
         private async void BackPressedMessageSubscriber(BackPressedMessage msg) {
             var master = MainPage as MainPage;
 
-            if (master != null) {
+            if (master != null)
+            {
                 var detailPage = master.Detail.Navigation.NavigationStack.LastOrDefault();
 
-                if (detailPage is ReaderPage readerPage && readerPage.IsQuickPanelVisible()) {
-                    _messageBus.Send(new CloseQuickPanelMessage());
-                } else if (detailPage is HomePage) {
-                    if (_doubleBackToExitPressedOnce) {
+                if (detailPage is HomePage)
+                {
+                    if (_doubleBackToExitPressedOnce)
+                    {
                         _messageBus.Send(new CloseAppMessage());
-                    } else {
+                    }
+                    else
+                    {
                         IocManager.Container.Resolve<IToastService>().Show("Press once again to exit!");
                         _doubleBackToExitPressedOnce = true;
-                        Xamarin.Forms.Device.StartTimer(new TimeSpan(0, 0, 2), () => {
+                        Xamarin.Forms.Device.StartTimer(new TimeSpan(0, 0, 2), () =>
+                        {
                             _doubleBackToExitPressedOnce = false;
                             return false;
                         });
                     }
-                } else {
+                }
+                else
+                {
                     await master.Detail.Navigation.PopAsync();
                 }
             }

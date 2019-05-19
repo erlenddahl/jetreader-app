@@ -29,6 +29,7 @@
         <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
         <PackageReference Include="PCLAppConfig" Version="0.4.1" />
         <PackageReference Include="Plugin.Permissions" Version="3.0.0.12" />
+        <PackageReference Include="Rg.Plugins.Popup" Version="1.1.5.188" />
         <PackageReference Include="SharpZipLib.Portable" Version="0.86.0.0003" />
         <PackageReference Include="sqlite-net-pcl" Version="1.5.231" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="1.1.13" />

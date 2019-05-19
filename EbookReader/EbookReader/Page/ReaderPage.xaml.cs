@@ -15,6 +15,7 @@ using EbookReader.Provider;
 using EbookReader.Service;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json.Linq;
+using Rg.Plugins.Popup.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -43,6 +44,8 @@ namespace EbookReader.Page {
         Position _lastLoadedPosition = new Position();
         bool _syncPending = false;
 
+        QuickPanel _quickPanel;
+
         public ReaderPage() {
             InitializeComponent();
 
@@ -64,13 +67,14 @@ namespace EbookReader.Page {
             WebView.Messages.OnKeyStroke += Messages_OnKeyStroke;
             WebView.Messages.OnInteraction += Messages_OnInteraction;
 
-            QuickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
-
             var quickPanelPosition = new Rectangle(0, 0, 1, 0.75);
 
             if (Device.RuntimePlatform == Device.UWP) {
                 quickPanelPosition = new Rectangle(0, 0, 0.33, 1);
             }
+            
+            _quickPanel = new QuickPanel();
+            _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
 
             NavigationPage.SetHasNavigationBar(this, false);
             _messageBus.Send(new FullscreenRequestMessage(true));
@@ -80,7 +84,7 @@ namespace EbookReader.Page {
 
         private void Messages_OnInteraction(object sender, JObject e)
         {
-            if (IsQuickPanelVisible()) return;
+            if (_quickPanel.IsVisible) return;
             _messageBus.Send(new FullscreenRequestMessage(true));
         }
 
@@ -117,10 +121,6 @@ namespace EbookReader.Page {
 
         private void UnSubscribeMessages() {
             _messageBus.UnSubscribe(nameof(ReaderPage));
-        }
-
-        public bool IsQuickPanelVisible() {
-            return QuickPanel.IsVisible;
         }
 
         private void Messages_OnOpenUrl(object sender, Model.WebViewMessages.OpenUrl e)
@@ -211,7 +211,7 @@ namespace EbookReader.Page {
             var position = _bookshelfBook.Position;
 
             Title = _ebook.Title + " - " + _ebook.Author;
-            QuickPanel.PanelContent.SetNavigation(_ebook.Navigation);
+            _quickPanel.PanelContent.SetNavigation(_ebook.Navigation);
             RefreshBookmarks();
 
             var chapter = _ebook.Spines.First();
@@ -254,7 +254,7 @@ namespace EbookReader.Page {
 
         private async void RefreshBookmarks() {
             var bookmarks = await _bookmarkService.LoadBookmarksByBookId(_bookshelfBook.Id);
-            QuickPanel.PanelBookmarks.SetBookmarks(bookmarks);
+            _quickPanel.PanelBookmarks.SetBookmarks(bookmarks);
         }
 
         private void OpenBookmark(OpenBookmarkMessage msg) {
@@ -381,7 +381,7 @@ namespace EbookReader.Page {
         }
 
         private void _messages_OnOpenQuickPanelRequest(object sender, Model.WebViewMessages.OpenQuickPanelRequest e) {
-            QuickPanel.Show();
+            PopupNavigation.Instance.PushAsync(_quickPanel, false);
         }
 
         private void _messages_OnPrevChapterRequest(object sender, Model.WebViewMessages.PrevChapterRequest e) {

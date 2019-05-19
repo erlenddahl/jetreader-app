@@ -61,6 +61,10 @@ namespace EbookReader.UWP {
 
                 FormsWebViewRenderer.Initialize();
 
+                //Rg initialization, see: https://github.com/rotorgames/Rg.Plugins.Popup/wiki/Getting-started
+                Rg.Plugins.Popup.Popup.Init();
+                assemblies.AddRange(Rg.Plugins.Popup.Popup.GetExtraAssemblies());
+
                 Xamarin.Forms.Forms.Init(e, assemblies);
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated) {

@@ -41,6 +41,9 @@ namespace EbookReader.Droid {
 
             Plugin.CurrentActivity.CrossCurrentActivity.Current.Init(this, bundle);
 
+            // Rg.popup initialization, see: https://github.com/rotorgames/Rg.Plugins.Popup/wiki/Getting-started
+            Rg.Plugins.Popup.Popup.Init(this, bundle);
+
             global::Xamarin.Forms.Forms.SetFlags("FastRenderers_Experimental");
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
@@ -81,6 +84,12 @@ namespace EbookReader.Droid {
         }
 
         public override void OnBackPressed() {
+            if (Rg.Plugins.Popup.Popup.SendBackPressed(base.OnBackPressed))
+            {
+                // There were open popups. They should now be closed.
+                return;
+            }
+
             IocManager.Container.Resolve<IMessageBus>().Send(new BackPressedMessage());
         }
 

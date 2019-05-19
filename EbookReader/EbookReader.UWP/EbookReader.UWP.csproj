@@ -260,6 +260,9 @@
     <PackageReference Include="Plugin.Permissions">
       <Version>3.0.0.12</Version>
     </PackageReference>
+    <PackageReference Include="Rg.Plugins.Popup">
+      <Version>1.1.5.188</Version>
+    </PackageReference>
     <PackageReference Include="sqlite-net-pcl">
       <Version>1.5.231</Version>
     </PackageReference>
