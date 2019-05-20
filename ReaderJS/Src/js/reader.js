@@ -90,6 +90,62 @@ window.Ebook = {
 
         this.setUpColumns();
         this.setUpEvents();
+
+        setTimeout(function () {
+            Ebook.refreshStatusPanelClock();
+        }, 60000);
+    },
+    refreshStatusPanelClock: function () {
+        var d = new Date();
+        var h = d.getHours();
+        var m = d.getMinutes();
+        var s = "";
+        s += (h < 10 ? "0" : "") + h;
+        s += (m < 10 ? "0" : "") + m;
+        Ebook.setStatusPanelValues({ "clock": s });
+    },
+    log: function (msg) {
+        $("#log").prepend($("<div>" + msg + "</div>"));
+    },
+    generateStatusPanel: function () {
+        var items = this.statusPanelItems || {};
+        $("#status-panel").html("");
+
+        for (var key in this.statusPanelItems) {
+            this.statusPanelItems[key].containers = [];
+        }
+
+        for (var i in this.statusPanel) {
+            var cell = this.statusPanel[i];
+            var htmlCell = $("<div class='cell'></div>");
+            for (var j in cell) {
+
+                var htmlItem = $("<div class='item'></div>");
+                htmlCell.append(htmlItem);
+
+                if (!items[cell[j]])
+                    items[cell[j]] = { value: null, containers: [htmlItem] };
+                else {
+                    items[cell[j]].containers.push(htmlItem);
+                    htmlItem.html(items[cell[j]].value);
+                }
+            }
+
+            $("#status-panel").append(htmlCell);
+        }
+
+        this.statusPanelItems = items;
+    },
+    setStatusPanelValues: function (keyValues) {
+        if (!this.statusPanelItems) this.statusPanelItems = {};
+
+        for (var key in keyValues) {
+            var item = this.statusPanelItems[key];
+            if (!item) continue;
+            item.value = keyValues[key];
+            for (var i in item.containers)
+                item.containers[i].html(keyValues[key]);
+        }
     },
     visualizeCommandCells: function() {
         if ($(".command-cells").length) {
@@ -521,12 +577,19 @@ window.Ebook = {
         },
     },
     messagesHelper: {
-        sendPageChange: function() {
+        sendPageChange: function () {
+
+            var pos = Ebook.getCurrentPosition();
+            Ebook.setStatusPanelValues({
+                "chapterProgress": Ebook.currentPage + " / " + Ebook.totalPages,
+                "position": pos
+            });
+
             Messages.send("PageChange",
                 {
                     CurrentPage: Ebook.currentPage,
                     TotalPages: Ebook.totalPages,
-                    Position: Ebook.getCurrentPosition(),
+                    Position: pos,
                 });
         },
         nextChapterRequest: function() {
@@ -591,6 +654,17 @@ window.Messages = {
                 data.ScrollSpeed,
                 data.DoubleSwipe,
                 data.NightMode);
+
+            if (data.StatusPanelData)
+                this.setStatusPanelData(data.StatusPanelData);
+        },
+        setStatusPanelData: function (data) {
+            if (data.PanelDefinition) {
+                Ebook.statusPanel = data.PanelDefinition;
+                Ebook.generateStatusPanel();
+            }
+            if (data.Values)
+                Ebook.setStatusPanelValues(data.Values);
         },
         loadHtml: function(data) {
             Ebook.htmlHelper.hideContent();
@@ -599,6 +673,7 @@ window.Messages = {
 
             Ebook.loadImages(data.Images);
             Ebook.setUpEbook();
+            Ebook.setStatusPanelValues({ "chapter": data.Title });
 
             setTimeout(function() {
                 if (data.Position > 0) {
@@ -612,13 +687,11 @@ window.Messages = {
                     Ebook.goToPageFast(1);
                     Ebook.messagesHelper.sendPageChange();
                 }
-            },
-            5);
+            }, 5);
 
             setTimeout(function() {
                 Ebook.htmlHelper.showContent();
-            },
-            5);
+            }, 5);
         },
         goToPosition: function(data) {
             Ebook.goToPositionFast(data.Position);

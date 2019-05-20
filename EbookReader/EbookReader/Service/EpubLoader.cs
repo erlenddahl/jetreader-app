@@ -87,7 +87,8 @@ namespace EbookReader.Service {
 
             var result = new Model.EpubLoader.HtmlResult {
                 Html = doc.DocumentNode.Descendants("body").First().InnerHtml,
-                Images = images
+                Images = images,
+                Title = doc.DocumentNode.Descendants("title").FirstOrDefault().InnerHtml
             };
 
             return result;

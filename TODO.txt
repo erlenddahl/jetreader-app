@@ -1,9 +1,17 @@
 Active
+ - Make more flexible control system (three columns/three rows? customizable)
+    - Working on configuration.
+        - Make full list of actions
+        - Select from presets or pick rows/cells manually
+        - Pick both tap and press action per area
+ - Make the tiny status bar more flexible
+    - Implement remaining status bar items (book progress most important)
+ - Rewrite book loading to be more efficient
+ - Rewrite ReaderJS => resize() to be more efficient
 
 Inactive
- - Rework interaction system for shorter code and more flexibility
+ - Optmimize launch time
  - Automatically open last book
- - Clean file structure
  - Change nightmode to general theme system
     - Make sure it also (can) affect the app itself, and not only the reader
  - Rework status bar (more info, customizable info, smaller, position)

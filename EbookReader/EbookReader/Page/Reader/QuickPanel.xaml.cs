@@ -33,19 +33,5 @@ namespace EbookReader.Page.Reader {
         private void PanelContent_OnChapterChange(object sender, Model.Navigation.Item e) {
             PopupNavigation.Instance.RemovePageAsync(this, false);
         }
-
-        public void Show() {
-            Device.BeginInvokeOnMainThread(() => {
-                IsVisible = true;
-                _messageBus.Send(new FullscreenRequestMessage(false));
-            });
-        }
-
-        public void Hide() {
-            Device.BeginInvokeOnMainThread(() => {
-                IsVisible = false;
-                _messageBus.Send(new FullscreenRequestMessage(true));
-            });
-        }
     }
 }

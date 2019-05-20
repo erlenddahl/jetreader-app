@@ -28,7 +28,7 @@ namespace EbookReader.Page {
         readonly IMessageBus _messageBus;
         readonly ISyncService _syncService;
         readonly IBookmarkService _bookmarkService;
-
+        private readonly IBatteryProvider _batteryProvider;
         int _currentChapter;
 
         Book _bookshelfBook;
@@ -55,6 +55,8 @@ namespace EbookReader.Page {
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
             _syncService = IocManager.Container.Resolve<ISyncService>();
             _bookmarkService = IocManager.Container.Resolve<IBookmarkService>();
+            _batteryProvider = IocManager.Container.Resolve<IBatteryProvider>();
+            IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>((_)=> { SetStatusPanelValue("battery", GetBatteryHtml()); });
 
             // webview events
             WebView.Messages.OnNextChapterRequest += _messages_OnNextChapterRequest;
@@ -80,6 +82,11 @@ namespace EbookReader.Page {
             _messageBus.Send(new FullscreenRequestMessage(true));
 
             ChangeTheme();
+        }
+
+        private object GetBatteryHtml()
+        {
+            return "<div class='battery-indicator'><div class='nub'></div><div class='battery'>" + _batteryProvider.RemainingChargePercent + "%</div></div>";
         }
 
         private void Messages_OnInteraction(object sender, JObject e)
@@ -439,7 +446,8 @@ namespace EbookReader.Page {
 
         #region webview messages
         private void InitWebView(int width, int height) {
-            var json = new {
+            var json = new
+            {
                 Width = width,
                 Height = height,
                 UserSettings.Reader.Margin,
@@ -448,9 +456,34 @@ namespace EbookReader.Page {
                 UserSettings.Control.ClickEverywhere,
                 UserSettings.Control.DoubleSwipe,
                 UserSettings.Reader.NightMode,
+                StatusPanelData = new
+                {
+                    PanelDefinition = new[] {
+                        new[] { "battery", "clock" },
+                        new[] { "chapter", "chapterProgress" },
+                        new[] { "bookProgressPercentage" }
+                    },
+                    Values = new
+                    {
+                        clock = DateTime.Now.ToString("HH:mm"),
+                        battery = GetBatteryHtml()
+                    }
+                }
             };
 
             WebView.Messages.Send("init", json);
+        }
+
+        private void SetStatusPanelValue(string key, object value)
+        {
+            var d = new Dictionary<string, object>();
+            d.Add(key, value);
+            SetStatusPanelValues(d);
+        }
+
+        private void SetStatusPanelValues(Dictionary<string, object> keyValues)
+        {
+            WebView.Messages.Send("setStatusPanelData", JObject.FromObject(keyValues));
         }
 
         private void ResizeWebView(int width, int height) {
@@ -466,6 +499,7 @@ namespace EbookReader.Page {
             var json = new {
                 htmlResult.Html,
                 htmlResult.Images,
+                htmlResult.Title,
                 Position = position,
                 LastPage = lastPage,
                 Marker = marker,
