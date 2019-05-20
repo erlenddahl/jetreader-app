@@ -16,7 +16,6 @@ window.Ebook = {
     scrollSpeed: 0,
     doubleSwipe: false,
     nightMode: false,
-    panEventCounter: 0,
     init: function (width, height, margin, fontSize, scrollSpeed, doubleSwipe, nightMode) {
         this.webViewWidth = width;
         this.webViewHeight = height;
@@ -25,10 +24,10 @@ window.Ebook = {
         this.scrollSpeed = scrollSpeed;
         this.doubleSwipe = doubleSwipe;
         this.nightMode = nightMode;
-        this.debugging = false;
+        this.debugging = true;
         this.commands = [
             {
-                height: 1/3,
+                height: 3/10,
                 cells: [
                     {
                         tap: "prevPage",
@@ -47,7 +46,7 @@ window.Ebook = {
                 ]
             },
             {
-                height: 1 / 3,
+                height: 3/10,
                 cells: [
                     {
                         tap: "prevPage",
@@ -66,7 +65,7 @@ window.Ebook = {
                 ]
             },
             {
-                height: 1 / 3,
+                height: 3 / 10,
                 cells: [
                     {
                         tap: "prevPage",
@@ -76,6 +75,26 @@ window.Ebook = {
                     {
                         tap: "nextPage",
                         width: 1 / 2,
+                        showText: true
+                    }
+                ]
+            },
+            {
+                height: 1 / 10,
+                cells: [
+                    {
+                        tap: "sync",
+                        width: 1 / 3,
+                        showText: true
+                    },
+                    {
+                        tap: "backup",
+                        width: 1 / 3,
+                        showText: true
+                    },
+                    {
+                        tap: "bookInfo",
+                        width: 1 / 3,
                         showText: true
                     }
                 ]
@@ -197,6 +216,8 @@ window.Ebook = {
             }
             visualization.append(row);
         }
+
+        visualization.on("click", function () { $(".command-cells").remove(); });
         $("body").append(visualization);
     },
     getCommandCell: function(center) {
@@ -430,16 +451,23 @@ window.Ebook = {
         $("img").css("max-width", (Ebook.webViewWidth - (2 * Ebook.webViewMargin)) + "px");
         $("img").css("max-height", (Ebook.webViewHeight - (2 * Ebook.webViewMargin)) + "px");
     },
-    panEventHandler: function(x, y, isFinal) {
-        if (isFinal) {
-            Ebook.panEventCounter = 0;
+
+    panEventCounter: 0,
+    panEventHandler: function (e) {
+
+        if (Ebook.panEventCounter < 1) {
+            Messages.send("Interaction", { type: "panupdown" });
         }
 
-        if (Ebook.panEventCounter % 10 === 0 || isFinal) {
-            Messages.send("Interaction", { type: "panupdown" });
-            Ebook.messagesHelper.sendPanEvent(x, y);
+        if (Ebook.panEventCounter % 10 === 0 || e.isFinal) {
+            Ebook.messagesHelper.sendPanEvent(e.center.x, e.center.y);
         }
+
         Ebook.panEventCounter++;
+
+        if (e.isFinal) {
+            Ebook.panEventCounter = 0;
+        }
     },
     pagerHelper: {
         cache: new Map(),
@@ -640,10 +668,12 @@ window.Messages = {
         });
 
         csCallback(Base64.encode(json));
+        Ebook.log("OUT: " + action);
     },
     parse: function(data) {
         var json = JSON.parse(Base64.decode(data));
         this.actions[json.Action](json.Data);
+        Ebook.log("IN: " + json.Action);
     },
     actions: {
         init: function(data) {
@@ -770,8 +800,12 @@ window.Gestures = {
             Ebook.performCommand(cell[action]);
         }
 
-        hammer.on("singletap", function(e) {
-            Messages.send("Interaction", { type: "tap" });
+        hammer.on("singletap", function (e) {
+
+            var cell = Ebook.getCommandCell(e.center);
+            if(!cell || !cell["tap"] || cell["tap"] !="toggleFullscreen")
+                Messages.send("Interaction", { type: "tap" });
+
             if (Gestures.isLink(e)) return;
             perform("tap", e.center);
         });
@@ -808,13 +842,8 @@ window.Gestures = {
             }
         });
 
-        hammer.on("pandown", function(e) {
-            Ebook.panEventHandler(e.center.x, e.center.y, e.isFinal);
-        });
-
-        hammer.on("panup", function(e) {
-            Ebook.panEventHandler(e.center.x, e.center.y, e.isFinal);
-        });
+        hammer.on("pandown", Ebook.panEventHandler);
+        hammer.on("panup", Ebook.panEventHandler);
     },
     isLink: function(e) {
         if (e && e.target) {

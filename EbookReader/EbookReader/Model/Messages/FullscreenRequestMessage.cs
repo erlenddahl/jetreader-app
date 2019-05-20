@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 namespace EbookReader.Model.Messages {
     public class FullscreenRequestMessage {
 
-        public bool Fullscreen => _setFullscreen && UserSettings.Reader.Fullscreen;
+        public bool? Fullscreen { get; private set; }
         public string Caller { get; }
 
-        readonly bool _setFullscreen;
-
-        public FullscreenRequestMessage(bool setFullscreen, [CallerMemberName]string callerName = "") {
-            _setFullscreen = setFullscreen;
+        public FullscreenRequestMessage(bool? setFullscreen, [CallerMemberName]string callerName = "") {
+            Fullscreen = setFullscreen;
             Caller = callerName;
         }
     }

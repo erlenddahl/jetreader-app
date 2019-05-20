@@ -6,6 +6,7 @@ Active
         - Pick both tap and press action per area
  - Make the tiny status bar more flexible
     - Implement remaining status bar items (book progress most important)
+    - Add configuration system
  - Rewrite book loading to be more efficient
  - Rewrite ReaderJS => resize() to be more efficient
 

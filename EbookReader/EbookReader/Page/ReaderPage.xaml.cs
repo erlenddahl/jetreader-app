@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -68,6 +69,7 @@ namespace EbookReader.Page {
             WebView.Messages.OnPanEvent += Messages_OnPanEvent;
             WebView.Messages.OnKeyStroke += Messages_OnKeyStroke;
             WebView.Messages.OnInteraction += Messages_OnInteraction;
+            WebView.Messages.OnCommandRequest += Messages_OnCommandRequest;
 
             var quickPanelPosition = new Rectangle(0, 0, 1, 0.75);
 
@@ -89,9 +91,26 @@ namespace EbookReader.Page {
             return "<div class='battery-indicator'><div class='nub'></div><div class='battery'>" + _batteryProvider.RemainingChargePercent + "%</div></div>";
         }
 
+        private void Messages_OnCommandRequest(object sender, Model.WebViewMessages.CommandRequest e)
+        {
+            switch (e.Command)
+            {
+                case "toggleFullscreen":
+                    try
+                    {
+                        _messageBus.Send(new FullscreenRequestMessage(null));
+                    }
+                    catch(Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                    }
+                    break;
+            }
+        }
+
         private void Messages_OnInteraction(object sender, JObject e)
         {
-            if (_quickPanel.IsVisible) return;
+            if (PopupNavigation.Instance.PopupStack.Contains(_quickPanel)) return;
             _messageBus.Send(new FullscreenRequestMessage(true));
         }
 
@@ -121,9 +140,6 @@ namespace EbookReader.Page {
             _messageBus.Subscribe<ChangedBookmarkNameMessage>(ChangedBookmarkName, new[] { nameof(ReaderPage) });
             _messageBus.Subscribe<GoToPageMessage>(GoToPageHandler, new[] { nameof(ReaderPage) });
             _messageBus.Subscribe<KeyStrokeMessage>(KeyStrokeHandler, new[] { nameof(ReaderPage) });
-
-            var ctrl = this;
-            _messageBus.Subscribe<FullscreenRequestMessage>((e)=> NavigationPage.SetHasNavigationBar(ctrl, !e.Fullscreen), new []{nameof(ReaderPage)});
         }
 
         private void UnSubscribeMessages() {

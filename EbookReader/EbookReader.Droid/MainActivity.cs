@@ -133,15 +133,20 @@ namespace EbookReader.Droid {
             });
         }
 
+        private bool isFullscreen = false;
         private void ToggleFullscreen(FullscreenRequestMessage msg)
         {
+            if (!UserSettings.Reader.Fullscreen) return;
+
             //TODO: See https://stackoverflow.com/questions/7692789/toggle-fullscreen-mode for more robust function (for more Android versions)
             RunOnUiThread(() =>
             {
                 var decorView = Window.DecorView;
                 var newUiOptions = (int)decorView.SystemUiVisibility;
 
-                if (msg.Fullscreen)
+                var activateFullscreen = msg.Fullscreen.HasValue ? msg.Fullscreen.Value : !isFullscreen;
+
+                if (activateFullscreen)
                 {
                     newUiOptions |= (int)SystemUiFlags.LayoutStable;
                     newUiOptions |= (int)SystemUiFlags.LayoutHideNavigation;
@@ -150,6 +155,7 @@ namespace EbookReader.Droid {
                     newUiOptions |= (int)SystemUiFlags.HideNavigation;
                     newUiOptions |= (int)SystemUiFlags.Immersive;
                     newUiOptions |= (int)SystemUiFlags.LowProfile;
+                    isFullscreen = true;
                 }
                 else
                 {
@@ -160,6 +166,7 @@ namespace EbookReader.Droid {
                     newUiOptions &= ~(int)SystemUiFlags.HideNavigation;
                     newUiOptions &= ~(int)SystemUiFlags.Immersive;
                     newUiOptions &= ~(int)SystemUiFlags.LowProfile;
+                    isFullscreen = false;
                 }
 
                 decorView.SystemUiVisibility = (StatusBarVisibility)newUiOptions;
