@@ -8,7 +8,6 @@ Active
     - Implement remaining status bar items (book progress most important)
     - Add configuration system
  - Rewrite book loading to be more efficient
- - Rewrite ReaderJS => resize() to be more efficient
 
 Inactive
  - Optmimize launch time

@@ -5,6 +5,23 @@
 /*global Hammer*/
 /*global Gestures*/
 /*global KeyStrokes*/
+
+
+function CodeTimer() {
+    this.timings = [];
+    this.prev = performance.now();
+}
+
+CodeTimer.prototype.time = function () {
+    var now = performance.now();
+    this.timings.push(now - this.prev);
+    this.prev = now;
+}
+
+CodeTimer.prototype.sendDebug = function (desc) {
+    window.Messages.send("Debug", desc + " :: " + JSON.stringify(this.timings));
+}
+
 window.Ebook = {
     pageWidth: 0,
     totalPages: 0,
@@ -124,6 +141,8 @@ window.Ebook = {
         Ebook.setStatusPanelValues({ "clock": s });
     },
     log: function (msg) {
+        return;
+        $("#log").show();
         $("#log").prepend($("<div>" + msg + "</div>"));
     },
     generateStatusPanel: function () {
@@ -171,6 +190,8 @@ window.Ebook = {
             $(".command-cells").remove();
             return;
         }
+
+        Ebook.getCurrentPosition();
 
         //TODO: Make sure colors are nice
         //TODO: Test new color system. Extract this function into utility class that can be used in a separate web view for configuring the grid
@@ -248,10 +269,10 @@ window.Ebook = {
         Ebook.messagesHelper.sendDebug("Touch command: " + cmd);
         switch (cmd) {
         case "nextPage":
-            Ebook.goToNextPage();
+            Ebook.goToNextPage(true);
             break;
         case "prevPage":
-            Ebook.goToPreviousPage();
+            Ebook.goToPreviousPage(true);
             break;
         case "visualizeCommandCells":
             Ebook.visualizeCommandCells();
@@ -273,8 +294,6 @@ window.Ebook = {
     setUpEbook: function() {
         this.resizeImages();
 
-        this.pagerHelper.invalideCache();
-
         this.goToPageFast(1);
 
         this.totalPages = this.getPageOfMarker("js-ebook-end-of-chapter");
@@ -290,23 +309,26 @@ window.Ebook = {
 
         columnsInner.style["column-width"] = this.pageWidth + "px";
     },
-    resize: function(width, height) {
-        Ebook.htmlHelper.hideContent();
-        var position = Ebook.getCurrentPosition();
+    resize: function (width, height) {
+        var timer = new CodeTimer();
+        Ebook.htmlHelper.hideContent(); timer.time();
 
-        Ebook.goToPageFast(1);
-        Ebook.webViewWidth = width;
-        Ebook.webViewHeight = height;
-        Ebook.htmlHelper.setWidth();
-        Ebook.htmlHelper.setHeight();
+        // Use the last position set by a user action if available.
+        var position = Ebook.currentPosition || Ebook.getCurrentPosition(); timer.time();
 
-        Ebook.setUpColumns();
-        Ebook.setUpEbook();
+        Ebook.goToPageFast(1); timer.time();
+        Ebook.webViewWidth = width; timer.time();
+        Ebook.webViewHeight = height; timer.time();
+        Ebook.htmlHelper.setWidth(); timer.time();
+        Ebook.htmlHelper.setHeight(); timer.time();
 
-        setTimeout(function() {
-            Ebook.goToPositionFast(position);
-            Ebook.htmlHelper.showContent();
-        }, 5);
+        Ebook.setUpColumns(); timer.time();
+        Ebook.setUpEbook(); timer.time();
+
+        Ebook.goToPositionFast(position); timer.time();
+        Ebook.htmlHelper.showContent(); timer.time();
+
+        timer.sendDebug("resize");
     },
     changeFontSize: function(fontSize) {
         Ebook.htmlHelper.hideContent();
@@ -342,67 +364,100 @@ window.Ebook = {
             Ebook.htmlHelper.showContent();
         }, 5);
     },
-    goToNextPage: function() {
+    goToNextPage: function (saveNewPosition) {
         var page = this.currentPage + 1;
         if (page <= this.totalPages) {
-            this.goToPage(page);
+            this.goToPage(page, null, saveNewPosition);
         } else {
             this.messagesHelper.nextChapterRequest();
         }
     },
-    goToPreviousPage: function() {
+    goToPreviousPage: function(saveNewPosition) {
         var page = this.currentPage - 1;
         if (page >= 1) {
-            this.goToPage(page);
+            this.goToPage(page, null, saveNewPosition);
         } else {
             this.messagesHelper.prevChapterRequest();
         }
     },
-    goToPage: function(page, duration) {
-        if (duration === undefined) {
+    goToPage: function(page, duration, saveNewPosition) {
+        if (duration === undefined || duration === null) {
             duration = Ebook.scrollSpeed;
         }
 
-        this.goToPageInternal(page, duration);
-
-        this.messagesHelper.sendPageChange();
+        this.goToPageInternal(page, duration, function () {
+            if (saveNewPosition)
+                Ebook.currentPosition = Ebook.getCurrentPosition();
+            Ebook.messagesHelper.sendPageChange();
+        });
     },
     goToPageFast: function(page) {
         this.goToPageInternal(page, 0);
     },
-    goToPageInternal: function(page, duration) {
+    goToPageInternal: function(page, duration, callback) {
         if (page < 1) {
             page = 1;
         }
 
         this.currentPage = page;
 
-        $('#columns-outer').animate({
-            scrollLeft: (page - 1) * this.pageWidth,
-        }, duration);
-    },
-    goToPosition: function(position, duration) {
-        Ebook.pagerHelper.computeLengthOfAllPages();
-
-        var page = 0;
-        var currentPosition = 0;
-
-        while (currentPosition < position) {
-            page++;
-
-            var length = Ebook.pagerHelper.cache.get(page);
-            if (length !== undefined) {
-                currentPosition += length;
-            }
+        if (duration < 1) {
+            $('#columns-outer').scrollLeft((page - 1) * this.pageWidth);
+            if (callback) callback();
+        } else {
+            $('#columns-outer').animate({
+                scrollLeft: (page - 1) * this.pageWidth,
+            }, duration, function () {
+                    if (callback) callback();
+            });
         }
+    },
+    goToPosition: function (position, duration) {
 
+        // Insert a marker into the HTML code at the given position.
+        var content = document.getElementById("content");
+        var html = content.innerHTML;
+        html = html.substring(0, position) + "<span id='jr-go-to-position'></span>" + html.substring(position);
+        content.innerHTML = html;
+
+        // Now select the inserted marker
+        var elmnt = document.getElementById("jr-go-to-position");
+
+        // Scroll to the first page to reset the scrolling
+        this.goToPageFast(1);
+
+        // Find the marker's left coordinate, and remove it from the HTML code.
+        var left = elmnt.getBoundingClientRect().left;
+        elmnt.remove();
+
+        // Calculate which page this coordinate is on, 
+        var page = Math.trunc(left / this.pageWidth + 1);
+
+        // and go to that page.
         this.goToPage(page, duration);
     },
     goToPositionFast: function(position) {
         this.goToPosition(position, 0);
     },
-    getCurrentPosition: function() {
-        return this.pagerHelper.startOfPage(this.currentPage);
+    getCurrentPosition: function () {
+
+        // Get the caret position for the upper left corner of the screen (with a slight margin)
+        var range = document.caretRangeFromPoint(Ebook.webViewMargin + 10, Ebook.webViewMargin + 10);
+
+        // Due to the way the caret position is defined (it's inside the innermost HTML element, most
+        // often a <p>), we can't use the startOffset property directly (as that's relative to the parent
+        // position). Instead, we insert a marker element, 
+        var mark = document.createElement("i");
+        mark.innerHTML = "[jr-current-position]";
+        range.insertNode(mark);
+
+        // and finds the position of the inserted element in the HTML string.
+        var html = document.getElementById("content").innerHTML;        
+        var pos = html.split("<i>[jr-current-position]</i>")[0].length;
+
+        // Remove the marker, and return the position.
+        mark.remove();
+        return pos;
     },
     setUpLinksListener: function() {
         var links = document.getElementById("content").getElementsByTagName("a");
@@ -469,110 +524,6 @@ window.Ebook = {
             Ebook.panEventCounter = 0;
         }
     },
-    pagerHelper: {
-        cache: new Map(),
-        invalideCache: function() {
-            this.cache = new Map();
-        },
-        startOfPage: function(page) {
-            page = Math.min(Math.max(page, 1), Ebook.totalPages);
-
-            Ebook.pagerHelper.computeLengthOfAllPages();
-
-            var start = 0;
-
-            for (var i = 1; i < page; i++) {
-                var length = this.cache.get(i);
-                if (length !== undefined) {
-                    start += length;
-                }
-            }
-
-            if (page > 1) {
-                ++start;
-            }
-
-            return start;
-        },
-        markAllPages: function() {
-            var currentPage = Ebook.currentPage;
-
-            var rect = {
-                top: Ebook.webViewMargin,
-                left: Ebook.webViewMargin,
-            };
-
-            var ranges = [];
-            for (var i = 1; i <= Ebook.totalPages; i++) {
-                Ebook.goToPageFast(i);
-
-                var range = document.caretRangeFromPoint(rect.left, rect.top);
-
-                if (range !== null) {
-                    ranges.push(range);
-                }
-            }
-
-            ranges.forEach(function(range) {
-                var mark = document.createElement("span");
-                mark.setAttribute("class", "js-ebook-page-begin");
-
-                range.insertNode(mark);
-            });
-
-            Ebook.goToPageFast(currentPage);
-        },
-        computeLengthOfAllPages: function() {
-            if (this.cache.size > 0) {
-                return;
-            }
-
-            this.markAllPages();
-
-            var html = document.getElementById("content").innerHTML;
-            var pages = html.split('<span class="js-ebook-page-begin"></span>');
-
-            var result = new Map();
-
-            for (var i = 1; i <= Ebook.totalPages; i++) {
-                var clearText = this.clearText(this.stripHtmlTags(pages[i]));
-                var length = clearText.length;
-                result.set(i, length);
-            }
-
-            var mark = document.getElementsByClassName("js-ebook-page-begin")[0];
-
-            while (mark !== undefined) {
-                var previousNode = mark.previousSibling;
-                var nextNode = mark.nextSibling;
-
-                if (previousNode !== null && nextNode !== null && previousNode.nodeType === Node.TEXT_NODE && nextNode.nodeType === Node.TEXT_NODE) {
-                    var text = previousNode.nodeValue + nextNode.nodeValue;
-                    var textNode = document.createTextNode(text);
-
-                    var parent = mark.parentNode;
-                    parent.replaceChild(textNode, mark);
-
-                    previousNode.remove();
-                    nextNode.remove();
-                } else {
-                    mark.remove();
-                }
-
-                mark = document.getElementsByClassName("js-ebook-page-begin")[0];
-            }
-
-            Ebook.pagerHelper.cache = result;
-        },
-        stripHtmlTags: function(html) {
-            var div = document.createElement("div");
-            div.innerHTML = html;
-            return div.textContent;
-        },
-        clearText: function(text) {
-            return text.replace(/\s/g, '');
-        },
-    },
     htmlHelper: {
         setFontSize: function() {
             $("body").css({
@@ -607,17 +558,16 @@ window.Ebook = {
     messagesHelper: {
         sendPageChange: function () {
 
-            var pos = Ebook.getCurrentPosition();
             Ebook.setStatusPanelValues({
                 "chapterProgress": Ebook.currentPage + " / " + Ebook.totalPages,
-                "position": pos
+                "position": Ebook.currentPosition
             });
 
             Messages.send("PageChange",
                 {
                     CurrentPage: Ebook.currentPage,
                     TotalPages: Ebook.totalPages,
-                    Position: pos,
+                    Position: Ebook.currentPosition,
                 });
         },
         nextChapterRequest: function() {
@@ -705,7 +655,8 @@ window.Messages = {
             Ebook.setUpEbook();
             Ebook.setStatusPanelValues({ "chapter": data.Title });
 
-            setTimeout(function() {
+            setTimeout(function () {
+
                 if (data.Position > 0) {
                     Ebook.goToPositionFast(data.Position);
                 } else if (data.LastPage) {
@@ -717,6 +668,8 @@ window.Messages = {
                     Ebook.goToPageFast(1);
                     Ebook.messagesHelper.sendPageChange();
                 }
+
+                Ebook.currentPosition = Ebook.getCurrentPosition();
             }, 5);
 
             setTimeout(function() {
@@ -729,7 +682,7 @@ window.Messages = {
         changeFontSize: function(data) {
             Ebook.changeFontSize(data.FontSize);
         },
-        resize: function(data) {
+        resize: function (data) {
             Ebook.resize(data.Width, data.Height);
         },
         changeMargin: function(data) {
@@ -819,13 +772,13 @@ window.Gestures = {
         hammer.on("panleft", function(e) {
             if (!e.isFinal) return;
             Messages.send("Interaction", { type: "panleft" });
-            Ebook.goToNextPage();
+            Ebook.goToNextPage(true);
         });
 
         hammer.on("panright", function(e) {
             if (!e.isFinal) return;
             Messages.send("Interaction", { type: "panright" });
-            Ebook.goToPreviousPage();
+            Ebook.goToPreviousPage(true);
         });
 
         hammer.on("swipeleftdouble", function() {
