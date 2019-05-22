@@ -44,7 +44,9 @@ namespace EbookReader.BookLoaders.Epub
 
                 StripHtmlTags(doc);
 
-                InlineImages(book, doc, chapter);
+                var data = ((EpubEbook) book).Data;
+                InlineCss(data, doc);
+                InlineImages(data, doc, chapter);
 
                 //TODO: Handle book CSS
                 return doc.DocumentNode.Descendants("body").First().InnerHtml;
@@ -63,17 +65,40 @@ namespace EbookReader.BookLoaders.Epub
             }
         }
 
+        private void InlineCss(EpubBook data, HtmlDocument doc)
+        {
+            var body = doc.DocumentNode.Descendants("body").First();
+            var internalStyles = doc.DocumentNode.Descendants("style");
+            foreach (var s in internalStyles)
+            {
+                s.Remove();
+                body.AppendChild(s);
+            }
+
+            var externalStyles = doc.DocumentNode
+                .Descendants("link")
+                .Where(p => p.Attributes["rel"].Value.ToLower() == "stylesheet")
+                .Select(p => p.Attributes["href"].Value)
+                .ToList();
+
+            foreach (var s in externalStyles)
+            {
+                var style = data.Resources.Css.FirstOrDefault(p => p.FileName.Contains(s.Replace("../", "")));
+                if (style != null)
+                    body.AppendChild(HtmlNode.CreateNode("<style>" + style.TextContent + "</style>"));
+            }
+        }
+
         /// <summary>
         /// Enumerates all img tags and svg.image tags and extracts image paths. Each image is
         /// converted to base64, and inserted directly into the HTML code.
         /// </summary>
-        /// <param name="epub"></param>
+        /// <param name="data"></param>
         /// <param name="doc"></param>
         /// <param name="chapter"></param>
         /// <returns></returns>
-        private void InlineImages(Ebook epub, HtmlDocument doc, EbookChapter chapter) {
+        private void InlineImages(EpubBook data, HtmlDocument doc, EbookChapter chapter) {
 
-            var data = ((EpubEbook)epub).Data;
             var imageData = data.Resources.Images.ToDictionary(k => k.FileName, v => v);
 
             // Find all img and image nodes, and extract their source path

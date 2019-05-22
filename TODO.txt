@@ -20,5 +20,4 @@ Inactive
  - Rename projects
  - Investigate the need for a ICryptoService. Isn't this included in .Net Core?
  - Don't load the entire file only to make a checksum of it. Stream it, or find another way of generating a UUID.
- - Fix book CSS
  - Fix bookshelf covers
