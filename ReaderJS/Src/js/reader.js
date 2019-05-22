@@ -127,9 +127,32 @@ window.Ebook = {
         this.setUpColumns();
         this.setUpEvents();
 
+        this.initializeLinkListener();
+
         setTimeout(function () {
             Ebook.refreshStatusPanelClock();
         }, 60000);
+    },
+    initializeLinkListener: function() {
+
+        $(document).on("click", "a",
+            function(e) {
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+                e.preventDefault();
+                e.cancelBubble = true;
+
+                var href = this.getAttribute("href");
+                if (href) {
+                    if (href.startsWith("#")) {
+                        Ebook.goToMarker(href.slice(1));
+                    } else {
+                        Ebook.messagesHelper.sendLinkClicked(href);
+                    }
+                }
+
+                return false;
+            });
     },
     refreshStatusPanelClock: function () {
         var d = new Date();
@@ -297,8 +320,6 @@ window.Ebook = {
         this.goToPageFast(1);
 
         this.totalPages = this.getPageOfMarker("js-ebook-end-of-chapter");
-
-        this.setUpLinksListener();
     },
     setUpColumns: function() {
         var columnsInner = document.getElementById("columns-inner");
@@ -459,30 +480,6 @@ window.Ebook = {
         mark.remove();
         return pos;
     },
-    setUpLinksListener: function() {
-        var links = document.getElementById("content").getElementsByTagName("a");
-        for (var i = 0; i < links.length; i++) {
-            links[i].addEventListener("click", function(e) {
-                e.stopImmediatePropagation();
-                e.stopPropagation();
-                e.preventDefault();
-                e.cancelBubble = true;
-                var link = this;
-                var href = link.getAttribute("href");
-                if (href) {
-                    if (href.startsWith("#")) {
-                        Ebook.goToMarker(href.slice(1));
-                    } else if (link.hostname) {
-                        Ebook.messagesHelper.sendOpenUrl(href);
-                    } else {
-                        Ebook.messagesHelper.sendChapterRequest(href);
-                    }
-                }
-
-                return false;
-            }, false);
-        }
-    },
     getPageOfMarker: function(marker) {
         var currentPage = this.currentPage;
         this.goToPageFast(1);
@@ -565,37 +562,31 @@ window.Ebook = {
                 });
         },
         nextChapterRequest: function() {
-            Messages.send("NextChapterRequest", {});
+            Messages.send("NextChapterRequest");
         },
         prevChapterRequest: function() {
-            Messages.send("PrevChapterRequest", {});
+            Messages.send("PrevChapterRequest");
         },
         sendOpenQuickPanelRequest: function() {
-            Messages.send("OpenQuickPanelRequest", {});
+            Messages.send("OpenQuickPanelRequest");
         },
-        sendChapterRequest: function(chapter) {
-            Messages.send("ChapterRequest",
+        sendLinkClicked: function(href) {
+            Messages.send("LinkClicked",
                 {
-                    Chapter: chapter,
-                });
-        },
-        sendOpenUrl: function(url) {
-            Messages.send("OpenUrl",
-                {
-                    Url: url,
+                    Href: href
                 });
         },
         sendPanEvent: function(x, y) {
             Messages.send("PanEvent",
                 {
                     X: x,
-                    Y: y,
+                    Y: y
                 });
         },
         sendKeyStroke: function(keyCode) {
             Messages.send("KeyStroke",
                 {
-                    KeyCode: keyCode,
+                    KeyCode: keyCode
                 });
         },
         sendDebug: function(data) {
@@ -608,7 +599,7 @@ window.Messages = {
     send: function(action, data) {
         var json = JSON.stringify({
             action: action,
-            data: data,
+            data: data || {}
         });
 
         csCallback(Base64.encode(json));
@@ -752,13 +743,11 @@ window.Gestures = {
             if(!cell || !cell["tap"] || cell["tap"] !="toggleFullscreen")
                 Messages.send("Interaction", { type: "tap" });
 
-            if (Gestures.isLink(e)) return;
             perform("tap", e.center);
         });
 
         hammer.on("press", function(e) {
             Messages.send("Interaction", { type: "press" });
-            if (Gestures.isLink(e)) return;
             perform("press", e.center);
         });
 
@@ -790,19 +779,6 @@ window.Gestures = {
 
         hammer.on("pandown", Ebook.panEventHandler);
         hammer.on("panup", Ebook.panEventHandler);
-    },
-    isLink: function(e) {
-        if (e && e.target) {
-            var el = e.target;
-            while (el !== null && el.id !== "content") {
-                if (el.localName === "a") {
-                    return true;
-                }
-
-                el = el.parentElement;
-            }
-        }
-        return false;
     }
 };
 

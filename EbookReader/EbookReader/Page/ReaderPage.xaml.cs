@@ -48,6 +48,7 @@ namespace EbookReader.Page {
         bool _syncPending = false;
 
         QuickPanel _quickPanel;
+        private IToastService _toastService;
 
         public ReaderPage() {
             InitializeComponent();
@@ -59,6 +60,7 @@ namespace EbookReader.Page {
             _syncService = IocManager.Container.Resolve<ISyncService>();
             _bookmarkService = IocManager.Container.Resolve<IBookmarkService>();
             _batteryProvider = IocManager.Container.Resolve<IBatteryProvider>();
+            _toastService = IocManager.Container.Resolve<IToastService>();
             IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>((_)=> { SetStatusPanelValue("battery", GetBatteryHtml()); });
 
             // webview events
@@ -66,8 +68,7 @@ namespace EbookReader.Page {
             WebView.Messages.OnPrevChapterRequest += _messages_OnPrevChapterRequest;
             WebView.Messages.OnOpenQuickPanelRequest += _messages_OnOpenQuickPanelRequest;
             WebView.Messages.OnPageChange += Messages_OnPageChange;
-            WebView.Messages.OnChapterRequest += Messages_OnChapterRequest;
-            WebView.Messages.OnOpenUrl += Messages_OnOpenUrl;
+            WebView.Messages.OnLinkClicked += Messages_OnLinkClicked;
             WebView.Messages.OnPanEvent += Messages_OnPanEvent;
             WebView.Messages.OnKeyStroke += Messages_OnKeyStroke;
             WebView.Messages.OnInteraction += Messages_OnInteraction;
@@ -148,20 +149,6 @@ namespace EbookReader.Page {
             _messageBus.UnSubscribe(nameof(ReaderPage));
         }
 
-        private void Messages_OnOpenUrl(object sender, Model.WebViewMessages.OpenUrl e)
-        {
-            if (string.IsNullOrEmpty(e.Url)) return;
-
-            try {
-                var uri = new Uri(e.Url);
-                Device.OpenUri(uri);
-            } catch (Exception ex) {
-                Crashes.TrackError(ex, new Dictionary<string, string> {
-                    {"Url", e.Url }
-                });
-            }
-        }
-
         private void Messages_OnPanEvent(object sender, Model.WebViewMessages.PanEvent e) {
 
             if (UserSettings.Control.BrightnessChange == BrightnessChange.None) {
@@ -177,9 +164,24 @@ namespace EbookReader.Page {
             _messageBus.Send(new ChangesBrightnessMessage { Brightness = brightness });
         }
 
-        private void Messages_OnChapterRequest(object sender, Model.WebViewMessages.ChapterRequest e)
+        private void Messages_OnLinkClicked(object sender, LinkClicked e)
         {
-            LoadChapter(e.Chapter);
+            if (string.IsNullOrEmpty(e.Href)) return;
+
+            if(!e.Href.Contains("://"))
+                LoadChapter(e.Href);
+            else
+            {
+                try
+                {
+                    var uri = new Uri(e.Href);
+                    Device.OpenUri(uri);
+                }
+                catch (Exception ex)
+                {
+                    _toastService.Show("Failed to open url: " + ex.Message);
+                }
+            }
         }
 
         private void LoadChapter(string chapterPath)
@@ -190,9 +192,11 @@ namespace EbookReader.Page {
             var path = parts.FirstOrDefault();
             var hash = parts.Skip(1).FirstOrDefault();
 
-            var chapter = _ebook.Chapters.FirstOrDefault(p => p.Href == path);
+            var chapter = _ebook.Chapters.FirstOrDefault(p => p.Href.Contains(path));
             if (chapter != null)
                 SendChapter(chapter, marker: hash);
+            else
+                _toastService.Show("Failed to open chapter.");
         }
 
         private void Messages_OnKeyStroke(object sender, Model.WebViewMessages.KeyStroke e) {

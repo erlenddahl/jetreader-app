@@ -23,8 +23,7 @@ namespace EbookReader.Service {
         public event EventHandler<Model.WebViewMessages.NextChapterRequest> OnNextChapterRequest;
         public event EventHandler<Model.WebViewMessages.PrevChapterRequest> OnPrevChapterRequest;
         public event EventHandler<Model.WebViewMessages.OpenQuickPanelRequest> OnOpenQuickPanelRequest;
-        public event EventHandler<Model.WebViewMessages.ChapterRequest> OnChapterRequest;
-        public event EventHandler<Model.WebViewMessages.OpenUrl> OnOpenUrl;
+        public event EventHandler<Model.WebViewMessages.LinkClicked> OnLinkClicked;
         public event EventHandler<Model.WebViewMessages.PanEvent> OnPanEvent;
         public event EventHandler<Model.WebViewMessages.KeyStroke> OnKeyStroke;
         public event EventHandler<Model.WebViewMessages.CommandRequest> OnCommandRequest;
@@ -88,6 +87,7 @@ namespace EbookReader.Service {
                 if (cls.Name == json.Action)
                 {
                     Raise(this, "On" + cls.Name, msg);
+                    //Debug.WriteLine("Raising event " + "On" + cls.Name);
                     return;
                 }
 
