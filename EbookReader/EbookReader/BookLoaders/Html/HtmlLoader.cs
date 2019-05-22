@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EbookReader.Model.EpubLoader;
 using EbookReader.Model.Format;
 using EbookReader.Service;
 using HtmlAgilityPack;

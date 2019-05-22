@@ -10,6 +10,6 @@ namespace EbookReader.BookLoaders
     public interface IBookLoader
     {
         Task<Ebook> OpenBook(string filePath);
-        Task<Model.EpubLoader.HtmlResult> PrepareHtml(string html, Ebook book, EbookChapter chapter);
+        Task<string> PrepareHtml(string html, Ebook book, EbookChapter chapter);
     }
 }

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EbookReader.Model.Bookshelf;
-using EbookReader.Model.EpubLoader;
 using EbookReader.Model.Format;
 using EbookReader.Service;
 using EpubSharp;
@@ -40,25 +39,16 @@ namespace EbookReader.BookLoaders.Html
             return book;
         }
 
-        public virtual async Task<HtmlResult> PrepareHtml(string html, Ebook book, EbookChapter chapter)
+        public virtual async Task<string> PrepareHtml(string html, Ebook book, EbookChapter chapter)
         {
-
-            var doc = new HtmlDocument();
-            doc.LoadHtml(html);
-
-            StripHtmlTags(doc);
-
-            html = doc.DocumentNode.Descendants("body").First().InnerHtml;
-
             return await Task.Run(() =>
             {
-                var result = new HtmlResult
-                {
-                    Html = html,
-                    Images = new List<Base64Image>(),
-                };
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
 
-                return result;
+                StripHtmlTags(doc);
+
+                return doc.DocumentNode.Descendants("body").First().InnerHtml;
             });
         }
 

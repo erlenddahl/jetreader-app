@@ -10,7 +10,6 @@ using System.Xml.Linq;
 using Autofac;
 using EbookReader.Helpers;
 using EbookReader.Model.Bookshelf;
-using EbookReader.Model.EpubLoader;
 using EbookReader.Model.Format;
 using EbookReader.Service;
 using EpubSharp;
@@ -35,23 +34,21 @@ namespace EbookReader.BookLoaders.Epub
             });
         }
 
-        public async Task<HtmlResult> PrepareHtml(string html, Ebook book, EbookChapter chapter) { 
+        public async Task<string> PrepareHtml(string html, Ebook book, EbookChapter chapter)
+        {
 
-            var doc = new HtmlDocument();
-            doc.LoadHtml(html);
+            return await Task.Run(() =>
+            {
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
 
-            StripHtmlTags(doc);
+                StripHtmlTags(doc);
 
-            var images = await GetImages(book, doc, chapter);
+                InlineImages(book, doc, chapter);
 
-            //TODO: Handle book CSS
-            var result = new Model.EpubLoader.HtmlResult {
-                Html = doc.DocumentNode.Descendants("body").First().InnerHtml,
-                Images = images,
-                Title = doc.DocumentNode.Descendants("title").FirstOrDefault().InnerHtml
-            };
-
-            return result;
+                //TODO: Handle book CSS
+                return doc.DocumentNode.Descendants("body").First().InnerHtml;
+            });
         }
 
         private void StripHtmlTags(HtmlDocument doc) {
@@ -67,15 +64,14 @@ namespace EbookReader.BookLoaders.Epub
         }
 
         /// <summary>
-        /// Enumerates all img tags and svg.image tags and extracts image paths. Each tag is given an ID, and
-        /// unique images are read as base64 encoded images encoded with the same id. The returned list of 
-        /// Image models contains the base64 data and the id.
+        /// Enumerates all img tags and svg.image tags and extracts image paths. Each image is
+        /// converted to base64, and inserted directly into the HTML code.
         /// </summary>
         /// <param name="epub"></param>
         /// <param name="doc"></param>
         /// <param name="chapter"></param>
         /// <returns></returns>
-        private async Task<List<Model.EpubLoader.Base64Image>> GetImages(Ebook epub, HtmlDocument doc, EbookChapter chapter) {
+        private void InlineImages(Ebook epub, HtmlDocument doc, EbookChapter chapter) {
 
             var data = ((EpubEbook)epub).Data;
             var imageData = data.Resources.Images.ToDictionary(k => k.FileName, v => v);
@@ -97,31 +93,15 @@ namespace EbookReader.BookLoaders.Epub
                 // Group by image path to avoid loading and transferring the same image more than once
                 .GroupBy(p=>p.Path);
 
-            var models = new List<Base64Image>();
             foreach (var image in images)
             {
-                // Create a new image model
-                var img = new Base64Image
-                {
-                    Id = models.Count + 1,
-                    FileName = Path.Combine(image.Key)
-                };
-
-                var imgData = imageData[img.FileName];
+                var imgData = imageData[image.Key];
                 var base64 = Base64Helper.Encode(imgData.Content);
                 var ctype = imgData.ContentType.ToString().ToLower().Replace("image", "image/"); // From enum "ImageJpeg" to "image/jpeg".
-                img.Data = $"data:{ctype};base64,{base64}";
 
-                // Give each HTML node the current image id in order to let the JS reader load the
-                // base64 image into the node after the HTML has been transferred.
                 foreach (var element in image)
-                    //element.Node.Attributes.Add(doc.CreateAttribute("data-js-ebook-image-id", img.Id.ToString()));
-                    element.Node.Attributes["src"].Value = img.Data;
-
-                models.Add(img);
+                    element.Node.Attributes["src"].Value = $"data:{ctype};base64,{base64}";
             }
-
-            return models;
         }
     }
 }

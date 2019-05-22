@@ -324,10 +324,10 @@ namespace EbookReader.Page {
 
             var html = chapter.Content;
             var bookLoader = EbookFormatHelper.GetBookLoader(_bookshelfBook.Format);
-            var htmlResult = await bookLoader.PrepareHtml(html, _ebook, chapter);
+            var preparedHtml = await bookLoader.PrepareHtml(html, _ebook, chapter);
 
             Device.BeginInvokeOnMainThread(() => {
-                SendHtml(htmlResult, position, lastPage, marker);
+                SendHtml(preparedHtml, chapter.Title, position, lastPage, marker);
             });
 
         }
@@ -496,11 +496,10 @@ namespace EbookReader.Page {
             WebView.Messages.Send("resize", json);
         }
 
-        private void SendHtml(Model.EpubLoader.HtmlResult htmlResult, int position = 0, bool lastPage = false, string marker = "") {
+        private void SendHtml(string html, string title, int position = 0, bool lastPage = false, string marker = "") {
             var json = new {
-                htmlResult.Html,
-                htmlResult.Images,
-                htmlResult.Title,
+                Html = html,
+                Title = title,
                 Position = position,
                 LastPage = lastPage,
                 Marker = marker,

@@ -496,12 +496,6 @@ window.Ebook = {
             this.goToPage(page, duration);
         }
     },
-    loadImages: function(images) {
-        images.forEach(function(item) {
-            $("img[data-js-ebook-image-id=" + item.Id + "]").attr("src", item.Data);
-            $("image[data-js-ebook-image-id=" + item.Id + "]").attr("xlink:href", item.Data);
-        });
-    },
     resizeImages: function() {
         $("img").css("max-width", (Ebook.webViewWidth - (2 * Ebook.webViewMargin)) + "px");
         $("img").css("max-height", (Ebook.webViewHeight - (2 * Ebook.webViewMargin)) + "px");
@@ -651,7 +645,6 @@ window.Messages = {
 
             document.getElementById("content").innerHTML = data.Html;
 
-            Ebook.loadImages(data.Images);
             Ebook.setUpEbook();
             Ebook.setStatusPanelValues({ "chapter": data.Title });
 
