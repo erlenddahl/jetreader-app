@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EbookReader.Model.Format;
+using EbookReader.Service;
 using SQLite;
 
 namespace EbookReader.Model.Bookshelf {
@@ -11,15 +12,11 @@ namespace EbookReader.Model.Bookshelf {
         [PrimaryKey]
         public string Id { get; set; }
         public string Title { get; set; }
-
-        /// <summary>
-        /// The relative path (to the local storage folder) of the unzipped book folder
-        /// </summary>
-        public string Path { get; set; }
-        public byte[] Cover { get; set; }
         public DateTime? BookmarksSyncLastChange { get; set; }
         public EbookFormat Format { get; set; }
         public DateTime? FinishedReading { get; set; }
+        public string BookLocation { get; set; }
+        public string CoverFilename { get; set; }
 
         public int Spine { get; set; }
         public int SpinePosition { get; set; }
@@ -31,6 +28,31 @@ namespace EbookReader.Model.Bookshelf {
                 Spine = value.Spine;
                 SpinePosition = value.SpinePosition;
             }
+        }
+
+        private string GetTempLocation()
+        {
+            return FileService.ToAbsolute(Id);
+        }
+
+        public async Task DeleteTempLocation(FileService fs)
+        {
+            await fs.DeleteFolder(GetTempLocation());
+        }
+
+        public async Task CreateTempLocation(FileService fs)
+        {
+            await fs.CreateDirectoryAsync(GetTempLocation());
+        }
+
+        public async Task SaveToTempLocation(FileService fs, string filename, byte[] data)
+        {
+            await fs.WriteBytesAsync(System.IO.Path.Combine(GetTempLocation(), filename), data);
+        }
+
+        public string GetTempPath(string filename)
+        {
+            return System.IO.Path.Combine(GetTempLocation(), filename);
         }
     }
 }

@@ -48,7 +48,6 @@ namespace EbookReader.BookLoaders.Epub
                 InlineCss(data, doc);
                 InlineImages(data, doc, chapter);
 
-                //TODO: Handle book CSS
                 return doc.DocumentNode.Descendants("body").First().InnerHtml;
             });
         }

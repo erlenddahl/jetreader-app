@@ -31,17 +31,18 @@ namespace EbookReader.Service {
 
             var id = _cryptoService.GetMd5(file.DataArray);
 
-            var bookshelfBook = await _bookRepository.GetBookByIdAsync(id);
+            var bsBook = await _bookRepository.GetBookByIdAsync(id);
 
-            if (bookshelfBook == null) {
+            if (bsBook == null) {
                 var ebook = await bookLoader.OpenBook(file.FilePath);
-                bookshelfBook = ebook.ToBookshelf();
-                bookshelfBook.Id = id;
-                await _bookRepository.SaveBookAsync(bookshelfBook);
+                bsBook = ebook.ToBookshelf(id);
+                await bsBook.CreateTempLocation(_fileService);
+                await bsBook.SaveToTempLocation(_fileService, ebook.CoverFilename, ebook.CoverData);
+                await _bookRepository.SaveBookAsync(bsBook);
                 newBook = true;
             }
 
-            return (bookshelfBook, newBook);
+            return (bsBook, newBook);
         }
 
         public async Task<List<Book>> LoadBooks() {
@@ -52,7 +53,7 @@ namespace EbookReader.Service {
             var book = await _bookRepository.GetBookByIdAsync(id);
             if (book == null) return;
 
-            _fileService.DeleteFolder(book.Path);
+            await book.DeleteTempLocation(_fileService);
             var bookmarks = await _bookmarkRepository.GetBookmarksByBookIdAsync(id);
             foreach(var bookmark in bookmarks) {
                 await _bookmarkRepository.DeleteBookmarkAsync(bookmark);

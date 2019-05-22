@@ -22,8 +22,13 @@ namespace EbookReader.Model.Format
             Description = book.Format.Opf.Metadata.Descriptions.FirstOrDefault() ?? "";
             Language = book.Format.Opf.Metadata.Languages.FirstOrDefault() ?? "";
             Chapters = GetChapters(book).ToList();
-            Cover = book.CoverImage;
             Data = book;
+
+            if(book.CoverImage != null && book.CoverImage.Length > 0)
+            {
+                CoverFilename = book.Resources.Images.FirstOrDefault(p => p.Content == book.CoverImage)?.FileName;
+                CoverData = book.CoverImage;
+            }
         }
 
         private IEnumerable<EbookChapter> GetChapters(EpubBook book)
@@ -59,18 +64,20 @@ namespace EbookReader.Model.Format
         public string Description { get; set; }
         public string Language { get; set; }
         public List<EbookChapter> Chapters { get; set; }
-        public byte[] Cover { get; set; }
+        public byte[] CoverData { get; set; }
+        public string CoverFilename { get; set; }
 
         public EbookFormat Format { get; set; }
 
-        public virtual Book ToBookshelf()
+        public virtual Book ToBookshelf(string id)
         {
             return new Book
             {
+                Id = id,
                 Title = Title,
-                Path = Path,
-                Cover = Cover,
                 Format = Format,
+                BookLocation = Path,
+                CoverFilename = CoverFilename
             };
         }
     }

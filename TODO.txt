@@ -20,4 +20,6 @@ Inactive
  - Rename projects
  - Investigate the need for a ICryptoService. Isn't this included in .Net Core?
  - Don't load the entire file only to make a checksum of it. Stream it, or find another way of generating a UUID.
- - Fix bookshelf covers
+ - Store fonts and images to temp folder when opening a book for the first time
+ - Use temp images instead of base64 images in webview.
+ - Use temp fonts in webview

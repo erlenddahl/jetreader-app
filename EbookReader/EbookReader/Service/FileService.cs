@@ -10,9 +10,9 @@ namespace EbookReader.Service
     public class FileService
     {
 
-        public string StorageFolder => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        public static string StorageFolder => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-        public string ToAbsolute(string path)
+        public static string ToAbsolute(string path)
         {
             return Path.Combine(StorageFolder, path);
         }
@@ -71,7 +71,9 @@ namespace EbookReader.Service
 
         public async Task DeleteFolder(string path)
         {
-            await Task.Run(() => Directory.Delete(ToAbsolute(path)));
+            var abs = ToAbsolute(path);
+            if (!Directory.Exists(abs)) return;
+            await Task.Run(() => Directory.Delete(abs, true));
         }
 
     }

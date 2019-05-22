@@ -47,15 +47,14 @@ namespace EbookReader.Page.Home {
                 });
         }
 
-        private async void LoadImage() {
-            if ((_book.Cover?.Length ?? 0) <= 0) return;
+        private void LoadImage() {
+            if (string.IsNullOrEmpty(_book.CoverFilename)) return;
 
             var fileService = IocManager.Container.Resolve<FileService>();
-            //TODO: Fix cover 
-            //Cover.Source = ImageSource.FromFile(Path.Combine(fileService.StorageFolder, _book.Cover));
-            //Cover.Aspect = Aspect.Fill;
-            //Cover.WidthRequest = Card.CardWidth;
-            //Cover.HeightRequest = Card.CardHeight;
+            Cover.Source = ImageSource.FromFile(_book.GetTempPath(_book.CoverFilename));
+            Cover.Aspect = Aspect.Fill;
+            Cover.WidthRequest = Card.CardWidth;
+            Cover.HeightRequest = Card.CardHeight;
         }
 
         private void Open() {

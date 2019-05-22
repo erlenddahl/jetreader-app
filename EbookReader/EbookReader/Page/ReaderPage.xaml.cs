@@ -94,7 +94,7 @@ namespace EbookReader.Page {
             return "<div class='battery-indicator'><div class='nub'></div><div class='battery'>" + _batteryProvider.RemainingChargePercent + "%</div></div>";
         }
 
-        private void Messages_OnCommandRequest(object sender, Model.WebViewMessages.CommandRequest e)
+        private void Messages_OnCommandRequest(object sender, CommandRequest e)
         {
             switch (e.Command)
             {
@@ -149,7 +149,7 @@ namespace EbookReader.Page {
             _messageBus.UnSubscribe(nameof(ReaderPage));
         }
 
-        private void Messages_OnPanEvent(object sender, Model.WebViewMessages.PanEvent e) {
+        private void Messages_OnPanEvent(object sender, PanEvent e) {
 
             if (UserSettings.Control.BrightnessChange == BrightnessChange.None) {
                 return;
@@ -199,7 +199,7 @@ namespace EbookReader.Page {
                 _toastService.Show("Failed to open chapter.");
         }
 
-        private void Messages_OnKeyStroke(object sender, Model.WebViewMessages.KeyStroke e) {
+        private void Messages_OnKeyStroke(object sender, KeyStroke e) {
             _messageBus.Send(KeyStrokeMessage.FromKeyCode(e.KeyCode));
         }
 
@@ -234,7 +234,7 @@ namespace EbookReader.Page {
 
         public async void LoadBook(Book book) {
             _bookshelfBook = book;
-            _ebook = await EbookFormatHelper.GetBookLoader(book.Format).OpenBook(book.Path);
+            _ebook = await EbookFormatHelper.GetBookLoader(book.Format).OpenBook(book.BookLocation);
             var position = _bookshelfBook.Position;
 
             Title = _ebook.Title + " - " + _ebook.Author;
@@ -386,17 +386,17 @@ namespace EbookReader.Page {
             LoadChapter(e.Href);
         }
 
-        private void Messages_OnPageChange(object sender, Model.WebViewMessages.PageChange e) {
+        private void Messages_OnPageChange(object sender, PageChange e) {
             _bookshelfBook.SpinePosition = e.Position;
             _bookshelfService.SaveBook(_bookshelfBook);
             _messageBus.Send(new PageChangeMessage { CurrentPage = e.CurrentPage, TotalPages = e.TotalPages, Position = e.Position });
         }
 
-        private void _messages_OnOpenQuickPanelRequest(object sender, Model.WebViewMessages.OpenQuickPanelRequest e) {
+        private void _messages_OnOpenQuickPanelRequest(object sender, OpenQuickPanelRequest e) {
             PopupNavigation.Instance.PushAsync(_quickPanel, false);
         }
 
-        private void _messages_OnPrevChapterRequest(object sender, Model.WebViewMessages.PrevChapterRequest e) {
+        private void _messages_OnPrevChapterRequest(object sender, PrevChapterRequest e) {
             if (_currentChapter > 0) {
                 SendChapter(_ebook.Chapters[_currentChapter - 1], lastPage: true);
             }
@@ -405,7 +405,7 @@ namespace EbookReader.Page {
             _bookshelfService.SaveBook(_bookshelfBook);
         }
 
-        private void _messages_OnNextChapterRequest(object sender, Model.WebViewMessages.NextChapterRequest e) {
+        private void _messages_OnNextChapterRequest(object sender, NextChapterRequest e) {
             if (_currentChapter < _ebook.Chapters.Count - 1) {
                 SendChapter(_ebook.Chapters[_currentChapter + 1]);
                 _bookshelfBook.FinishedReading = null;
