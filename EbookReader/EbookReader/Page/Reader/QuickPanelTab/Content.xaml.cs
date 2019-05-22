@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.BookLoaders;
 using EbookReader.Service;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -14,20 +15,20 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
     public partial class Content : StackLayout {
 
 
-        public event EventHandler<Model.Navigation.Item> OnChapterChange;
+        public event EventHandler<EbookChapter> OnChapterChange;
 
         public Content() {
 
             InitializeComponent();
         }
 
-        public void SetNavigation(List<Model.Navigation.Item> items) {
+        public void SetNavigation(List<EbookChapter> items) {
             Device.BeginInvokeOnMainThread(() => {
                 SetItems(items);
             });
         }
 
-        private void SetItems(List<Model.Navigation.Item> items) {
+        private void SetItems(List<EbookChapter> items) {
 
             Items.Children.Clear();
 
@@ -36,13 +37,13 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
             }
         }
 
-        private List<Label> GetItems(List<Model.Navigation.Item> items) {
+        private List<Label> GetItems(List<EbookChapter> items) {
 
             var labels = new List<Label>();
 
             foreach (var item in items) {
                 var label = new Label {
-                    StyleId = item.Id,
+                    StyleId = item.Href,
                     Text = item.Title,
                     Margin = new Thickness(item.Depth * 20, 0),
                     FontSize = Device.GetNamedSize(Device.RuntimePlatform == Device.Android ? NamedSize.Large : NamedSize.Medium, typeof(Label)),
@@ -59,7 +60,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
             return labels;
         }
 
-        private void ClickToItem(Model.Navigation.Item item) {
+        private void ClickToItem(EbookChapter item) {
             OnChapterChange?.Invoke(this, item);
         }
 

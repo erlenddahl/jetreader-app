@@ -16,7 +16,7 @@ namespace EbookReader.Model.Bookshelf {
         /// The relative path (to the local storage folder) of the unzipped book folder
         /// </summary>
         public string Path { get; set; }
-        public string Cover { get; set; }
+        public byte[] Cover { get; set; }
         public DateTime? BookmarksSyncLastChange { get; set; }
         public EbookFormat Format { get; set; }
         public DateTime? FinishedReading { get; set; }

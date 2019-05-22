@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EbookReader.Service
 {
-    public class FileService : IFileService
+    public class FileService
     {
 
         public string StorageFolder => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -56,7 +56,12 @@ namespace EbookReader.Service
 
         public async Task<Stream> LoadFileStreamAsync(string filePath)
         {
-            return await Task.Run(() => File.OpenRead(ToAbsolute(filePath)));
+            return await Task.Run(() => LoadFileStream(ToAbsolute(filePath)));
+        }
+
+        public virtual Stream LoadFileStream(string filePath)
+        {
+            return File.OpenRead(filePath);
         }
 
         public async Task<bool> FileExists(string filename)

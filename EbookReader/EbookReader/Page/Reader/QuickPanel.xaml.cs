@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.BookLoaders;
 using EbookReader.Model.Messages;
 using EbookReader.Service;
 using Rg.Plugins.Popup.Services;
@@ -30,7 +31,7 @@ namespace EbookReader.Page.Reader {
             });
         }
         
-        private void PanelContent_OnChapterChange(object sender, Model.Navigation.Item e) {
+        private void PanelContent_OnChapterChange(object sender, EbookChapter e) {
             PopupNavigation.Instance.RemovePageAsync(this, false);
         }
     }

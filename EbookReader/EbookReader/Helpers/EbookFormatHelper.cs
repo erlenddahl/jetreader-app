@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.BookLoaders;
 using EbookReader.Exceptions;
 using EbookReader.Model.Format;
 using EbookReader.Service;

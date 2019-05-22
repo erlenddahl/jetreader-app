@@ -6,9 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace EbookReader.Helpers {
-    public static class Base64Helper {
-        public static string Encode(string text) {
+    public static class Base64Helper
+    {
+        public static string Encode(string text)
+        {
             var bytes = Encoding.UTF8.GetBytes(text);
+            return Convert.ToBase64String(bytes);
+        }
+        public static string Encode(byte[] bytes)
+        {
             return Convert.ToBase64String(bytes);
         }
 

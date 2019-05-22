@@ -8,6 +8,6 @@ namespace EbookReader.Model.EpubLoader {
     public class HtmlResult {
         public string Html { get; set; }
         public string Title { get; set; }
-        public IList<Image> Images { get; set; }
+        public IList<Base64Image> Images { get; set; }
     }
 }

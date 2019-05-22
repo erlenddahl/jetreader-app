@@ -110,7 +110,6 @@ namespace EbookReader.Page {
             }
 
             var pickedFile = await CrossFilePicker.Current.PickFile();
-
             if (pickedFile == null) return;
 
             try

@@ -4,15 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.BookLoaders;
+using EbookReader.BookLoaders.Epub;
+using EbookReader.BookLoaders.Txt;
+using EbookReader.BookLoaders.Html;
 using EbookReader.Service;
-using EbookReader.Service.Epub;
 using EbookReader.View;
 using EbookReader.Provider;
-using EbookReader.Model.Format.EpubFormat;
 using EbookReader.Model.Format;
 using EbookReader.Repository;
+using EpubSharp.Format;
 
-namespace EbookReader {
+namespace EbookReader
+{
     public static class IocManager {
 
         private static ContainerBuilder _containerBuilder;
@@ -41,10 +45,7 @@ namespace EbookReader {
             ContainerBuilder.RegisterType<EpubLoader>().Keyed<IBookLoader>(EbookFormat.Epub);
             ContainerBuilder.RegisterType<TxtLoader>().Keyed<IBookLoader>(EbookFormat.Txt);
             ContainerBuilder.RegisterType<HtmlLoader>().Keyed<IBookLoader>(EbookFormat.Html);
-            ContainerBuilder.RegisterType<FileService>().As<IFileService>();
-            ContainerBuilder.RegisterType<Epub200Parser>().Keyed<EpubParser>(EpubVersion.V200);
-            ContainerBuilder.RegisterType<Epub300Parser>().Keyed<EpubParser>(EpubVersion.V300);
-            ContainerBuilder.RegisterType<Epub301Parser>().Keyed<EpubParser>(EpubVersion.V301);
+            ContainerBuilder.RegisterType<FileService>().As<FileService>();
             ContainerBuilder.RegisterType<MessageBus>().As<IMessageBus>().SingleInstance();
             ContainerBuilder.RegisterType<BookshelfService>().As<IBookshelfService>();
             ContainerBuilder.RegisterType<ReaderWebView>().As<ReaderWebView>();

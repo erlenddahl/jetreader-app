@@ -48,13 +48,14 @@ namespace EbookReader.Page.Home {
         }
 
         private async void LoadImage() {
-            if (string.IsNullOrEmpty(_book.Cover)) return;
+            if ((_book.Cover?.Length ?? 0) <= 0) return;
 
-            var fileService = IocManager.Container.Resolve<IFileService>();
-            Cover.Source = ImageSource.FromFile(Path.Combine(fileService.StorageFolder, _book.Cover));
-            Cover.Aspect = Aspect.Fill;
-            Cover.WidthRequest = Card.CardWidth;
-            Cover.HeightRequest = Card.CardHeight;
+            var fileService = IocManager.Container.Resolve<FileService>();
+            //TODO: Fix cover 
+            //Cover.Source = ImageSource.FromFile(Path.Combine(fileService.StorageFolder, _book.Cover));
+            //Cover.Aspect = Aspect.Fill;
+            //Cover.WidthRequest = Card.CardWidth;
+            //Cover.HeightRequest = Card.CardHeight;
         }
 
         private void Open() {

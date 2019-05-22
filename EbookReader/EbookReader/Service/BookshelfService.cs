@@ -12,12 +12,12 @@ using Plugin.FilePicker.Abstractions;
 
 namespace EbookReader.Service {
     public class BookshelfService : IBookshelfService {
-        readonly IFileService _fileService;
+        readonly FileService _fileService;
         readonly ICryptoService _cryptoService;
         readonly IBookRepository _bookRepository;
         readonly IBookmarkRepository _bookmarkRepository;
 
-        public BookshelfService(IFileService fileService, ICryptoService cryptoService, IBookRepository bookRepository, IBookmarkRepository bookmarkRepository) {
+        public BookshelfService(FileService fileService, ICryptoService cryptoService, IBookRepository bookRepository, IBookmarkRepository bookmarkRepository) {
             _fileService = fileService;
             _cryptoService = cryptoService;
             _bookRepository = bookRepository;
@@ -34,8 +34,8 @@ namespace EbookReader.Service {
             var bookshelfBook = await _bookRepository.GetBookByIdAsync(id);
 
             if (bookshelfBook == null) {
-                var ebook = await bookLoader.GetBook(file.FileName, file.DataArray, id);
-                bookshelfBook = bookLoader.CreateBookshelfBook(ebook);
+                var ebook = await bookLoader.OpenBook(file.FilePath);
+                bookshelfBook = ebook.ToBookshelf();
                 bookshelfBook.Id = id;
                 await _bookRepository.SaveBookAsync(bookshelfBook);
                 newBook = true;

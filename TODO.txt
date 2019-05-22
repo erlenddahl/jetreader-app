@@ -7,7 +7,6 @@ Active
  - Make the tiny status bar more flexible
     - Implement remaining status bar items (book progress most important)
     - Add configuration system
- - Rewrite book loading to be more efficient
 
 Inactive
  - Optmimize launch time
@@ -18,3 +17,6 @@ Inactive
  - Implement statistics
  - Implement easy syncing using erlenddahl.net (or custom url)
  - New icon
+ - Rename projects
+ - Investigate the need for a ICryptoService. Isn't this included in .Net Core?
+ - Don't load the entire file only to make a checksum of it. Stream it, or find another way of generating a UUID.
