@@ -125,7 +125,7 @@ namespace EbookReader.UWP {
         }
 
         private void ToggleFullscreen(Model.Messages.FullscreenRequestMessage msg) {
-            if (msg.Fullscreen) {
+            if (msg.Fullscreen != null && msg.Fullscreen.Value) {
                 ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
             } else {
                 ApplicationView.GetForCurrentView().ExitFullScreenMode();
