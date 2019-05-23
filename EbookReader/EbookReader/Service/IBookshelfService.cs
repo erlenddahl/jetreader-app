@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EbookReader.Books;
 using Plugin.FilePicker.Abstractions;
 
 namespace EbookReader.Service {
     public interface IBookshelfService {
-        Task<(Model.Bookshelf.Book book, bool isNew)> AddBook(FileData file);
-        Task<List<Model.Bookshelf.Book>> LoadBooks();
-        Task<Model.Bookshelf.Book> LoadBookById(string id);
+        Task<(BookInfo book, bool isNew)> AddBook(FileData file);
+        Task<List<BookInfo>> LoadBooks();
+        Task<BookInfo> LoadBookById(string id);
         void RemoveById(string id);
-        void SaveBook(Model.Bookshelf.Book book);
+        void SaveBook(BookInfo info);
         void Clear();
     }
 }

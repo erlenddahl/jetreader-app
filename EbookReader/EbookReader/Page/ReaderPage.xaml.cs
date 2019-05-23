@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using EbookReader.BookLoaders;
+using EbookReader.Books;
 using EbookReader.DependencyService;
 using EbookReader.Helpers;
-using EbookReader.Model.Bookshelf;
 using EbookReader.Model.Format;
 using EbookReader.Model.Messages;
 using EbookReader.Model.WebViewMessages;
@@ -22,7 +22,8 @@ using Rg.Plugins.Popup.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace EbookReader.Page {
+namespace EbookReader.Page
+{
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ReaderPage : ContentPage {
 
@@ -34,8 +35,8 @@ namespace EbookReader.Page {
         private readonly IBatteryProvider _batteryProvider;
         int _currentChapter;
 
-        Book _bookshelfBook;
         Ebook _ebook;
+        BookInfo _bookshelfBook;
 
         bool _resizeFirstRun = true;
         bool _resizeTimerRunning = false;
@@ -232,9 +233,9 @@ namespace EbookReader.Page {
             });
         }
 
-        public async void LoadBook(Book book) {
-            _bookshelfBook = book;
-            _ebook = await EbookFormatHelper.GetBookLoader(book.Format).OpenBook(book.BookLocation);
+        public async void LoadBook(BookInfo info) {
+            _bookshelfBook = info;
+            _ebook = await EbookFormatHelper.GetBookLoader(info.Format).OpenBook(info);
             var position = _bookshelfBook.Position;
 
             Title = _ebook.Title + " - " + _ebook.Author;

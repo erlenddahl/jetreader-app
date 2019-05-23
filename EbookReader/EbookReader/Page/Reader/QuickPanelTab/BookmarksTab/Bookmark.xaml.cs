@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace EbookReader.Page.Reader.QuickPanelTab.BookmarksTab {
+namespace EbookReader.Page.Reader.QuickPanelTab.BookmarksTab
+{
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Bookmark : StackLayout {
-        public Bookmark(Model.Bookshelf.Bookmark bookmark) {
+        public Bookmark(Books.Bookmark bookmark) {
             InitializeComponent();
 
             BindingContext = new Model.View.BookmarkVm(bookmark);

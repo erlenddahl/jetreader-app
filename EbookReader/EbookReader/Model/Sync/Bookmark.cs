@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EbookReader.Model.Bookshelf;
+using EbookReader.Books;
 using Newtonsoft.Json;
 
-namespace EbookReader.Model.Sync {
+namespace EbookReader.Model.Sync
+{
     public class Bookmark {
 
         [JsonProperty("I")]
@@ -27,7 +28,7 @@ namespace EbookReader.Model.Sync {
         [JsonProperty("C")]
         public DateTime LastChange { get; set; }
 
-        public static Bookmark FromDbBookmark(Bookshelf.Bookmark bm)
+        public static Bookmark FromDbBookmark(Books.Bookmark bm)
         {
             return new Bookmark()
             {
@@ -40,9 +41,9 @@ namespace EbookReader.Model.Sync {
             };
         }
 
-        public Bookshelf.Bookmark ToDbBookmark(string bookId)
+        public Books.Bookmark ToDbBookmark(string bookId)
         {
-            return new Bookshelf.Bookmark()
+            return new Books.Bookmark()
             {
                 Id = Id,
                 BookId = bookId,

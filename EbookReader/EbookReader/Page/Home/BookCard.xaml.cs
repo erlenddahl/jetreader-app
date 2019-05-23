@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.Books;
 using EbookReader.DependencyService;
 using EbookReader.Model.Format;
 using EbookReader.Model.Messages;
@@ -16,9 +17,9 @@ namespace EbookReader.Page.Home {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class BookCard : StackLayout {
 
-        private readonly Model.Bookshelf.Book _book;
+        private readonly BookInfo _book;
 
-        public BookCard(Model.Bookshelf.Book book) {
+        public BookCard(BookInfo book) {
 
             _book = book;
 

@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.Books;
 using EbookReader.Model.Messages;
 using EbookReader.Model.View;
 using EbookReader.Service;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace EbookReader.Page.Reader.QuickPanelTab {
+namespace EbookReader.Page.Reader.QuickPanelTab
+{
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Bookmarks : StackLayout {
         public Bookmarks() {
@@ -21,13 +23,13 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
             IocManager.Container.Resolve<IMessageBus>().Subscribe<BookmarksChangedMessage>(BookmarksChangedSubsciber);
         }
 
-        public void SetBookmarks(List<Model.Bookshelf.Bookmark> items) {
+        public void SetBookmarks(List<Bookmark> items) {
             Device.BeginInvokeOnMainThread(() => {
                 SetItems(items);
             });
         }
 
-        private void SetItems(List<Model.Bookshelf.Bookmark> items) {
+        private void SetItems(List<Bookmark> items) {
 
             Items.Children.Clear();
 
@@ -36,7 +38,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
             }
         }
 
-        private List<StackLayout> GetItems(List<Model.Bookshelf.Bookmark> items) {
+        private List<StackLayout> GetItems(List<Bookmark> items) {
 
             var layouts = new List<StackLayout>();
 

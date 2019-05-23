@@ -8,8 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Autofac;
+using EbookReader.Books;
 using EbookReader.Helpers;
-using EbookReader.Model.Bookshelf;
 using EbookReader.Model.Format;
 using EbookReader.Service;
 using EpubSharp;
@@ -26,12 +26,18 @@ namespace EbookReader.BookLoaders.Epub
             _fileService = fileService;
         }
 
+        public async Task<Ebook> OpenBook(BookInfo info) {
+            return await OpenBook(info.BookLocation, info);
+        }
 
-        public async Task<Ebook> OpenBook(string filePath, string id = null) {
+        public async Task<Ebook> OpenBook(string filePath, BookInfo info = null)
+        {
             return await Task.Run(() => {
                 var book = EpubReader.Read(_fileService.LoadFileStream(filePath), false);
-                if (id == null) id = _fileService.GetFileHash(filePath).Result;
-                return new EpubEbook(filePath, id, book);
+                var epub = new EpubEbook(book);
+                epub.Path = filePath;
+                info = epub.Info; // Force generation
+                return epub;
             });
         }
 
@@ -79,7 +85,7 @@ namespace EbookReader.BookLoaders.Epub
                     foreach(var font in book.Data.Resources.Fonts.Union(book.Data.Resources.Other))
                     {
                         var fontPath = PathHelper.CombinePath(style.FileName, font.FileName);
-                        var extractedFontPath = book.GetTempPath(fontPath);
+                        var extractedFontPath = book.Info.GetTempPath(fontPath);
                         css = css.Replace(fontPath, extractedFontPath);
                     }
 
@@ -126,7 +132,7 @@ namespace EbookReader.BookLoaders.Epub
                 foreach (var element in image)
                 {
                     //element.Node.Attributes["src"].Value = $"data:{ctype};base64,{base64}";
-                    var tempPath = book.GetTempPath(imgData.FileName);
+                    var tempPath = book.Info.GetTempPath(imgData.FileName);
                     if(element.Node.Attributes.Contains("src"))
                         element.Node.Attributes["src"].Value = tempPath;
                     if(element.Node.Attributes.Contains("xlink:href"))

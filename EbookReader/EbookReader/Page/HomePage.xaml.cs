@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.Books;
 using EbookReader.Helpers;
 using EbookReader.Model.Messages;
 using EbookReader.Page.Home;
@@ -163,7 +164,7 @@ namespace EbookReader.Page {
             }
         }
 
-        private async void SendBookToReader(Model.Bookshelf.Book book) {
+        private async void SendBookToReader(BookInfo book) {
             var page = new ReaderPage();
             page.LoadBook(book);
             await Navigation.PushAsync(page);

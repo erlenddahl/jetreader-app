@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EbookReader.Model.Bookshelf;
+using EbookReader.Books;
 
-namespace EbookReader.Repository {
+namespace EbookReader.Repository
+{
     public interface IBookmarkRepository {
         Task<List<Bookmark>> GetBookmarksByBookIdAsync(string bookId);
         Task<int> DeleteBookmarkAsync(Bookmark book);

@@ -15,8 +15,8 @@ namespace JetReader.Tests
     [TestClass]
     public class EpubLoaderTests
     {
-        public static string LibraryPath = @"C:\Users\erlendd\Dropbox\Bøker\Calibre-bibliotek";
-        //public static string LibraryPath = @"C:\Users\Erlend\Dropbox\Bøker\Calibre-bibliotek";
+        //public static string LibraryPath = @"C:\Users\erlendd\Dropbox\Bøker\Calibre-bibliotek";
+        public static string LibraryPath = @"C:\Users\Erlend\Dropbox\Bøker\Calibre-bibliotek";
 
         public static string[] GetEpubs()
         {
@@ -64,13 +64,6 @@ namespace JetReader.Tests
 
             foreach (var file in epubs)
             {
-                byte[] data;
-                using (var r = File.OpenRead(file))
-                {
-                    data = ReadFully(r);
-                }
-                var id = GetMd5(data);
-
                 try
                 {
                     loader.OpenBook(file).Wait();

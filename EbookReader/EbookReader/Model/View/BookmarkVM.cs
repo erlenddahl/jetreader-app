@@ -5,13 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Autofac;
+using EbookReader.Books;
 using EbookReader.Model.Messages;
 using EbookReader.Service;
 using Xamarin.Forms;
 
-namespace EbookReader.Model.View {
+namespace EbookReader.Model.View
+{
     public class BookmarkVm : BaseVm {
-        public Bookshelf.Bookmark Bookmark { get; set; }
+        public Bookmark Bookmark { get; set; }
 
         bool _editMode;
         public bool EditMode {
@@ -27,7 +29,7 @@ namespace EbookReader.Model.View {
         public ICommand ShowEditCommand { get; set; }
         public ICommand SaveCommand { get; set; }
 
-        public BookmarkVm(Bookshelf.Bookmark bookmark) {
+        public BookmarkVm(Bookmark bookmark) {
             Bookmark = bookmark;
 
             OpenBookmarkCommand = new Command(OpenBookmark);

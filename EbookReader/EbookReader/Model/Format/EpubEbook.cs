@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using EbookReader.BookLoaders;
+using EbookReader.Books;
 using EpubSharp;
 using HtmlAgilityPack;
 
@@ -22,10 +23,8 @@ namespace EbookReader.Model.Format
             }
         }
 
-        public EpubEbook(string path, string id, EpubBook book)
+        public EpubEbook(EpubBook book, BookInfo info = null) : base(info)
         {
-            Id = id;
-            Path = path;
             Title = book.Title;
             Author = string.Join(", ", book.Authors);
             Description = book.Format.Opf.Metadata.Descriptions.FirstOrDefault() ?? "";
@@ -43,9 +42,9 @@ namespace EbookReader.Model.Format
         private string GetTitle(Dictionary<string, EpubChapter> dict, EpubTextFile text)
         {
             // First, see if the file is in the TOC.
-            /*if (dict.TryGetValue(text.FileName, out var nav))
+            if (dict.TryGetValue(text.FileName, out var nav))
                 if (!string.IsNullOrWhiteSpace(nav.Title))
-                    return nav.Title;*/
+                    return nav.Title;
 
             // If not, try to extract the title from the HTML code.
             var html = new HtmlDocument();
@@ -59,7 +58,7 @@ namespace EbookReader.Model.Format
 
         private IEnumerable<EbookChapter> GetHtmlFilesInReadingOrder(EpubBook book)
         {
-            Dictionary<string, EpubChapter> dict = null;// = book.TableOfContents.ToDictionary(k => k.FileName, v => v);
+            Dictionary<string, EpubChapter> dict = book.TableOfContents.ToDictionary(k => k.FileName, v => v);
             foreach (var chapter in book.SpecialResources.HtmlInReadingOrder)
             {
                 yield return new EbookChapter(GetTitle(dict, chapter), chapter.TextContent, chapter.FileName);

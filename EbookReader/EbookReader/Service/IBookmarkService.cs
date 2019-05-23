@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EbookReader.Model.Bookshelf;
+using EbookReader.Books;
 
-namespace EbookReader.Service {
+namespace EbookReader.Service
+{
     public interface IBookmarkService {
         void DeleteBookmark(Bookmark bookmark, string bookId);
         Task<List<Bookmark>> LoadBookmarksByBookId(string bookId);

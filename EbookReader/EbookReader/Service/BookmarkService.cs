@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EbookReader.Model.Bookshelf;
+using EbookReader.Books;
 using EbookReader.Provider;
 using EbookReader.Repository;
 
-namespace EbookReader.Service {
+namespace EbookReader.Service
+{
     public class BookmarkService : IBookmarkService {
         readonly IBookmarkRepository _bookmarkRepository;
         IBookRepository _bookRepository;

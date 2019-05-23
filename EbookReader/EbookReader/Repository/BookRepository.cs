@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SQLite;
-using EbookReader.Model.Bookshelf;
 using EbookReader.Service;
+using EbookReader.Books;
 
 namespace EbookReader.Repository {
     public class BookRepository : IBookRepository {
@@ -15,25 +15,25 @@ namespace EbookReader.Repository {
             _connection = databaseService.Connection;
         }
 
-        public Task<List<Book>> GetAllBooksAsync() {
-            return _connection.Table<Book>().ToListAsync();
+        public Task<List<BookInfo>> GetAllBooksAsync() {
+            return _connection.Table<BookInfo>().ToListAsync();
         }
 
-        public Task<Book> GetBookByIdAsync(string id) {
-            return _connection.Table<Book>().Where(i => i.Id == id).FirstOrDefaultAsync();
+        public Task<BookInfo> GetBookByIdAsync(string id) {
+            return _connection.Table<BookInfo>().Where(i => i.Id == id).FirstOrDefaultAsync();
         }
 
-        public Task<int> DeleteBookAsync(Book book) {
+        public Task<int> DeleteBookAsync(BookInfo book) {
             return _connection.DeleteAsync(book);
         }
 
-        public Task<int> SaveBookAsync(Book item) {
+        public Task<int> SaveBookAsync(BookInfo item) {
             return _connection.InsertOrReplaceAsync(item);
         }
 
         public Task<int> DeleteAllBooksAsync()
         {
-            return _connection.Table<Book>().DeleteAsync(p => true);
+            return _connection.Table<BookInfo>().DeleteAsync(p => true);
         }
     }
 }

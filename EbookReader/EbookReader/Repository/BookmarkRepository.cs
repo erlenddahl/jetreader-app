@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EbookReader.Model.Bookshelf;
+using EbookReader.Books;
 using EbookReader.Service;
 using SQLite;
 
-namespace EbookReader.Repository {
+namespace EbookReader.Repository
+{
     public class BookmarkRepository : IBookmarkRepository {
         readonly SQLiteAsyncConnection _connection;
 

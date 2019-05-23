@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.Books;
 using EbookReader.DependencyService;
 using EbookReader.Helpers;
-using EbookReader.Model.Bookshelf;
 using EbookReader.Repository;
 using Plugin.FilePicker.Abstractions;
 
@@ -22,7 +22,7 @@ namespace EbookReader.Service {
             _bookmarkRepository = bookmarkRepository;
         }
 
-        public async Task<(Book, bool)> AddBook(FileData file) {
+        public async Task<(BookInfo, bool)> AddBook(FileData file) {
 
             var newBook = false;
             var bookLoader = EbookFormatHelper.GetBookLoader(file.FileName);
@@ -31,9 +31,9 @@ namespace EbookReader.Service {
             var bsBook = await _bookRepository.GetBookByIdAsync(id);
 
             if (bsBook == null) {
-                var ebook = await bookLoader.OpenBook(file.FilePath, id);
-                bsBook = ebook.ToBookshelf();
-                await ebook.ExtractToTemp(_fileService, ebook);
+                var ebook = await bookLoader.OpenBook(file.FilePath);
+                bsBook = ebook.Info;
+                await bsBook.ExtractToTemp(_fileService, ebook);
                 await _bookRepository.SaveBookAsync(bsBook);
                 newBook = true;
             }
@@ -41,7 +41,7 @@ namespace EbookReader.Service {
             return (bsBook, newBook);
         }
 
-        public async Task<List<Book>> LoadBooks() {
+        public async Task<List<BookInfo>> LoadBooks() {
             return await _bookRepository.GetAllBooksAsync();
         }
         
@@ -57,7 +57,7 @@ namespace EbookReader.Service {
             await _bookRepository.DeleteBookAsync(book);
         }
 
-        public async void SaveBook(Book book) {
+        public async void SaveBook(BookInfo book) {
             await _bookRepository.SaveBookAsync(book);
         }
 
@@ -66,7 +66,7 @@ namespace EbookReader.Service {
             _bookRepository.DeleteAllBooksAsync();
         }
 
-        public async Task<Book> LoadBookById(string id) {
+        public async Task<BookInfo> LoadBookById(string id) {
             return await _bookRepository.GetBookByIdAsync(id);
         }
     }

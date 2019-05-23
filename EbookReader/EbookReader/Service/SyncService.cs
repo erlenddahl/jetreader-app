@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
-using EbookReader.Model.Bookshelf;
+using EbookReader.Books;
 using EbookReader.Model.Messages;
 using EbookReader.Model.Sync;
 using EbookReader.Provider;
 using Newtonsoft.Json;
 using Plugin.Connectivity;
 
-namespace EbookReader.Service {
+namespace EbookReader.Service
+{
     public class SyncService : ISyncService {
 
         const string ProgressNode = "progress";
@@ -60,7 +61,7 @@ namespace EbookReader.Service {
             _cloudStorageService.DeleteNode(PathGenerator(bookId));
         }
 
-        public void SaveBookmark(string bookId, Model.Bookshelf.Bookmark bookmark) {
+        public void SaveBookmark(string bookId, Books.Bookmark bookmark) {
 
             if (!CanSync()) return;
 
@@ -72,7 +73,7 @@ namespace EbookReader.Service {
             SaveBookmarksLastChange(bookId);
         }
 
-        public async void SynchronizeBookmarks(Book book) {
+        public async void SynchronizeBookmarks(BookInfo book) {
 
             if (!CanSync()) return;
 

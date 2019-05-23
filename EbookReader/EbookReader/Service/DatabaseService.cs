@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EbookReader.Books;
 using EbookReader.DependencyService;
-using EbookReader.Model.Bookshelf;
 using SQLite;
 
-namespace EbookReader.Service {
+namespace EbookReader.Service
+{
     public class DatabaseService : IDatabaseService {
         readonly SQLiteAsyncConnection _database;
 
@@ -20,7 +21,7 @@ namespace EbookReader.Service {
         }
 
         private void CreateTables() {
-           _database.CreateTableAsync<Book>().Wait();
+           _database.CreateTableAsync<BookInfo>().Wait();
            _database.CreateTableAsync<Bookmark>().Wait();
         }
     }

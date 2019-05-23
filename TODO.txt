@@ -10,12 +10,17 @@ Active
 
 Inactive
  - Optmimize launch time
- - Automatically open last book
+ - Automatically open previous book
  - Change nightmode to general theme system
     - Make sure it also (can) affect the app itself, and not only the reader
  - Rework status bar (more info, customizable info, smaller, position)
  - Implement statistics
  - Implement easy syncing using erlenddahl.net (or custom url)
  - New icon
+ - Smooth page turning on pan
  - Rename projects
  - Investigate the need for a ICryptoService. Isn't this included in .Net Core?
+ - Add support for more file formats (EPUB, PDF, DJVU, AZW3, MOBI, FB2, PRC, CHM, CBZ, CBR, UMD, DOCX, ODT, RTF, TXT, HTML, WEBP, OPDS)
+ - Dictionary
+ - Annotation/highlighting
+ - Translation support

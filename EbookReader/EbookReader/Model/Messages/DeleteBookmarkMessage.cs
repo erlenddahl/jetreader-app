@@ -1,11 +1,13 @@
-﻿using System;
+﻿using EbookReader.Books;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EbookReader.Model.Messages {
+namespace EbookReader.Model.Messages
+{
     public class DeleteBookmarkMessage {
-        public Model.Bookshelf.Bookmark Bookmark { get; set; }
+        public Bookmark Bookmark { get; set; }
     }
 }
