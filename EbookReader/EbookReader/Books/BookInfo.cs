@@ -39,6 +39,9 @@ namespace EbookReader.Books
                 SpinePosition = value.SpinePosition;
             }
         }
+
+        public long BookFileSize { get; set; }
+
         private string GetTempLocation()
         {
             return FileService.ToAbsolute(Id);

@@ -14,10 +14,12 @@ using EbookReader.Model.Format;
 using EbookReader.Model.Messages;
 using EbookReader.Model.WebViewMessages;
 using EbookReader.Page.Reader;
+using EbookReader.Page.Reader.Popups;
 using EbookReader.Provider;
 using EbookReader.Service;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json.Linq;
+using Rg.Plugins.Popup.Extensions;
 using Rg.Plugins.Popup.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -95,7 +97,7 @@ namespace EbookReader.Page
             return "<div class='battery-indicator'><div class='nub'></div><div class='battery'>" + _batteryProvider.RemainingChargePercent + "%</div></div>";
         }
 
-        private void Messages_OnCommandRequest(object sender, CommandRequest e)
+        private async void Messages_OnCommandRequest(object sender, CommandRequest e)
         {
             switch (e.Command)
             {
@@ -108,6 +110,10 @@ namespace EbookReader.Page
                     {
                         Debug.WriteLine(ex.Message);
                     }
+                    break;
+                case "bookInfo":
+                    var infoPage = new BookInfoPopup(_ebook);
+                    await Navigation.PushPopupAsync(infoPage);
                     break;
             }
         }

@@ -52,9 +52,6 @@ namespace EbookReader.Page.Home {
         private void LoadImage() {
             if (string.IsNullOrEmpty(_book.CoverFilename)) return;
 
-            _book.PrintTempFiles();
-
-            var fileService = IocManager.Container.Resolve<FileService>();
             Cover.Source = ImageSource.FromFile(_book.GetTempPath(_book.CoverFilename));
             Cover.Aspect = Aspect.Fill;
             Cover.WidthRequest = Card.CardWidth;

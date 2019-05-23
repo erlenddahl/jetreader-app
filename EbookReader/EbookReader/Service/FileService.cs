@@ -92,5 +92,15 @@ namespace EbookReader.Service
             });
         }
 
+        public async Task<long> GetFileSizeInBytes(string path)
+        {
+            using(var input = LoadFileStream(path))
+            using (var ms = new MemoryStream())
+            {
+                input.CopyTo(ms);
+                return ms.Length;
+            }
+        }
+
     }
 }

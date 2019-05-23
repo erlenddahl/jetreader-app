@@ -3,7 +3,9 @@ using EbookReader.BookLoaders;
 using EbookReader.Books;
 using EbookReader.Service;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Web;
 
@@ -33,14 +35,33 @@ namespace EbookReader.Model.Format
 
         private BookInfo GenerateBookInfo()
         {
+            var fs = IocManager.Container.Resolve<FileService>();
             return new BookInfo
             {
-                Id = IocManager.Container.Resolve<FileService>().GetFileHash(Path).Result,
+                Id = fs.GetFileHash(Path).Result,
+                BookFileSize = fs.GetFileSizeInBytes(Path).Result,
                 Title = Title,
                 Format = Format,
                 BookLocation = Path,
-                CoverFilename = CoverFilename
+                CoverFilename = CoverFilename,
+                ChapterInfo = HtmlFiles.Select(p => new ChapterData(p)).ToList()
             };
+        }
+
+        public IEnumerable<(string title, string value)> GetInfo()
+        {
+            yield return ("Title", Title);
+            yield return ("Author", Author);
+            yield return ("Language", Language);
+            yield return ("Description", Description);
+            yield return ("", "");
+
+            yield return ("Book file path", Path);
+            yield return ("Book file size", (Info.BookFileSize / 1000d).ToString("n0") + " kB");
+            yield return ("", "");
+
+            yield return ("Words in book", Info.ChapterInfo.Sum(p => p.Words).ToString("n0"));
+            yield return ("Characters in book", Info.ChapterInfo.Sum(p => p.Letters).ToString("n0"));
         }
     }
 }

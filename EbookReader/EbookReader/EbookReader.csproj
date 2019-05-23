@@ -51,6 +51,9 @@
       <Compile Update="Page\MainPageMaster.xaml.cs">
         <DependentUpon>MainPageMaster.xaml</DependentUpon>
       </Compile>
+      <Compile Update="Page\Reader\Popups\BookInfoPopup.xaml.cs">
+        <DependentUpon>BookInfoPopup.xaml</DependentUpon>
+      </Compile>
       <Compile Update="Page\Settings\Popups\CommandGridConfigPopup.xaml.cs">
         <DependentUpon>CommandGridConfigPopup.xaml</DependentUpon>
       </Compile>
