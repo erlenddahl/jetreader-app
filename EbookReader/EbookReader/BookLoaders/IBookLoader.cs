@@ -9,7 +9,7 @@ namespace EbookReader.BookLoaders
 {
     public interface IBookLoader
     {
-        Task<Ebook> OpenBook(string filePath);
+        Task<Ebook> OpenBook(string filePath, string id = null);
         Task<string> PrepareHtml(string html, Ebook book, EbookChapter chapter);
     }
 }

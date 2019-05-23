@@ -27,10 +27,11 @@ namespace EbookReader.BookLoaders.Epub
         }
 
 
-        public async Task<Ebook> OpenBook(string filePath) {
+        public async Task<Ebook> OpenBook(string filePath, string id = null) {
             return await Task.Run(() => {
                 var book = EpubReader.Read(_fileService.LoadFileStream(filePath), false);
-                return new EpubEbook(filePath, book);
+                if (id == null) id = _fileService.GetFileHash(filePath).Result;
+                return new EpubEbook(filePath, id, book);
             });
         }
 
@@ -42,36 +43,24 @@ namespace EbookReader.BookLoaders.Epub
                 var doc = new HtmlDocument();
                 doc.LoadHtml(html);
 
-                StripHtmlTags(doc);
+                HtmlHelper.StripHtmlTags(doc, new[] { "iframe" });
 
-                var data = ((EpubEbook) book).Data;
-                InlineCss(data, doc);
+                var data = ((EpubEbook) book);
+                InlineCss(data, doc, chapter);
                 InlineImages(data, doc, chapter);
 
-                return doc.DocumentNode.Descendants("body").First().InnerHtml;
+                return HtmlHelper.GetBody(doc).InnerHtml;
             });
         }
 
-        private void StripHtmlTags(HtmlDocument doc) {
-            var tagsToRemove = new[] { "script", "style", "iframe" };
-            var nodesToRemove = doc.DocumentNode
-                .Descendants()
-                .Where(o => tagsToRemove.Contains(o.Name))
-                .ToList();
-
-            foreach (var node in nodesToRemove) {
-                node.Remove();
-            }
-        }
-
-        private void InlineCss(EpubBook data, HtmlDocument doc)
+        private void InlineCss(EpubEbook book, HtmlDocument doc, EbookChapter chapter)
         {
-            var body = doc.DocumentNode.Descendants("body").First();
-            var internalStyles = doc.DocumentNode.Descendants("style");
+            var internalStyles = doc.DocumentNode.Descendants("style").ToList();
+            var body = HtmlHelper.GetBody(doc);
             foreach (var s in internalStyles)
             {
                 s.Remove();
-                body.AppendChild(s);
+                body.PrependChild(s);
             }
 
             var externalStyles = doc.DocumentNode
@@ -82,9 +71,20 @@ namespace EbookReader.BookLoaders.Epub
 
             foreach (var s in externalStyles)
             {
-                var style = data.Resources.Css.FirstOrDefault(p => p.FileName.Contains(s.Replace("../", "")));
+                var style = book.Data.Resources.Css.FirstOrDefault(p => p.FileName == chapter.ResolveRelativePath(s));
                 if (style != null)
-                    body.AppendChild(HtmlNode.CreateNode("<style>" + style.TextContent + "</style>"));
+                {
+                    var css = style.TextContent;
+
+                    foreach(var font in book.Data.Resources.Fonts.Union(book.Data.Resources.Other))
+                    {
+                        var fontPath = PathHelper.CombinePath(style.FileName, font.FileName);
+                        var extractedFontPath = book.GetTempPath(fontPath);
+                        css = css.Replace(fontPath, extractedFontPath);
+                    }
+
+                    body.PrependChild(HtmlNode.CreateNode("<style>" + css + "</style>"));
+                }
             }
         }
 
@@ -96,9 +96,9 @@ namespace EbookReader.BookLoaders.Epub
         /// <param name="doc"></param>
         /// <param name="chapter"></param>
         /// <returns></returns>
-        private void InlineImages(EpubBook data, HtmlDocument doc, EbookChapter chapter) {
+        private void InlineImages(EpubEbook book, HtmlDocument doc, EbookChapter chapter) {
 
-            var imageData = data.Resources.Images.ToDictionary(k => k.FileName, v => v);
+            var imageData = book.Data.Resources.Images.ToDictionary(k => k.FileName, v => v);
 
             // Find all img and image nodes, and extract their source path
             var images = doc.DocumentNode.Descendants("img")
@@ -112,7 +112,7 @@ namespace EbookReader.BookLoaders.Epub
                 {
                     p.Node,
                     p.Src,
-                    Path = PathHelper.NormalizePath(PathHelper.CombinePath(chapter.Href, p.Src.Value).Replace("../", ""))
+                    Path = chapter.ResolveRelativePath(p.Src.Value)
                 })
                 // Group by image path to avoid loading and transferring the same image more than once
                 .GroupBy(p=>p.Path);
@@ -120,11 +120,18 @@ namespace EbookReader.BookLoaders.Epub
             foreach (var image in images)
             {
                 var imgData = imageData[image.Key];
-                var base64 = Base64Helper.Encode(imgData.Content);
-                var ctype = imgData.ContentType.ToString().ToLower().Replace("image", "image/"); // From enum "ImageJpeg" to "image/jpeg".
+                //var base64 = Base64Helper.Encode(imgData.Content);
+                //var ctype = imgData.ContentType.ToString().ToLower().Replace("image", "image/"); // From enum "ImageJpeg" to "image/jpeg".
 
                 foreach (var element in image)
-                    element.Node.Attributes["src"].Value = $"data:{ctype};base64,{base64}";
+                {
+                    //element.Node.Attributes["src"].Value = $"data:{ctype};base64,{base64}";
+                    var tempPath = book.GetTempPath(imgData.FileName);
+                    if(element.Node.Attributes.Contains("src"))
+                        element.Node.Attributes["src"].Value = tempPath;
+                    if(element.Node.Attributes.Contains("xlink:href"))
+                        element.Node.Attributes["xlink:href"].Value = tempPath;
+                }
             }
         }
     }

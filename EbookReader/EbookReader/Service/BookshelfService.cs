@@ -13,13 +13,11 @@ using Plugin.FilePicker.Abstractions;
 namespace EbookReader.Service {
     public class BookshelfService : IBookshelfService {
         readonly FileService _fileService;
-        readonly ICryptoService _cryptoService;
         readonly IBookRepository _bookRepository;
         readonly IBookmarkRepository _bookmarkRepository;
 
         public BookshelfService(FileService fileService, ICryptoService cryptoService, IBookRepository bookRepository, IBookmarkRepository bookmarkRepository) {
             _fileService = fileService;
-            _cryptoService = cryptoService;
             _bookRepository = bookRepository;
             _bookmarkRepository = bookmarkRepository;
         }
@@ -29,15 +27,13 @@ namespace EbookReader.Service {
             var newBook = false;
             var bookLoader = EbookFormatHelper.GetBookLoader(file.FileName);
 
-            var id = _cryptoService.GetMd5(file.DataArray);
-
+            var id = await _fileService.GetFileHash(file.FilePath);
             var bsBook = await _bookRepository.GetBookByIdAsync(id);
 
             if (bsBook == null) {
-                var ebook = await bookLoader.OpenBook(file.FilePath);
-                bsBook = ebook.ToBookshelf(id);
-                await bsBook.CreateTempLocation(_fileService);
-                await bsBook.SaveToTempLocation(_fileService, ebook.CoverFilename, ebook.CoverData);
+                var ebook = await bookLoader.OpenBook(file.FilePath, id);
+                bsBook = ebook.ToBookshelf();
+                await ebook.ExtractToTemp(_fileService, ebook);
                 await _bookRepository.SaveBookAsync(bsBook);
                 newBook = true;
             }

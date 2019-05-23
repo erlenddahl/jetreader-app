@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using EbookReader.DependencyService;
+using EbookReader.Model.Format;
 using EbookReader.Model.Messages;
 using EbookReader.Service;
 using Xamarin.Forms;
@@ -49,6 +50,8 @@ namespace EbookReader.Page.Home {
 
         private void LoadImage() {
             if (string.IsNullOrEmpty(_book.CoverFilename)) return;
+
+            _book.PrintTempFiles();
 
             var fileService = IocManager.Container.Resolve<FileService>();
             Cover.Source = ImageSource.FromFile(_book.GetTempPath(_book.CoverFilename));

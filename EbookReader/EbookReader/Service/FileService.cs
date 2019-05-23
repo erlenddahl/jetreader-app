@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -74,6 +75,21 @@ namespace EbookReader.Service
             var abs = ToAbsolute(path);
             if (!Directory.Exists(abs)) return;
             await Task.Run(() => Directory.Delete(abs, true));
+        }
+
+        public async Task<string> GetFileHash(string path)
+        {
+            return await Task.Run(() =>
+            {
+                using (var hasher = SHA1.Create())
+                {
+                    using (var stream = LoadFileStream(path))
+                    {
+                        var hash = hasher.ComputeHash(stream);
+                        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                    }
+                }
+            });
         }
 
     }

@@ -14,20 +14,9 @@ namespace EbookReader.Helpers {
             var path1Uri = new Uri(absolutePath1, UriKind.Absolute);
             var path2Uri = new Uri(path2, UriKind.Relative);
             var diff = new Uri(path1Uri, path2Uri);
-            return diff.OriginalString.Replace(dummyDriveLetter, "");
-        }
-
-        public static string NormalizePath(string path) {
-            if (!string.IsNullOrEmpty(path)) {
-                if (path.StartsWith("/")) {
-                    path = path.Substring(1);
-                }
-
-                path = path.Replace("%20", " ");
-                path = Regex.Replace(path, "/+", "/");
-            }
-
-            return path;
+            var newpath = diff.OriginalString.Replace(dummyDriveLetter, "");
+            if (newpath.StartsWith("/")) newpath = newpath.Substring(1);
+            return newpath;
         }
     }
 }

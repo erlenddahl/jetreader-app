@@ -15,8 +15,13 @@ namespace JetReader.Tests
     [TestClass]
     public class EpubLoaderTests
     {
-        //private string _libraryPath = @"C:\Users\erlendd\Dropbox\Bøker\Calibre-bibliotek";
-        private string _libraryPath = @"C:\Users\Erlend\Dropbox\Bøker\Calibre-bibliotek";
+        public static string LibraryPath = @"C:\Users\erlendd\Dropbox\Bøker\Calibre-bibliotek";
+        //public static string LibraryPath = @"C:\Users\Erlend\Dropbox\Bøker\Calibre-bibliotek";
+
+        public static string[] GetEpubs()
+        {
+            return Directory.GetFiles(LibraryPath, "*.epub", SearchOption.AllDirectories);
+        }
 
         public static string GetMd5(byte[] bytes)
         {
@@ -33,7 +38,7 @@ namespace JetReader.Tests
             }
         }
 
-        internal static byte[] ReadFully(Stream input)
+        public static byte[] ReadFully(Stream input)
         {
             using (var ms = new MemoryStream())
             {
@@ -45,11 +50,10 @@ namespace JetReader.Tests
         [TestMethod]
         public void TestAllEpubs()
         {
-            //TODO: Compare to NuGet libraries
             //Successes: 310 / 408
             //Time usage: 112,7570463 seconds
 
-            var epubs = Directory.GetFiles(_libraryPath, "*.epub", SearchOption.AllDirectories);
+            var epubs = GetEpubs();
             var failures = new List<string>();
 
             IocManager.Build();
@@ -87,11 +91,10 @@ namespace JetReader.Tests
         [TestMethod]
         public void TestAllEpubsEpubsharp()
         {
-            //TODO: Compare to NuGet libraries
             //Successes: 310 / 408
             //Time usage: 112,7570463 seconds
 
-            var epubs = Directory.GetFiles(_libraryPath, "*.epub", SearchOption.AllDirectories);
+            var epubs = GetEpubs();
             var failures = new List<string>();
             var start = DateTime.Now;
 
@@ -125,11 +128,10 @@ namespace JetReader.Tests
         [TestMethod]
         public void TestAllEpubsVersOne()
         {
-            //TODO: Compare to NuGet libraries
             //Successes: 310 / 408
             //Time usage: 112,7570463 seconds
 
-            var epubs = Directory.GetFiles(_libraryPath, "*.epub", SearchOption.AllDirectories);
+            var epubs = GetEpubs();
             var failures = new List<string>();
             var start = DateTime.Now;
 

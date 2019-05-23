@@ -8,9 +8,7 @@ using EbookReader.Service;
 using SQLite;
 
 namespace EbookReader.Model.Bookshelf {
-    public class Book {
-        [PrimaryKey]
-        public string Id { get; set; }
+    public class Book : BookData {
         public string Title { get; set; }
         public DateTime? BookmarksSyncLastChange { get; set; }
         public EbookFormat Format { get; set; }
@@ -28,31 +26,6 @@ namespace EbookReader.Model.Bookshelf {
                 Spine = value.Spine;
                 SpinePosition = value.SpinePosition;
             }
-        }
-
-        private string GetTempLocation()
-        {
-            return FileService.ToAbsolute(Id);
-        }
-
-        public async Task DeleteTempLocation(FileService fs)
-        {
-            await fs.DeleteFolder(GetTempLocation());
-        }
-
-        public async Task CreateTempLocation(FileService fs)
-        {
-            await fs.CreateDirectoryAsync(GetTempLocation());
-        }
-
-        public async Task SaveToTempLocation(FileService fs, string filename, byte[] data)
-        {
-            await fs.WriteBytesAsync(System.IO.Path.Combine(GetTempLocation(), filename), data);
-        }
-
-        public string GetTempPath(string filename)
-        {
-            return System.IO.Path.Combine(GetTempLocation(), filename);
         }
     }
 }

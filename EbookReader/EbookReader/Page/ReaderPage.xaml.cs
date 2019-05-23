@@ -192,7 +192,7 @@ namespace EbookReader.Page {
             var path = parts.FirstOrDefault();
             var hash = parts.Skip(1).FirstOrDefault();
 
-            var chapter = _ebook.Chapters.FirstOrDefault(p => p.Href.Contains(path));
+            var chapter = _ebook.HtmlFiles.FirstOrDefault(p => p.Href.Contains(path));
             if (chapter != null)
                 SendChapter(chapter, marker: hash);
             else
@@ -238,14 +238,14 @@ namespace EbookReader.Page {
             var position = _bookshelfBook.Position;
 
             Title = _ebook.Title + " - " + _ebook.Author;
-            _quickPanel.PanelContent.SetNavigation(_ebook.Chapters);
+            _quickPanel.PanelContent.SetNavigation(_ebook.HtmlFiles);
             RefreshBookmarks();
 
-            var chapter = _ebook.Chapters.First();
+            var chapter = _ebook.HtmlFiles.First();
             var positionInChapter = 0;
 
             if (position != null) {
-                var loadedChapter = _ebook.Chapters[position.Spine];
+                var loadedChapter = _ebook.HtmlFiles[position.Spine];
                 if (loadedChapter != null) {
                     chapter = loadedChapter;
                     positionInChapter = position.SpinePosition;
@@ -285,7 +285,7 @@ namespace EbookReader.Page {
         }
 
         private void OpenBookmark(OpenBookmarkMessage msg) {
-            var loadedChapter = _ebook.Chapters[msg.Bookmark.Position.Spine];
+            var loadedChapter = _ebook.HtmlFiles[msg.Bookmark.Position.Spine];
             if (loadedChapter != null) {
                 if (_currentChapter != msg.Bookmark.Position.Spine) {
                     SendChapter(loadedChapter, position: msg.Bookmark.Position.SpinePosition);
@@ -323,7 +323,7 @@ namespace EbookReader.Page {
         }
 
         private async void SendChapter(EbookChapter chapter, int position = 0, bool lastPage = false, string marker = "") {
-            _currentChapter = _ebook.Chapters.IndexOf(chapter);
+            _currentChapter = _ebook.HtmlFiles.IndexOf(chapter);
             _bookshelfBook.Spine = _currentChapter;
 
             var html = chapter.Content;
@@ -352,7 +352,7 @@ namespace EbookReader.Page {
 
             if (_syncPending || syncPosition == null || syncPosition.Position == null || syncPosition.Position.Equals(_bookshelfBook.Position) || syncPosition.Position.Equals(_lastLoadedPosition) || syncPosition.D == UserSettings.Synchronization.DeviceName) return;
 
-            var loadedChapter = _ebook.Chapters[syncPosition.Position.Spine];
+            var loadedChapter = _ebook.HtmlFiles[syncPosition.Position.Spine];
 
             if (loadedChapter == null) return;
 
@@ -398,7 +398,7 @@ namespace EbookReader.Page {
 
         private void _messages_OnPrevChapterRequest(object sender, PrevChapterRequest e) {
             if (_currentChapter > 0) {
-                SendChapter(_ebook.Chapters[_currentChapter - 1], lastPage: true);
+                SendChapter(_ebook.HtmlFiles[_currentChapter - 1], lastPage: true);
             }
 
             _bookshelfBook.FinishedReading = null;
@@ -406,8 +406,8 @@ namespace EbookReader.Page {
         }
 
         private void _messages_OnNextChapterRequest(object sender, NextChapterRequest e) {
-            if (_currentChapter < _ebook.Chapters.Count - 1) {
-                SendChapter(_ebook.Chapters[_currentChapter + 1]);
+            if (_currentChapter < _ebook.HtmlFiles.Count - 1) {
+                SendChapter(_ebook.HtmlFiles[_currentChapter + 1]);
                 _bookshelfBook.FinishedReading = null;
             } else {
                 _bookshelfBook.FinishedReading = DateTime.UtcNow;

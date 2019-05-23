@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EbookReader.Helpers;
 using EbookReader.Model.Bookshelf;
 using EbookReader.Model.Format;
 using EbookReader.Service;
@@ -25,15 +26,16 @@ namespace EbookReader.BookLoaders.Html
             _fileService = fileService;
         }
 
-        public virtual async Task<Ebook> OpenBook(string filePath)
+        public virtual async Task<Ebook> OpenBook(string filePath, string id = null)
         {
             var title = Path.GetFileName(filePath);
             var data = await _fileService.ReadAllTextAsync(filePath);
 
             var book = new Ebook()
             {
+                Id = id ?? await _fileService.GetFileHash(filePath),
                 Title = title,
-                Chapters = new List<EbookChapter>() { new EbookChapter(title, data) },
+                HtmlFiles = new List<EbookChapter>() { new EbookChapter(title, data) },
             };
 
             return book;
@@ -46,24 +48,10 @@ namespace EbookReader.BookLoaders.Html
                 var doc = new HtmlDocument();
                 doc.LoadHtml(html);
 
-                StripHtmlTags(doc);
+                HtmlHelper.StripHtmlTags(doc, new[] { "script", "style", "iframe" });
 
-                return doc.DocumentNode.Descendants("body").First().InnerHtml;
+                return HtmlHelper.GetBody(doc).InnerHtml;
             });
-        }
-
-        protected virtual void StripHtmlTags(HtmlDocument doc)
-        {
-            var tagsToRemove = new[] { "script", "style", "iframe" };
-            var nodesToRemove = doc.DocumentNode
-                .Descendants()
-                .Where(o => tagsToRemove.Contains(o.Name))
-                .ToList();
-
-            foreach (var node in nodesToRemove)
-            {
-                node.Remove();
-            }
         }
     }
 }
