@@ -56,6 +56,9 @@
       </Compile>
     </ItemGroup>
     <ItemGroup>
+      <EmbeddedResource Update="Page\Popups\LoadingPopupPage.xaml.xaml">
+        <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      </EmbeddedResource>
       <EmbeddedResource Update="Page\Settings\Popups\CommandGridConfigPopup.xaml">
         <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       </EmbeddedResource>

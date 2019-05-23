@@ -9,11 +9,13 @@ using EbookReader.Books;
 using EbookReader.Helpers;
 using EbookReader.Model.Messages;
 using EbookReader.Page.Home;
+using EbookReader.Page.Popups;
 using EbookReader.Service;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Plugin.FilePicker;
+using Rg.Plugins.Popup.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -113,6 +115,9 @@ namespace EbookReader.Page {
             var pickedFile = await CrossFilePicker.Current.PickFile();
             if (pickedFile == null) return;
 
+            var loadingPage = new LoadingPopupPage();
+            await Navigation.PushPopupAsync(loadingPage);
+
             try
             {
                 var (book, isNew) = await _bookshelfService.AddBook(pickedFile);
@@ -139,8 +144,10 @@ namespace EbookReader.Page {
                 });
                 Debug.WriteLine(e.Message);
                 Debug.WriteLine(e.StackTrace);
-                await DisplayAlert("Error", "File failed to open", "OK");
+                await DisplayAlert("Error", "Failed to open this ebook file.", "OK");
             }
+
+            await Navigation.RemovePopupPageAsync(loadingPage);
         }
 
         private void OpenBook(OpenBookMessage msg) {
