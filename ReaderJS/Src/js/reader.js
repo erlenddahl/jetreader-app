@@ -665,6 +665,7 @@ window.Messages = {
 
             setTimeout(function() {
                 Ebook.htmlHelper.showContent();
+                Ebook.isLoaded = true;
             }, 5);
         },
         goToPosition: function(data) {
@@ -738,6 +739,7 @@ window.Gestures = {
         ]);
 
         function perform(action, center) {
+            if (!Ebook.isLoaded) return;
             var cell = Ebook.getCommandCell(center);
             if (!cell) return;
             if (!cell[action]) return;
@@ -759,18 +761,19 @@ window.Gestures = {
         });
 
         hammer.on("panleft", function(e) {
-            if (!e.isFinal) return;
+            if (!e.isFinal || !Ebook.isLoaded) return;
             Messages.send("Interaction", { type: "panleft" });
             Ebook.goToNextPage(true);
         });
 
         hammer.on("panright", function(e) {
-            if (!e.isFinal) return;
+            if (!e.isFinal || !Ebook.isLoaded) return;
             Messages.send("Interaction", { type: "panright" });
             Ebook.goToPreviousPage(true);
         });
 
         hammer.on("swipeleftdouble", function() {
+            if (!Ebook.isLoaded) return;
             Messages.send("Interaction", { type: "swipeleftdouble" });
             if (Ebook.doubleSwipe) {
                 Ebook.messagesHelper.nextChapterRequest();
@@ -778,6 +781,7 @@ window.Gestures = {
         });
 
         hammer.on("swiperightdouble", function() {
+            if (!Ebook.isLoaded) return;
             Messages.send("Interaction", { type: "swiperightdouble" });
             if (Ebook.doubleSwipe) {
                 Ebook.goToPage(1);

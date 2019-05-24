@@ -24,7 +24,6 @@ Inactive
  - Dictionary
  - Annotation/highlighting
  - Translation support
- - Fix crash on pan before book is completely loaded
  - Fix crash if book file is deleted
  - Fix lower tap buttons hard to hit
- - Fix book info popup (cover size, popup size)
+ - Make close button/show back arrow on book info popup
