@@ -28,6 +28,7 @@ namespace EbookReader.Service {
         public event EventHandler<Model.WebViewMessages.KeyStroke> OnKeyStroke;
         public event EventHandler<Model.WebViewMessages.CommandRequest> OnCommandRequest;
         public event EventHandler<JObject> OnInteraction;
+        public event Action<Model.WebViewMessages.Message, string> OnMessageReturned;
 
         public WebViewMessages(ReaderWebView webView) {
             _webView = webView;
@@ -61,7 +62,8 @@ namespace EbookReader.Service {
             var toSend = Base64Helper.Encode(json);
 
             Device.BeginInvokeOnMainThread(async () => {
-                await _webView.InjectJavascriptAsync($"Messages.parse('{toSend}')");
+                var res = await _webView.InjectJavascriptAsync($"Messages.parse('{toSend}')");
+                OnMessageReturned?.Invoke(message, res);
             });
 
             if (message.Action == "init") {

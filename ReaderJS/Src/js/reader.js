@@ -19,8 +19,12 @@ CodeTimer.prototype.time = function () {
 }
 
 CodeTimer.prototype.sendDebug = function (desc) {
-    window.Messages.send("Debug", desc + " :: " + JSON.stringify(this.timings));
+    var data = desc + " :: " + JSON.stringify(this.timings);
+    window.Messages.send("Debug", data);
+    return data;
 }
+
+var pageLoadTime = performance.now();
 
 window.Ebook = {
     pageWidth: 0,
@@ -609,8 +613,9 @@ window.Messages = {
     },
     parse: function(data) {
         var json = JSON.parse(Base64.decode(data));
-        this.actions[json.Action](json.Data);
+        var res = this.actions[json.Action](json.Data);
         Ebook.log("IN: " + json.Action);
+        return res || "";
     },
     actions: {
         init: function(data) {
@@ -624,6 +629,11 @@ window.Messages = {
 
             if (data.StatusPanelData)
                 this.setStatusPanelData(data.StatusPanelData);
+
+            return performance.now() - pageLoadTime;
+        },
+        getPageCount: function() {
+            return Ebook.getPageCount();
         },
         setStatusPanelData: function (data) {
             if (data.PanelDefinition) {
@@ -659,6 +669,8 @@ window.Messages = {
         
             Ebook.htmlHelper.showContent();
             Ebook.isLoaded = true;
+
+            return performance.now() - pageLoadTime;
         },
         goToPosition: function(data) {
             Ebook.goToPositionFast(data.Position);

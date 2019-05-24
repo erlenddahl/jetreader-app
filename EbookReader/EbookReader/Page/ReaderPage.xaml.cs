@@ -13,6 +13,7 @@ using EbookReader.Helpers;
 using EbookReader.Model.Format;
 using EbookReader.Model.Messages;
 using EbookReader.Model.WebViewMessages;
+using EbookReader.Page.Popups;
 using EbookReader.Page.Reader;
 using EbookReader.Page.Reader.Popups;
 using EbookReader.Provider;
@@ -48,6 +49,8 @@ namespace EbookReader.Page
         QuickPanel _quickPanel;
         private IToastService _toastService;
 
+        LoadingPopupPage loadingPage = new LoadingPopupPage();
+
         public ReaderPage() {
             InitializeComponent();
 
@@ -71,6 +74,7 @@ namespace EbookReader.Page
             WebView.Messages.OnKeyStroke += Messages_OnKeyStroke;
             WebView.Messages.OnInteraction += Messages_OnInteraction;
             WebView.Messages.OnCommandRequest += Messages_OnCommandRequest;
+            WebView.Messages.OnMessageReturned += Messages_OnMessageReturned;
 
             var quickPanelPosition = new Rectangle(0, 0, 1, 0.75);
 
@@ -90,6 +94,18 @@ namespace EbookReader.Page
         private object GetBatteryHtml()
         {
             return "<div class='battery-indicator'><div class='nub'></div><div class='battery'>" + _batteryProvider.RemainingChargePercent + "%</div></div>";
+        }
+
+        private async void Messages_OnMessageReturned(Message msg, string result)
+        {
+            if (msg.Action == "init")
+            {
+                //await Navigation.RemovePopupPageAsync(loadingPage);
+            }
+            else if (msg.Action == "loadHtml")
+            {
+                await Navigation.RemovePopupPageAsync(loadingPage);
+            }
         }
 
         private async void Messages_OnCommandRequest(object sender, CommandRequest e)
@@ -236,8 +252,12 @@ namespace EbookReader.Page
         }
 
         public async void LoadBook(BookInfo info) {
+
+            await Navigation.PushPopupAsync(loadingPage);
+
             _bookshelfBook = info;
-            _ebook = await EbookFormatHelper.GetBookLoader(info.Format).OpenBook(info);
+            var loader = EbookFormatHelper.GetBookLoader(info.Format);
+            _ebook = await loader.OpenBook(info);
             var position = _bookshelfBook.Position;
 
             Title = _ebook.Title + " - " + _ebook.Author;
