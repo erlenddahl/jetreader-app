@@ -75,11 +75,18 @@
     }
 }
 
-#status-panel {
+#status-panel-top {
+    top: 0;
+}
+
+#status-panel-bottom {
+    bottom: 0;
+}
+
+.status-panel {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 0;
     height: 10px;
     display: flex;
     flex-direction: row;

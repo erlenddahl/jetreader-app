@@ -339,6 +339,7 @@ namespace EbookReader.Page
 
             Device.BeginInvokeOnMainThread(() => {
                 SendHtml(preparedHtml, chapter.Title, position, lastPage, marker);
+                SetStatusPanelValues(new Dictionary<string, object>() { { "bookTitle", _ebook.Title }, { "bookAuthor", _ebook.Author } });
             });
 
         }
@@ -470,10 +471,18 @@ namespace EbookReader.Page
                 UserSettings.Reader.NightMode,
                 StatusPanelData = new
                 {
-                    PanelDefinition = new[] {
-                        new[] { "battery", "clock" },
-                        new[] { "chapter", "chapterProgress" },
-                        new[] { "bookProgressPercentage" }
+                    PanelDefinition = new
+                    {
+                        top = new[] {
+                            new string[0],
+                            new[] { "bookTitle", "bookAuthor" },
+                            new string[0]
+                        },
+                        bottom = new[] {
+                            new[] { "battery", "clock" },
+                            new[] { "chapterTitle", "chapterProgress" },
+                            new[] { "bookProgress", "bookProgressPercentage" }
+                        }
                     },
                     Values = new
                     {
@@ -488,8 +497,7 @@ namespace EbookReader.Page
 
         private void SetStatusPanelValue(string key, object value)
         {
-            var d = new Dictionary<string, object>();
-            d.Add(key, value);
+            var d = new Dictionary<string, object> {{key, value}};
             SetStatusPanelValues(d);
         }
 

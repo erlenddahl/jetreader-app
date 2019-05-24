@@ -168,20 +168,26 @@ window.Ebook = {
         $("#log").show();
         $("#log").prepend($("<div>" + msg + "</div>"));
     },
-    generateStatusPanel: function () {
-        var items = this.statusPanelItems || {};
-        $("#status-panel").html("");
+    generateStatusPanels: function() {
 
+        if (!this.statusPanelItems) this.statusPanelItems = {};
         for (var key in this.statusPanelItems) {
             this.statusPanelItems[key].containers = [];
         }
 
-        for (var i in this.statusPanel) {
-            var cell = this.statusPanel[i];
+        this.generateStatusPanel("top");
+        this.generateStatusPanel("bottom");
+    },
+    generateStatusPanel: function (panelId) {
+        var items = this.statusPanelItems || {};
+        $("#status-panel-" + panelId).html("");
+
+        for (var i in this.statusPanel[panelId]) {
+            var cell = this.statusPanel[panelId][i];
             var htmlCell = $("<div class='cell'></div>");
             for (var j in cell) {
 
-                var htmlItem = $("<div class='item'></div>");
+                var htmlItem = $("<div class='item'>" + cell[j] + "</div>");
                 htmlCell.append(htmlItem);
 
                 if (!items[cell[j]])
@@ -192,7 +198,7 @@ window.Ebook = {
                 }
             }
 
-            $("#status-panel").append(htmlCell);
+            $("#status-panel-" + panelId).append(htmlCell);
         }
 
         this.statusPanelItems = items;
@@ -208,7 +214,7 @@ window.Ebook = {
                 item.containers[i].html(keyValues[key]);
         }
     },
-    visualizeCommandCells: function() {
+    visualizeCommandCells: function () {
         if ($(".command-cells").length) {
             $(".command-cells").remove();
             return;
@@ -234,10 +240,10 @@ window.Ebook = {
 
         var commandColors = {};
 
-        var grid = Ebook.commands; 
+        var grid = Ebook.commands;
         var visualization = $("<div>").addClass("command-cells");
         for (var i = 0; i < grid.length; i++) {
-            var h = Ebook.webViewHeight  * grid[i].height;
+            var h = Ebook.webViewHeight * grid[i].height;
             var row = $("<div>").addClass("row").css("height", h + "px");
             for (var j = 0; j < grid[i].cells.length; j++) {
 
@@ -261,7 +267,6 @@ window.Ebook = {
             visualization.append(row);
         }
 
-        visualization.on("click", function () { $(".command-cells").remove(); });
         $("body").append(visualization);
     },
     getCommandCell: function(center) {
@@ -626,10 +631,12 @@ window.Messages = {
         setStatusPanelData: function (data) {
             if (data.PanelDefinition) {
                 Ebook.statusPanel = data.PanelDefinition;
-                Ebook.generateStatusPanel();
+                Ebook.generateStatusPanels();
             }
             if (data.Values)
                 Ebook.setStatusPanelValues(data.Values);
+            if (!data.PanelDefinition && !data.Values)
+                Ebook.setStatusPanelValues(data);
         },
         loadHtml: function(data) {
             Ebook.htmlHelper.hideContent();
@@ -637,7 +644,7 @@ window.Messages = {
             document.getElementById("content").innerHTML = data.Html;
 
             Ebook.setUpEbook();
-            Ebook.setStatusPanelValues({ "chapter": data.Title });
+            Ebook.setStatusPanelValues({ "chapterTitle": data.Title });
 
             setTimeout(function () {
 
