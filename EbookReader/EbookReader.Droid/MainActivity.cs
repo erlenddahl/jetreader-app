@@ -135,6 +135,7 @@ namespace EbookReader.Droid {
         }
 
         private bool isFullscreen = false;
+        private bool hasStableLayout = false;
         private void ToggleFullscreen(FullscreenRequestMessage msg)
         {
             if (!UserSettings.Reader.Fullscreen) return;
@@ -146,12 +147,25 @@ namespace EbookReader.Droid {
                 var newUiOptions = (int)decorView.SystemUiVisibility;
 
                 var activateFullscreen = msg.Fullscreen.HasValue ? msg.Fullscreen.Value : !isFullscreen;
+                var stableLayout = msg.StableLayout.HasValue ? msg.StableLayout.Value : hasStableLayout;
+
+                if (stableLayout)
+                {
+                    newUiOptions |= (int) SystemUiFlags.LayoutStable;
+                    newUiOptions |= (int) SystemUiFlags.LayoutHideNavigation;
+                    newUiOptions |= (int) SystemUiFlags.LayoutFullscreen;
+                    hasStableLayout = true;
+                }
+                else
+                {
+                    newUiOptions &= ~(int)SystemUiFlags.LayoutStable;
+                    newUiOptions &= ~(int)SystemUiFlags.LayoutHideNavigation;
+                    newUiOptions &= ~(int)SystemUiFlags.LayoutFullscreen;
+                    hasStableLayout = false;
+                }
 
                 if (activateFullscreen)
                 {
-                    newUiOptions |= (int)SystemUiFlags.LayoutStable;
-                    newUiOptions |= (int)SystemUiFlags.LayoutHideNavigation;
-                    newUiOptions |= (int)SystemUiFlags.LayoutFullscreen;
                     newUiOptions |= (int)SystemUiFlags.Fullscreen;
                     newUiOptions |= (int)SystemUiFlags.HideNavigation;
                     newUiOptions |= (int)SystemUiFlags.Immersive;
@@ -160,9 +174,6 @@ namespace EbookReader.Droid {
                 }
                 else
                 {
-                    newUiOptions |= (int)SystemUiFlags.LayoutStable;
-                    newUiOptions &= ~(int)SystemUiFlags.LayoutHideNavigation;
-                    newUiOptions &= ~(int)SystemUiFlags.LayoutFullscreen;
                     newUiOptions &= ~(int)SystemUiFlags.Fullscreen;
                     newUiOptions &= ~(int)SystemUiFlags.HideNavigation;
                     newUiOptions &= ~(int)SystemUiFlags.Immersive;

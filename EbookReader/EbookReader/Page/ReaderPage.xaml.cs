@@ -40,11 +40,6 @@ namespace EbookReader.Page
         Ebook _ebook;
         BookInfo _bookshelfBook;
 
-        bool _resizeFirstRun = true;
-        bool _resizeTimerRunning = false;
-        int? _resizeTimerWidth;
-        int? _resizeTimerHeight;
-
         bool _backgroundSync = true;
         Position _lastSavedPosition = null;
         Position _lastLoadedPosition = new Position();
@@ -87,7 +82,7 @@ namespace EbookReader.Page
             _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
 
             NavigationPage.SetHasNavigationBar(this, false);
-            _messageBus.Send(new FullscreenRequestMessage(true));
+            _messageBus.Send(new FullscreenRequestMessage(true, true));
 
             ChangeTheme();
         }
@@ -104,7 +99,7 @@ namespace EbookReader.Page
                 case "toggleFullscreen":
                     try
                     {
-                        _messageBus.Send(new FullscreenRequestMessage(null));
+                        _messageBus.Send(new FullscreenRequestMessage(null, null));
                     }
                     catch(Exception ex)
                     {
@@ -121,7 +116,7 @@ namespace EbookReader.Page
         private void Messages_OnInteraction(object sender, JObject e)
         {
             if (PopupNavigation.Instance.PopupStack.Contains(_quickPanel)) return;
-            _messageBus.Send(new FullscreenRequestMessage(true));
+            _messageBus.Send(new FullscreenRequestMessage(true, true));
         }
 
         private void ChangeTheme(ChangeThemeMessage msg = null)
@@ -214,13 +209,14 @@ namespace EbookReader.Page
             base.OnDisappearing();
             SaveProgress();
             _backgroundSync = false;
+            _messageBus.Send(new FullscreenRequestMessage(null, false));
             UnSubscribeMessages();
         }
 
         protected override void OnAppearing() {
             base.OnAppearing();
             _backgroundSync = true;
-            _messageBus.Send(new FullscreenRequestMessage(true));
+            _messageBus.Send(new FullscreenRequestMessage(true, true));
             SubscribeMessages();
 
             Task.Run(() => {
@@ -430,31 +426,6 @@ namespace EbookReader.Page
                 (int)WebView.Height
             );
         }
-
-        private void WebView_SizeChanged(object sender, EventArgs e) {
-
-            if (_resizeFirstRun) {
-                _resizeFirstRun = false;
-                return;
-            }
-
-            _resizeTimerWidth = (int)WebView.Width;
-            _resizeTimerHeight = (int)WebView.Height;
-
-            if (_resizeTimerRunning) return;
-
-            _resizeTimerRunning = true;
-            Device.StartTimer(new TimeSpan(0, 0, 0, 0, 500), () => {
-
-                if (_resizeTimerWidth.HasValue && _resizeTimerHeight.HasValue) {
-                    ResizeWebView(_resizeTimerWidth.Value, _resizeTimerHeight.Value);
-                }
-
-                _resizeTimerRunning = false;
-
-                return false;
-            });
-        }
         #endregion
 
         #region webview messages
@@ -504,6 +475,11 @@ namespace EbookReader.Page
         private void SetStatusPanelValues(Dictionary<string, object> keyValues)
         {
             WebView.Messages.Send("setStatusPanelData", JObject.FromObject(keyValues));
+        }
+
+        private void RefreshWebViewSize()
+        {
+            ResizeWebView((int)WebView.Width, (int)WebView.Height);
         }
 
         private void ResizeWebView(int width, int height) {

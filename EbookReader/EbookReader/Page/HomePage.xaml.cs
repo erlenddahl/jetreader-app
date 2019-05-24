@@ -64,7 +64,7 @@ namespace EbookReader.Page {
 
             // because of floating action button on android
             Xamarin.Forms.Device.StartTimer(new TimeSpan(0, 0, 0, 0, 200), () => {
-                _messageBus.Send(new FullscreenRequestMessage(false));
+                _messageBus.Send(new FullscreenRequestMessage(false, false));
                 return false;
             });
 
