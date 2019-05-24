@@ -4,13 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
     xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
-    BackgroundColor="#EEEEEE"
+    BackgroundColor="Transparent"
     x:Class="EbookReader.Page.Reader.Popups.BookInfoPopup">
-    <StackLayout x:Name="container" Padding="20, 20, 20, 20" Orientation="Vertical">
+    <StackLayout x:Name="container" BackgroundColor="#EEEEEE" Margin="20, 20, 20, 20" Padding="20, 20, 20, 20" Orientation="Vertical">
         <Image x:Name="Cover" 
-               Source="book.png"
-               HorizontalOptions="CenterAndExpand" 
-               VerticalOptions="CenterAndExpand" />
+            Source="book.png"
+            HorizontalOptions="Fill" 
+            VerticalOptions="StartAndExpand" />
 
     </StackLayout>
 </pages:PopupPage>
