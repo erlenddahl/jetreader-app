@@ -322,9 +322,10 @@ window.Ebook = {
     setUpEbook: function() {
         this.resizeImages();
 
-        this.goToPageFast(1);
-
-        this.totalPages = this.getPageOfMarker("js-ebook-end-of-chapter");
+        this.totalPages = this.getPageCount();
+    },
+    getPageCount: function() {
+        return this.getPageOfMarker("js-ebook-end-of-chapter");
     },
     setUpColumns: function() {
         var columnsInner = document.getElementById("columns-inner");
@@ -367,10 +368,8 @@ window.Ebook = {
         Ebook.setUpColumns();
         Ebook.setUpEbook();
 
-        setTimeout(function() {
-            Ebook.goToPositionFast(position);
-            Ebook.htmlHelper.showContent();
-        }, 5);
+        Ebook.goToPositionFast(position);
+        Ebook.htmlHelper.showContent();
     },
     changeMargin: function(margin) {
         Ebook.htmlHelper.hideContent();
@@ -385,10 +384,8 @@ window.Ebook = {
         Ebook.setUpColumns();
         Ebook.setUpEbook();
 
-        setTimeout(function() {
-            Ebook.goToPositionFast(position);
-            Ebook.htmlHelper.showContent();
-        }, 5);
+        Ebook.goToPositionFast(position);
+        Ebook.htmlHelper.showContent();
     },
     goToNextPage: function (saveNewPosition) {
         var page = this.currentPage + 1;
@@ -646,27 +643,22 @@ window.Messages = {
             Ebook.setUpEbook();
             Ebook.setStatusPanelValues({ "chapterTitle": data.Title });
 
-            setTimeout(function () {
+            if (data.Position > 0) {
+                Ebook.goToPositionFast(data.Position);
+            } else if (data.LastPage) {
+                Ebook.goToPageFast(Ebook.totalPages);
+                Ebook.messagesHelper.sendPageChange();
+            } else if (data.Marker) {
+                Ebook.goToMarker(data.Marker);
+            } else {
+                Ebook.goToPageFast(1);
+                Ebook.messagesHelper.sendPageChange();
+            }
 
-                if (data.Position > 0) {
-                    Ebook.goToPositionFast(data.Position);
-                } else if (data.LastPage) {
-                    Ebook.goToPageFast(Ebook.totalPages);
-                    Ebook.messagesHelper.sendPageChange();
-                } else if (data.Marker) {
-                    Ebook.goToMarker(data.Marker);
-                } else {
-                    Ebook.goToPageFast(1);
-                    Ebook.messagesHelper.sendPageChange();
-                }
-
-                Ebook.currentPosition = Ebook.getCurrentPosition();
-            }, 5);
-
-            setTimeout(function() {
-                Ebook.htmlHelper.showContent();
-                Ebook.isLoaded = true;
-            }, 5);
+            Ebook.currentPosition = Ebook.getCurrentPosition();
+        
+            Ebook.htmlHelper.showContent();
+            Ebook.isLoaded = true;
         },
         goToPosition: function(data) {
             Ebook.goToPositionFast(data.Position);
