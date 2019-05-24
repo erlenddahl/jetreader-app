@@ -489,7 +489,12 @@ window.Ebook = {
     getPageOfMarker: function(marker) {
         var currentPage = this.currentPage;
         this.goToPageFast(1);
-        var position = document.getElementById(marker).getBoundingClientRect().left;
+        var markerElement = document.getElementById(marker);
+        if (!markerElement) {
+             Ebook.messagesHelper.sendDebug("Failed to find marker: " + marker);
+             return 0;
+        }
+        var position = markerElement.getBoundingClientRect().left;
         this.goToPageFast(currentPage);
         return Math.ceil(position / this.pageWidth);
     },
