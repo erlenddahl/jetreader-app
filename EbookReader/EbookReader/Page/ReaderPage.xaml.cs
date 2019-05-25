@@ -9,6 +9,7 @@ using Autofac;
 using EbookReader.BookLoaders;
 using EbookReader.Books;
 using EbookReader.Config.CommandGrid;
+using EbookReader.Config.StatusPanel;
 using EbookReader.DependencyService;
 using EbookReader.Helpers;
 using EbookReader.Model.Format;
@@ -63,7 +64,7 @@ namespace EbookReader.Page
             _bookmarkService = IocManager.Container.Resolve<IBookmarkService>();
             _batteryProvider = IocManager.Container.Resolve<IBatteryProvider>();
             _toastService = IocManager.Container.Resolve<IToastService>();
-            IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>((_)=> { SetStatusPanelValue("battery", GetBatteryHtml()); });
+            IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>((_)=> { SetStatusPanelValue(StatusPanelItem.Battery, GetBatteryHtml()); });
 
             // webview events
             WebView.Messages.OnNextChapterRequest += _messages_OnNextChapterRequest;
@@ -359,7 +360,7 @@ namespace EbookReader.Page
 
             Device.BeginInvokeOnMainThread(() => {
                 SendHtml(preparedHtml, chapter.Title, position, lastPage, marker);
-                SetStatusPanelValues(new Dictionary<string, object>() { { "bookTitle", _ebook.Title }, { "bookAuthor", _ebook.Author } });
+                SetStatusPanelValues(new Dictionary<StatusPanelItem, object>() { { StatusPanelItem.BookTitle, _ebook.Title }, { StatusPanelItem.BookAuthor, _ebook.Author } });
             });
 
             await _ebook.Info.WaitForProcessingToFinish();
@@ -472,23 +473,11 @@ namespace EbookReader.Page
                 Commands = GridConfig.DefaultGrids[0].ToJson(),
                 StatusPanelData = new
                 {
-                    PanelDefinition = new
-                    {
-                        top = new[] {
-                            new string[0],
-                            new[] { "bookTitle", "bookAuthor" },
-                            new string[0]
-                        },
-                        bottom = new[] {
-                            new[] { "battery", "clock" },
-                            new[] { "chapterTitle", "chapterProgress" },
-                            new[] { "bookProgress", "bookProgressPercentage" }
-                        }
-                    },
+                    PanelDefinition = StatusPanelConfig.DefaultPanelDefinitions[0].ToJson(),
                     Values = new
                     {
-                        clock = DateTime.Now.ToString("HH:mm"),
-                        battery = GetBatteryHtml()
+                        Clock = DateTime.Now.ToString("HH:mm"),
+                        Battery = GetBatteryHtml()
                     }
                 }
             };
@@ -496,13 +485,13 @@ namespace EbookReader.Page
             WebView.Messages.Send("init", json);
         }
 
-        private void SetStatusPanelValue(string key, object value)
+        private void SetStatusPanelValue(StatusPanelItem key, object value)
         {
-            var d = new Dictionary<string, object> {{key, value}};
+            var d = new Dictionary<StatusPanelItem, object> {{key, value}};
             SetStatusPanelValues(d);
         }
 
-        private void SetStatusPanelValues(Dictionary<string, object> keyValues)
+        private void SetStatusPanelValues(Dictionary<StatusPanelItem, object> keyValues)
         {
             WebView.Messages.Send("setStatusPanelData", JObject.FromObject(keyValues));
         }

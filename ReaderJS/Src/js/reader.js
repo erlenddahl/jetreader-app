@@ -91,7 +91,7 @@ window.Ebook = {
         var s = "";
         s += (h < 10 ? "0" : "") + h;
         s += (m < 10 ? "0" : "") + m;
-        Ebook.setStatusPanelValues({ "clock": s });
+        Ebook.setStatusPanelValues({ "Clock": s });
     },
     log: function (msg) {
         return;
@@ -105,12 +105,12 @@ window.Ebook = {
             this.statusPanelItems[key].containers = [];
         }
 
-        this.generateStatusPanel("top");
-        this.generateStatusPanel("bottom");
+        this.generateStatusPanel("Top");
+        this.generateStatusPanel("Bottom");
     },
     generateStatusPanel: function (panelId) {
         var items = this.statusPanelItems || {};
-        $("#status-panel-" + panelId).html("");
+        $("#status-panel-" + panelId.toLowerCase()).html("");
 
         for (var i in this.statusPanel[panelId]) {
             var cell = this.statusPanel[panelId][i];
@@ -128,7 +128,7 @@ window.Ebook = {
                 }
             }
 
-            $("#status-panel-" + panelId).append(htmlCell);
+            $("#status-panel-" + panelId.toLowerCase()).append(htmlCell);
         }
 
         this.statusPanelItems = items;
@@ -151,8 +151,7 @@ window.Ebook = {
         var wordsRead = Ebook.currentPage * wordsPerPage;
         var progress = (c.wordsBefore + wordsRead) / (c.wordsBefore + c.wordsCurrent + c.wordsAfter) * 100.0;
         Ebook.setStatusPanelValues({
-            "bookProgress": progress.toFixed(1) + "%", //TODO: Make this page / totalPage (needs page count for each chapter)
-            "bookProgressPercentage": progress.toFixed(1) + "%"
+            "BookProgressPercentage": progress.toFixed(1) + "%"
         });
     },
     visualizeCommandCells: function () {
@@ -499,8 +498,8 @@ window.Ebook = {
         sendPageChange: function () {
 
             Ebook.setStatusPanelValues({
-                "chapterProgress": Ebook.currentPage + " / " + Ebook.totalPages,
-                "position": Ebook.currentPosition
+                "ChapterProgress": Ebook.currentPage + " / " + Ebook.totalPages,
+                "Position": Ebook.currentPosition
             });
             Ebook.refreshChapterInfo();
 
@@ -600,7 +599,7 @@ window.Messages = {
             document.getElementById("content").innerHTML = data.Html;
 
             Ebook.setUpEbook();
-            Ebook.setStatusPanelValues({ "chapterTitle": data.Title });
+            Ebook.setStatusPanelValues({ "ChapterTitle": data.Title });
 
             if (data.Position > 0) {
                 Ebook.goToPositionFast(data.Position);
