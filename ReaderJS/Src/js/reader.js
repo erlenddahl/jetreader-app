@@ -775,7 +775,21 @@ window.Gestures = {
             Ebook.performCommand(cell[action]);
         }
 
+        function isLink(e) {
+            if (e && e.target) {
+                var el = e.target;
+                while (el !== null && el.id !== "content") {
+                    if (el.localName === "a") return true;
+                    el = el.parentElement;
+                }
+            }
+            return false;
+        }
+
         hammer.on("singletap", function (e) {
+
+            if (isLink(e)) return;
+            Ebook.messagesHelper.sendDebug(e);
 
             var cell = Ebook.getCommandCell(e.center);
             if(!cell || !cell["tap"] || cell["tap"] !="toggleFullscreen")
