@@ -19,7 +19,7 @@ namespace EbookReader.Page.Reader.Popups
 
             LoadImage(book);
             
-            foreach (var item in book.GetInfo())
+            foreach (var item in book.GetInfo().Result)
             {
                 if (string.IsNullOrWhiteSpace(item.title))
                 {

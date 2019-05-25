@@ -7,15 +7,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace EbookReader.Model.Format
 {
     public class Ebook
     {
-        private BookInfo info;
+        public BookInfo Info { get; }
 
-        public BookInfo Info => info ?? (info = GenerateBookInfo());
         public string Path { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }
@@ -28,40 +28,43 @@ namespace EbookReader.Model.Format
         public EbookFormat Format { get; set; }
         public virtual IEnumerable<(string filename, byte[] filedata)> ExtractFiles { get { yield break; } }
 
-        public Ebook(BookInfo info = null)
+        public Ebook(string path, BookInfo info = null)
         {
-            this.info = info;
-        }
+            Path = path;
+            Info = info;
 
-        private BookInfo GenerateBookInfo()
-        {
-            var fs = IocManager.Container.Resolve<FileService>();
-            return new BookInfo
+            if (Info == null)
             {
-                Id = fs.GetFileHash(Path).Result,
-                BookFileSize = fs.GetFileSizeInBytes(Path).Result,
-                Title = Title,
-                Format = Format,
-                BookLocation = Path,
-                CoverFilename = CoverFilename,
-                ChapterInfo = HtmlFiles.Select(p => new ChapterData(p)).ToList()
-            };
+                Info = new BookInfo
+                {
+                    Title = Title,
+                    Format = Format,
+                    BookLocation = Path,
+                    CoverFilename = CoverFilename
+                };
+                Info.ProcessBook(this);
+            }
         }
 
-        public IEnumerable<(string title, string value)> GetInfo()
+        public async Task<List<(string title, string value)>> GetInfo()
         {
-            yield return ("Title", Title);
-            yield return ("Author", Author);
-            yield return ("Language", Language);
-            yield return ("Description", Description);
-            yield return ("", "");
+            await Info.WaitForProcessingToFinish();
 
-            yield return ("Book file path", Path);
-            yield return ("Book file size", (Info.BookFileSize / 1000d).ToString("n0") + " kB");
-            yield return ("", "");
+            return new List<(string title, string value)>()
+            {
+                ("Title", Title),
+                ("Author", Author),
+                ("Language", Language),
+                ("Description", Description),
+                ("", ""),
 
-            yield return ("Words in book", Info.ChapterInfo.Sum(p => p.Words).ToString("n0"));
-            yield return ("Characters in book", Info.ChapterInfo.Sum(p => p.Letters).ToString("n0"));
+                ("Book file path", Path),
+                ("Book file size", (Info.BookFileSize / 1000d).ToString("n0") + " kB"),
+                ("", ""),
+
+                ("Words in book", Info.ChapterInfo.Sum(p => p.Words).ToString("n0")),
+                ("Characters in book", Info.ChapterInfo.Sum(p => p.Letters).ToString("n0"))
+            };
         }
     }
 }

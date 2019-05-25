@@ -31,14 +31,11 @@ namespace EbookReader.BookLoaders.Html
             var title = Path.GetFileName(filePath);
             var data = await _fileService.ReadAllTextAsync(filePath);
 
-            var book = new Ebook(info)
+            var book = new Ebook(filePath, info)
             {
-                Path = filePath,
                 Title = title,
                 HtmlFiles = new List<EbookChapter>() { new EbookChapter(title, data) },
             };
-
-            info = book.Info; // Force generation
 
             return book;
         }

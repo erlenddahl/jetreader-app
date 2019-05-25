@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
 using EbookReader.Model.Format;
 using EbookReader.Service;
 using Newtonsoft.Json;
@@ -47,6 +48,20 @@ namespace EbookReader.Books
             return FileService.ToAbsolute(Id);
         }
 
+        private int _processingStatus = 0;
+        public async Task ProcessBook(Ebook ebook)
+        {
+            if (_processingStatus != 0) return;
+            _processingStatus = 1;
+            var fs = IocManager.Container.Resolve<FileService>();
+            await Task.WhenAll(
+                Task.Run(() => { Id = fs.GetFileHash(BookLocation).Result; }),
+                Task.Run(() => { BookFileSize = fs.GetFileSizeInBytes(BookLocation).Result; }),
+                Task.Run(() => { ChapterInfo = ebook.HtmlFiles.Select(p => new ChapterData(p)).ToList(); })
+            );
+            _processingStatus = 2;
+        }
+
         public async Task DeleteTempLocation(FileService fs)
         {
             await fs.DeleteFolder(GetTempLocation());
@@ -72,6 +87,12 @@ namespace EbookReader.Books
         {
             foreach (var file in System.IO.Directory.GetFiles(GetTempLocation(), "*.*"))
                 Debug.WriteLine(file);
+        }
+
+        public async Task WaitForProcessingToFinish()
+        {
+            while (_processingStatus < 2)
+                await Task.Delay(25);
         }
     }
 }

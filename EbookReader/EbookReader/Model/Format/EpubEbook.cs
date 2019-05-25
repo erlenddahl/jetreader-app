@@ -23,7 +23,7 @@ namespace EbookReader.Model.Format
             }
         }
 
-        public EpubEbook(EpubBook book, BookInfo info = null) : base(info)
+        public EpubEbook(EpubBook book, string path, BookInfo info = null) : base(path, info)
         {
             Title = book.Title;
             Author = string.Join(", ", book.Authors);
@@ -58,7 +58,7 @@ namespace EbookReader.Model.Format
 
         private IEnumerable<EbookChapter> GetHtmlFilesInReadingOrder(EpubBook book)
         {
-            Dictionary<string, EpubChapter> dict = book.TableOfContents.ToDictionary(k => k.FileName, v => v);
+            var dict = book.TableOfContents.ToDictionary(k => k.FileName, v => v);
             foreach (var chapter in book.SpecialResources.HtmlInReadingOrder)
             {
                 yield return new EbookChapter(GetTitle(dict, chapter), chapter.TextContent, chapter.FileName);
