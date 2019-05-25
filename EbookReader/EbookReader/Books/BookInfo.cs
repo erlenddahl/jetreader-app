@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.BookLoaders;
 using EbookReader.Model.Format;
 using EbookReader.Service;
 using Newtonsoft.Json;
@@ -69,18 +70,16 @@ namespace EbookReader.Books
                 return;
             }
 
-            // Run the processing in parallell
+            // Run the processing in parallel
             var fs = IocManager.Container.Resolve<FileService>();
-            await Task.WhenAll(
-                Task.Run(() => { BookFileSize = fs.GetFileSizeInBytes(BookLocation).Result; }),
-                Task.Run(() => { ChapterInfo = ebook.HtmlFiles.Select(p => new ChapterData(p)).ToList(); })
-            );
+            await Task.Run(() => { BookFileSize = fs.GetFileSizeInBytes(BookLocation).Result; });
+            await Task.Run(() => { ChapterInfo = ebook.HtmlFiles.Select(p => new ChapterData(p)).ToList(); });
+
+            _processingStatus = 2;
 
             // Save the processed information
             var shelf = IocManager.Container.Resolve<BookshelfService>();
             shelf.SaveBook(this);
-
-            _processingStatus = 2;
         }
 
         /// <summary>
@@ -118,6 +117,36 @@ namespace EbookReader.Books
         {
             foreach (var file in System.IO.Directory.GetFiles(GetTempLocation(), "*.*"))
                 Debug.WriteLine(file);
+        }
+
+        /// <summary>
+        /// Counts the number of words in every chapter before the current chapter, in the current chapter,
+        /// and after the current chapter. Used for estimating the reading progress.
+        /// </summary>
+        /// <param name="chapter"></param>
+        /// <returns></returns>
+        public (int wordsBefore, int wordsCurrent, int wordsAfter) GetWordCountsAround(EbookChapter chapter)
+        {
+            var (before, current, after) = (0, 0, 0);
+
+            var isBefore = true;
+            foreach (var c in ChapterInfo)
+            {
+                if (c.Href == chapter.Href)
+                {
+                    isBefore = false;
+                    current = c.Words;
+                }
+                else
+                {
+                    if (isBefore)
+                        before += c.Words;
+                    else
+                        after += c.Words;
+                }
+            }
+
+            return (before, current, after);
         }
     }
 }

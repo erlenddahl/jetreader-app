@@ -277,8 +277,6 @@ namespace EbookReader.Page
 
             SendChapter(chapter, positionInChapter);
 
-            await _ebook.Info.WaitForProcessingToFinish();
-
         }
 
         private void AppSleepSubscriber(AppSleepMessage msg) {
@@ -359,6 +357,15 @@ namespace EbookReader.Page
             Device.BeginInvokeOnMainThread(() => {
                 SendHtml(preparedHtml, chapter.Title, position, lastPage, marker);
                 SetStatusPanelValues(new Dictionary<string, object>() { { "bookTitle", _ebook.Title }, { "bookAuthor", _ebook.Author } });
+            });
+
+            await _ebook.Info.WaitForProcessingToFinish();
+
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                var (wordsBefore, wordsCurrent, wordsAfter) = _ebook.Info.GetWordCountsAround(chapter);
+                var json = new JObject {{"wordsBefore", wordsBefore}, {"wordsCurrent", wordsCurrent}, {"wordsAfter", wordsAfter}};
+                WebView.Messages.Send("setChapterInfo", json);
             });
 
         }

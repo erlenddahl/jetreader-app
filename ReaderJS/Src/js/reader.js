@@ -218,6 +218,17 @@ window.Ebook = {
                 item.containers[i].html(keyValues[key]);
         }
     },
+    refreshChapterInfo: function() {
+        var c = Ebook.chapterInfo;
+        if (!c) return;
+        var wordsPerPage = c.wordsCurrent / Ebook.totalPages;
+        var wordsRead = Ebook.currentPage * wordsPerPage;
+        var progress = (c.wordsBefore + wordsRead) / (c.wordsBefore + c.wordsCurrent + c.wordsAfter) * 100.0;
+        Ebook.setStatusPanelValues({
+            "bookProgress": progress.toFixed(1) + "%", //TODO: Make this page / totalPage (needs page count for each chapter)
+            "bookProgressPercentage": progress.toFixed(1) + "%"
+        });
+    },
     visualizeCommandCells: function () {
         if ($(".command-cells").length) {
             $(".command-cells").remove();
@@ -568,6 +579,7 @@ window.Ebook = {
                 "chapterProgress": Ebook.currentPage + " / " + Ebook.totalPages,
                 "position": Ebook.currentPosition
             });
+            Ebook.refreshChapterInfo();
 
             Messages.send("PageChange",
                 {
@@ -640,6 +652,10 @@ window.Messages = {
                 this.setStatusPanelData(data.StatusPanelData);
 
             return performance.now() - pageLoadTime;
+        },
+        setChapterInfo: function(data) {
+            Ebook.chapterInfo = data;
+            Ebook.refreshChapterInfo();
         },
         getPageCount: function() {
             return Ebook.getPageCount();

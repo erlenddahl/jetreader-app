@@ -26,3 +26,4 @@ Inactive
  - Translation support
  - Fix crash if book file is deleted
  - Make close button/show back arrow on book info popup
+ - Find a way to count/estimate number of pages per chapter (ghost Ebook loading every chapter?)

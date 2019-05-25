@@ -8,6 +8,8 @@ namespace EbookReader.Books
         public int Words { get; set; }
         public int Letters { get; set; }
 
+        public string Href { get; set; }
+
         public ChapterData()
         {
 
@@ -16,6 +18,7 @@ namespace EbookReader.Books
         public ChapterData(EbookChapter chapter)
         {
             Title = chapter.Title;
+            Href = chapter.Href;
             (Words, Letters) = chapter.GetStatistics();
         }
     }
