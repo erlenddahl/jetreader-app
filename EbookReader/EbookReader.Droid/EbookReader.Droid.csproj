@@ -280,7 +280,6 @@
     <Compile Include="DependencyService\AndroidFileService.cs" />
     <Compile Include="DependencyService\BatteryProvider.cs" />
     <Compile Include="DependencyService\BrightnessProvider.cs" />
-    <Compile Include="DependencyService\CryptoService.cs" />
     <Compile Include="DependencyService\FileHelper.cs" />
     <Compile Include="DependencyService\ToastService.cs" />
     <Compile Include="DependencyService\VersionProvider.cs" />
