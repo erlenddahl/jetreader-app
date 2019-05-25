@@ -43,12 +43,20 @@ namespace EbookReader.Books
 
         public long BookFileSize { get; set; }
 
+        private int _processingStatus = 0;
+
         private string GetTempLocation()
         {
             return FileService.ToAbsolute(Id);
         }
 
-        private int _processingStatus = 0;
+        /// <summary>
+        /// Does the required heavy processing async. This should only be done once per book (when adding it to the book shelf). The variable
+        /// _processingStatus will be set to 1 when processing is started, and 2 when it is finished. If it is not 0, the function will return immediately.
+        /// When heavy processing data is needed, you should await WaitForProcessingToFinish() to make sure it has been processed.
+        /// </summary>
+        /// <param name="ebook"></param>
+        /// <returns></returns>
         public async Task ProcessBook(Ebook ebook)
         {
             if (_processingStatus != 0) return;
@@ -61,6 +69,7 @@ namespace EbookReader.Books
                 return;
             }
 
+            // Run the processing in parallell
             var fs = IocManager.Container.Resolve<FileService>();
             await Task.WhenAll(
                 Task.Run(() => { BookFileSize = fs.GetFileSizeInBytes(BookLocation).Result; }),
@@ -74,6 +83,10 @@ namespace EbookReader.Books
             _processingStatus = 2;
         }
 
+        /// <summary>
+        /// Waits in increments of 25ms until the heavy processing has been finished.
+        /// </summary>
+        /// <returns></returns>
         public async Task WaitForProcessingToFinish()
         {
             while (_processingStatus < 2)
