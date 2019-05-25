@@ -1,7 +1,9 @@
-﻿namespace EbookReader.Model.WebViewMessages
+﻿using EbookReader.Config.CommandGrid;
+
+namespace EbookReader.Model.WebViewMessages
 {
     public class CommandRequest
     {
-        public string Command { get; set; }
+        public GridCommand Command { get; set; }
     }
 }

@@ -37,7 +37,7 @@ window.Ebook = {
     scrollSpeed: 0,
     doubleSwipe: false,
     nightMode: false,
-    init: function (width, height, margin, fontSize, scrollSpeed, doubleSwipe, nightMode) {
+    init: function (width, height, margin, fontSize, scrollSpeed, doubleSwipe, nightMode, commands) {
         this.webViewWidth = width;
         this.webViewHeight = height;
         this.webViewMargin = margin;
@@ -46,81 +46,7 @@ window.Ebook = {
         this.doubleSwipe = doubleSwipe;
         this.nightMode = nightMode;
         this.debugging = true;
-        this.commands = [
-            {
-                height: 3/10,
-                cells: [
-                    {
-                        tap: "prevPage",
-                        width: 1 / 3
-                    },
-                    {
-                        tap: "visualizeCommandCells",
-                        press: "openQuickSettings",
-                        width: 1 / 3,
-                        showText: true
-                    },
-                    {
-                        tap: "nextPage",
-                        width: 1 / 3
-                    }
-                ]
-            },
-            {
-                height: 3/10,
-                cells: [
-                    {
-                        tap: "prevPage",
-                        width: 1 / 3
-                    },
-                    {
-                        tap: "toggleFullscreen",
-                        press: "openQuickSettings",
-                        width: 1 / 3,
-                        showText: true
-                    },
-                    {
-                        tap: "nextPage",
-                        width: 1 / 3
-                    }
-                ]
-            },
-            {
-                height: 3 / 10,
-                cells: [
-                    {
-                        tap: "prevPage",
-                        width: 1 / 2,
-                        showText: true
-                    },
-                    {
-                        tap: "nextPage",
-                        width: 1 / 2,
-                        showText: true
-                    }
-                ]
-            },
-            {
-                height: 1 / 10,
-                cells: [
-                    {
-                        tap: "sync",
-                        width: 1 / 3,
-                        showText: true
-                    },
-                    {
-                        tap: "backup",
-                        width: 1 / 3,
-                        showText: true
-                    },
-                    {
-                        tap: "bookInfo",
-                        width: 1 / 3,
-                        showText: true
-                    }
-                ]
-            }
-        ];
+        this.commands = commands;
 
         this.htmlHelper.setFontSize();
         this.htmlHelper.setWidth();
@@ -311,17 +237,14 @@ window.Ebook = {
     performCommand: function(cmd) {
         Ebook.messagesHelper.sendDebug("Touch command: " + cmd);
         switch (cmd) {
-        case "nextPage":
+        case "NextPage":
             Ebook.goToNextPage(true);
             break;
-        case "prevPage":
+        case "PrevPage":
             Ebook.goToPreviousPage(true);
             break;
-        case "visualizeCommandCells":
+        case "VisualizeCommandCells":
             Ebook.visualizeCommandCells();
-            break;
-        case "openQuickSettings":
-            Ebook.messagesHelper.sendOpenQuickPanelRequest();
             break;
         default:
             Messages.send("CommandRequest", { Command: cmd });
@@ -646,7 +569,8 @@ window.Messages = {
                 data.FontSize,
                 data.ScrollSpeed,
                 data.DoubleSwipe,
-                data.NightMode);
+                data.NightMode,
+                data.Commands);
 
             if (data.StatusPanelData)
                 this.setStatusPanelData(data.StatusPanelData);
@@ -789,7 +713,6 @@ window.Gestures = {
         hammer.on("singletap", function (e) {
 
             if (isLink(e)) return;
-            Ebook.messagesHelper.sendDebug(e);
 
             var cell = Ebook.getCommandCell(e.center);
             if(!cell || !cell["tap"] || cell["tap"] !="toggleFullscreen")

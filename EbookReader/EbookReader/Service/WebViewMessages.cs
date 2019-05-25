@@ -22,7 +22,6 @@ namespace EbookReader.Service {
         public event EventHandler<Model.WebViewMessages.PageChange> OnPageChange;
         public event EventHandler<Model.WebViewMessages.NextChapterRequest> OnNextChapterRequest;
         public event EventHandler<Model.WebViewMessages.PrevChapterRequest> OnPrevChapterRequest;
-        public event EventHandler<Model.WebViewMessages.OpenQuickPanelRequest> OnOpenQuickPanelRequest;
         public event EventHandler<Model.WebViewMessages.LinkClicked> OnLinkClicked;
         public event EventHandler<Model.WebViewMessages.PanEvent> OnPanEvent;
         public event EventHandler<Model.WebViewMessages.KeyStroke> OnKeyStroke;

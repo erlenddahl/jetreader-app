@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Autofac;
 using EbookReader.BookLoaders;
 using EbookReader.Books;
+using EbookReader.Config.CommandGrid;
 using EbookReader.DependencyService;
 using EbookReader.Helpers;
 using EbookReader.Model.Format;
@@ -67,7 +68,6 @@ namespace EbookReader.Page
             // webview events
             WebView.Messages.OnNextChapterRequest += _messages_OnNextChapterRequest;
             WebView.Messages.OnPrevChapterRequest += _messages_OnPrevChapterRequest;
-            WebView.Messages.OnOpenQuickPanelRequest += _messages_OnOpenQuickPanelRequest;
             WebView.Messages.OnPageChange += Messages_OnPageChange;
             WebView.Messages.OnLinkClicked += Messages_OnLinkClicked;
             WebView.Messages.OnPanEvent += Messages_OnPanEvent;
@@ -112,7 +112,7 @@ namespace EbookReader.Page
         {
             switch (e.Command)
             {
-                case "toggleFullscreen":
+                case GridCommand.ToggleFullscreen:
                     try
                     {
                         _messageBus.Send(new FullscreenRequestMessage(null, null));
@@ -122,9 +122,12 @@ namespace EbookReader.Page
                         Debug.WriteLine(ex.Message);
                     }
                     break;
-                case "bookInfo":
+                case GridCommand.BookInfo:
                     var infoPage = new BookInfoPopup(_ebook);
                     await Navigation.PushPopupAsync(infoPage);
+                    break;
+                case GridCommand.OpenQuickSettings:
+                    await Navigation.PushPopupAsync(_quickPanel, false);
                     break;
             }
         }
@@ -426,10 +429,6 @@ namespace EbookReader.Page
             _messageBus.Send(new PageChangeMessage { CurrentPage = e.CurrentPage, TotalPages = e.TotalPages, Position = e.Position });
         }
 
-        private void _messages_OnOpenQuickPanelRequest(object sender, OpenQuickPanelRequest e) {
-            PopupNavigation.Instance.PushAsync(_quickPanel, false);
-        }
-
         private void _messages_OnPrevChapterRequest(object sender, PrevChapterRequest e) {
             if (_currentChapter > 0) {
                 SendChapter(_ebook.HtmlFiles[_currentChapter - 1], lastPage: true);
@@ -470,6 +469,7 @@ namespace EbookReader.Page
                 UserSettings.Control.ClickEverywhere,
                 UserSettings.Control.DoubleSwipe,
                 UserSettings.Reader.NightMode,
+                Commands = GridConfig.DefaultGrids[0].ToJson(),
                 StatusPanelData = new
                 {
                     PanelDefinition = new
