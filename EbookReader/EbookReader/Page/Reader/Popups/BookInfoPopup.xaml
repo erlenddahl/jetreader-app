@@ -6,11 +6,13 @@
     xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
     BackgroundColor="Transparent"
     x:Class="EbookReader.Page.Reader.Popups.BookInfoPopup">
-    <StackLayout x:Name="container" BackgroundColor="#EEEEEE" Margin="20, 20, 20, 20" Padding="20, 20, 20, 20" Orientation="Vertical">
-        <Image x:Name="Cover" 
-            Source="book.png"
-            HorizontalOptions="Fill" 
-            VerticalOptions="StartAndExpand" />
+    <ScrollView Margin="20, 20, 20, 20">
+        <StackLayout x:Name="container" BackgroundColor="#EEEEEE" Padding="20, 20, 20, 20" Orientation="Vertical">
+            <Image x:Name="Cover" 
+                Source="book.png"
+                HorizontalOptions="Fill" 
+                VerticalOptions="StartAndExpand" />
 
-    </StackLayout>
+        </StackLayout>
+    </ScrollView>
 </pages:PopupPage>

@@ -52,10 +52,5 @@ namespace EbookReader.Page.Reader.Popups
             Cover.Source = ImageSource.FromFile(book.Info.GetTempPath(book.CoverFilename));
             Cover.Aspect = Aspect.AspectFit;
         }
-
-        private async void Button_Clicked(object sender, System.EventArgs e)
-        {
-            await PopupNavigation.Instance.RemovePageAsync(this, false);
-        }
     }
 }
