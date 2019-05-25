@@ -16,7 +16,7 @@ namespace EbookReader.Service {
         readonly IBookRepository _bookRepository;
         readonly IBookmarkRepository _bookmarkRepository;
 
-        public BookshelfService(FileService fileService, ICryptoService cryptoService, IBookRepository bookRepository, IBookmarkRepository bookmarkRepository) {
+        public BookshelfService(FileService fileService, IBookRepository bookRepository, IBookmarkRepository bookmarkRepository) {
             _fileService = fileService;
             _bookRepository = bookRepository;
             _bookmarkRepository = bookmarkRepository;

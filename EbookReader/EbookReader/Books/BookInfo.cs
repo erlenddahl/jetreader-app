@@ -53,13 +53,31 @@ namespace EbookReader.Books
         {
             if (_processingStatus != 0) return;
             _processingStatus = 1;
+
+            if (ChapterInfo?.Any() ?? false)
+            {
+                // Already loaded (from book shelf, probably)
+                _processingStatus = 2;
+                return;
+            }
+
             var fs = IocManager.Container.Resolve<FileService>();
             await Task.WhenAll(
-                Task.Run(() => { Id = fs.GetFileHash(BookLocation).Result; }),
                 Task.Run(() => { BookFileSize = fs.GetFileSizeInBytes(BookLocation).Result; }),
                 Task.Run(() => { ChapterInfo = ebook.HtmlFiles.Select(p => new ChapterData(p)).ToList(); })
             );
+
+            // Save the processed information
+            var shelf = IocManager.Container.Resolve<BookshelfService>();
+            shelf.SaveBook(this);
+
             _processingStatus = 2;
+        }
+
+        public async Task WaitForProcessingToFinish()
+        {
+            while (_processingStatus < 2)
+                await Task.Delay(25);
         }
 
         public async Task DeleteTempLocation(FileService fs)
@@ -87,12 +105,6 @@ namespace EbookReader.Books
         {
             foreach (var file in System.IO.Directory.GetFiles(GetTempLocation(), "*.*"))
                 Debug.WriteLine(file);
-        }
-
-        public async Task WaitForProcessingToFinish()
-        {
-            while (_processingStatus < 2)
-                await Task.Delay(25);
         }
     }
 }

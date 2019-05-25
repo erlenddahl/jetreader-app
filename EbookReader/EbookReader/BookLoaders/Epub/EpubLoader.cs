@@ -34,7 +34,7 @@ namespace EbookReader.BookLoaders.Epub
         {
             return await Task.Run(() => {
                 var book = EpubReader.Read(_fileService.LoadFileStream(filePath), false);
-                var epub = new EpubEbook(book, path: filePath);
+                var epub = new EpubEbook(book, filePath, info);
                 return epub;
             });
         }

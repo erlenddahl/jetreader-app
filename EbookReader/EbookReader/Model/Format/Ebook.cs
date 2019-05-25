@@ -14,7 +14,7 @@ namespace EbookReader.Model.Format
 {
     public class Ebook
     {
-        public BookInfo Info { get; }
+        public BookInfo Info { get; private set; }
 
         public string Path { get; set; }
         public string Title { get; set; }
@@ -32,18 +32,20 @@ namespace EbookReader.Model.Format
         {
             Path = path;
             Info = info;
+        }
 
+        public async Task GenerateInfo()
+        {
             if (Info == null)
-            {
                 Info = new BookInfo
                 {
+                    Id = System.IO.Path.GetFileName(Path),
                     Title = Title,
                     Format = Format,
                     BookLocation = Path,
                     CoverFilename = CoverFilename
                 };
-                Info.ProcessBook(this);
-            }
+            await Info.ProcessBook(this);
         }
 
         public async Task<List<(string title, string value)>> GetInfo()

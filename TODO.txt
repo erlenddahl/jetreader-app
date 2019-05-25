@@ -26,4 +26,3 @@ Inactive
  - Translation support
  - Fix crash if book file is deleted
  - Make close button/show back arrow on book info popup
- - EpubLoader.OpenBook(string, BookInfo) is too slow.

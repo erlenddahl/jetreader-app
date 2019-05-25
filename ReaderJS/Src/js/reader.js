@@ -449,6 +449,10 @@ window.Ebook = {
 
         // Now select the inserted marker
         var elmnt = document.getElementById("jr-go-to-position");
+        if (!elmnt) {
+            Ebook.messagesHelper.sendDebug("Failed to locate position marker for position " + position);
+            return;
+        }
 
         // Scroll to the first page to reset the scrolling
         this.goToPageFast(1);

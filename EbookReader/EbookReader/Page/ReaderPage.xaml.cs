@@ -276,6 +276,9 @@ namespace EbookReader.Page
             }
 
             SendChapter(chapter, positionInChapter);
+
+            await _ebook.Info.WaitForProcessingToFinish();
+
         }
 
         private void AppSleepSubscriber(AppSleepMessage msg) {

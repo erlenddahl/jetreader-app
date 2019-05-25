@@ -37,6 +37,8 @@ namespace EbookReader.Model.Format
                 CoverFilename = book.Resources.Images.FirstOrDefault(p => p.Content == book.CoverImage)?.FileName;
                 CoverData = book.CoverImage;
             }
+
+            GenerateInfo();
         }
 
         private string GetTitle(Dictionary<string, EpubChapter> dict, EpubTextFile text)

@@ -36,6 +36,7 @@ namespace EbookReader.BookLoaders.Html
                 Title = title,
                 HtmlFiles = new List<EbookChapter>() { new EbookChapter(title, data) },
             };
+            book.GenerateInfo();
 
             return book;
         }
