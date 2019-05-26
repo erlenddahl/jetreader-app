@@ -115,7 +115,7 @@ namespace EbookReader.Page {
             var pickedFile = await CrossFilePicker.Current.PickFile();
             if (pickedFile == null) return;
 
-            var loadingPage = new LoadingPopupPage();
+            var loadingPage = new LoadingPopup();
             await Navigation.PushPopupAsync(loadingPage);
 
             try

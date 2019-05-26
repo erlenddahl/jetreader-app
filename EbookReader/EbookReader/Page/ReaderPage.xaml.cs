@@ -51,7 +51,7 @@ namespace EbookReader.Page
         QuickPanel _quickPanel;
         private IToastService _toastService;
 
-        LoadingPopupPage loadingPage = new LoadingPopupPage();
+        LoadingPopup loadingPage = new LoadingPopup();
 
         public ReaderPage() {
             InitializeComponent();

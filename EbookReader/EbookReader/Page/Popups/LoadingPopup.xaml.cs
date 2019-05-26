@@ -2,9 +2,9 @@
 
 namespace EbookReader.Page.Popups
 {
-    public partial class LoadingPopupPage : PopupPage
+    public partial class LoadingPopup : PopupPage
     {
-        public LoadingPopupPage()
+        public LoadingPopup()
         {
             InitializeComponent();
         }
