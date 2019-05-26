@@ -30,29 +30,26 @@ window.Ebook = {
     pageWidth: 0,
     totalPages: 0,
     currentPage: 1,
-    fontSize: 0,
     webViewWidth: 0,
     webViewHeight: 0,
-    webViewMargin: 0,
     scrollSpeed: 0,
     doubleSwipe: false,
-    nightMode: false,
-    init: function (width, height, margin, fontSize, scrollSpeed, doubleSwipe, nightMode, commands) {
-        this.webViewWidth = width;
-        this.webViewHeight = height;
-        this.webViewMargin = margin;
-        this.fontSize = fontSize;
-        this.scrollSpeed = scrollSpeed;
-        this.doubleSwipe = doubleSwipe;
-        this.nightMode = nightMode;
-        this.debugging = true;
-        this.commands = commands;
+    debugging: true,
+    init: function (data) {
+
+        this.webViewWidth = data.Width;
+        this.webViewHeight = data.Height;
+        this.fontSize = data.FontSize;
+        this.margins = data.Margins;
+        this.scrollSpeed = data.ScrollSpeed;
+        this.doubleSwipe = data.DoubleSwipe;
+        this.commands = data.Commands;
+        this.setTheme(data.Theme);
 
         this.htmlHelper.setFontSize();
         this.htmlHelper.setWidth();
         this.htmlHelper.setHeight();
         this.htmlHelper.setMargin();
-        this.htmlHelper.setNightMode();
 
         this.setUpColumns();
         this.setUpEvents();
@@ -132,6 +129,10 @@ window.Ebook = {
         }
 
         this.statusPanelItems = items;
+    },
+    setTheme: function(theme) {
+        this.theme = theme;
+        Ebook.htmlHelper.setColors();
     },
     setStatusPanelValues: function (keyValues) {
         if (!this.statusPanelItems) this.statusPanelItems = {};
@@ -258,7 +259,6 @@ window.Ebook = {
     },
     setUpEbook: function() {
         this.resizeImages();
-
         this.totalPages = this.getPageCount();
     },
     getPageCount: function() {
@@ -308,12 +308,12 @@ window.Ebook = {
         Ebook.goToPositionFast(position);
         Ebook.htmlHelper.showContent();
     },
-    changeMargin: function(margin) {
+    changeMargins: function(margins) {
         Ebook.htmlHelper.hideContent();
         var position = Ebook.getCurrentPosition();
 
         Ebook.goToPageFast(1);
-        Ebook.webViewMargin = margin;
+        Ebook.margins = margins;
         Ebook.htmlHelper.setWidth();
         Ebook.htmlHelper.setHeight();
         Ebook.htmlHelper.setMargin();
@@ -380,6 +380,8 @@ window.Ebook = {
         html = html.substring(0, position) + "<span id='jr-go-to-position'></span>" + html.substring(position);
         content.innerHTML = html;
 
+        Ebook.messagesHelper.sendDebug(html.length + ", " + position);
+
         // Now select the inserted marker
         var elmnt = document.getElementById("jr-go-to-position");
         if (!elmnt) {
@@ -406,7 +408,7 @@ window.Ebook = {
     getCurrentPosition: function () {
 
         // Get the caret position for the upper left corner of the screen (with a slight margin)
-        var range = document.caretRangeFromPoint(Ebook.webViewMargin + 10, Ebook.webViewMargin + 10);
+        var range = document.caretRangeFromPoint(Ebook.margins.Left + 10, Ebook.margins.Top + 10);
 
         // Due to the way the caret position is defined (it's inside the innermost HTML element, most
         // often a <p>), we can't use the startOffset property directly (as that's relative to the parent
@@ -442,8 +444,8 @@ window.Ebook = {
         }
     },
     resizeImages: function() {
-        $("img").css("max-width", (Ebook.webViewWidth - (2 * Ebook.webViewMargin)) + "px");
-        $("img").css("max-height", (Ebook.webViewHeight - (2 * Ebook.webViewMargin)) + "px");
+        $("img").css("max-width", (Ebook.webViewWidth - (2 * Ebook.margins.Left)) + "px");
+        $("img").css("max-height", (Ebook.webViewHeight - (2 * Ebook.margins.Top)) + "px");
     },
 
     panEventCounter: 0,
@@ -470,16 +472,19 @@ window.Ebook = {
             });
         },
         setWidth: function() {
-            $("#columns-outer").css("width", (Ebook.webViewWidth - (2 * Ebook.webViewMargin)) + "px");
+            $("#columns-outer").css("width", (Ebook.webViewWidth - (2 * Ebook.margins.Left)) + "px");
         },
         setHeight: function() {
-            $("#columns-outer").css("height", (Ebook.webViewHeight - (2 * Ebook.webViewMargin)) + "px");
+            $("#columns-outer").css("height", (Ebook.webViewHeight - (2 * Ebook.margins.Top)) + "px");
         },
         setMargin: function() {
             $("#columns-outer").css({
-                "left": Ebook.webViewMargin + "px",
-                "top": Ebook.webViewMargin + "px"
+                "left": Ebook.margins.Left + "px",
+                "top": Ebook.margins.Top + "px"
             });
+
+            Ebook.messagesHelper.sendDebug($("#columns-outer").css(["width", "height", "left", "top"]));
+            Ebook.messagesHelper.sendDebug(Ebook.margins);
         },
         showContent: function() {
             $("#content").css("opacity", 1);
@@ -487,12 +492,12 @@ window.Ebook = {
         hideContent: function() {
             $("#content").css("opacity", 0);
         },
-        setNightMode: function() {
+        setColors: function() {
             $("body").css({
-                "background-color": Ebook.nightMode ? "#181819" : "#ffffff",
-                "color": Ebook.nightMode ? "#eff2f7" : "#000000"
+                "background-color": Ebook.theme.BackgroundColor,
+                "color": Ebook.theme.ForegroundColor
             });
-        },
+        }
     },
     messagesHelper: {
         sendPageChange: function () {
@@ -556,20 +561,21 @@ window.Messages = {
     },
     parse: function(data) {
         var json = JSON.parse(Base64.decode(data));
+
+        Ebook.messagesHelper.sendDebug("Received action: '" + json.Action + "'");
+
+        if (!this.actions[json.Action]) {
+            Ebook.messagesHelper.sendDebug("Missing action: '" + json.Action + "'");
+            return "";
+        }
         var res = this.actions[json.Action](json.Data);
         Ebook.log("IN: " + json.Action);
         return res || "";
     },
     actions: {
         init: function(data) {
-            Ebook.init(data.Width,
-                data.Height,
-                data.Margin,
-                data.FontSize,
-                data.ScrollSpeed,
-                data.DoubleSwipe,
-                data.NightMode,
-                data.Commands);
+
+            Ebook.init(data);
 
             if (data.StatusPanelData)
                 this.setStatusPanelData(data.StatusPanelData);
@@ -629,8 +635,8 @@ window.Messages = {
         resize: function (data) {
             Ebook.resize(data.Width, data.Height);
         },
-        changeMargin: function(data) {
-            Ebook.changeMargin(data.Margin);
+        changeMargins: function(data) {
+            Ebook.changeMargins(data);
         },
         goToPage: function(data) {
             if (data.Page > 0) {
@@ -640,10 +646,6 @@ window.Messages = {
             } else if (data.Previous) {
                 Ebook.goToPreviousPage();
             }
-        },
-        setNightMode: function(data) {
-            Ebook.nightMode = data.NightMode;
-            Ebook.htmlHelper.setNightMode();
         },
         setTheme: function(data) {
             Ebook.setTheme(data);

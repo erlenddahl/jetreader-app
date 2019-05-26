@@ -88,8 +88,6 @@ namespace EbookReader.Page
 
             NavigationPage.SetHasNavigationBar(this, false);
             _messageBus.Send(new FullscreenRequestMessage(true, true));
-
-            ChangeTheme();
         }
 
         private object GetBatteryHtml()
@@ -141,16 +139,7 @@ namespace EbookReader.Page
 
         private void ChangeTheme(ChangeThemeMessage msg = null)
         {
-            if (UserSettings.Reader.NightMode)
-            {
-                BackgroundColor = Color.FromRgb(24, 24, 25);
-            }
-            else
-            {
-                BackgroundColor = Color.FromRgb(0, 0, 0);
-            }
-
-            SendNightMode(UserSettings.Reader.NightMode);
+            SendTheme(msg.Theme);
         }
 
         private void SubscribeMessages()
@@ -325,7 +314,7 @@ namespace EbookReader.Page
         }
 
         private void ChangeMargin(ChangeMarginMessage msg) {
-            SetMargin(msg.Margin);
+            SetMargins(msg.Margins);
         }
 
         private void ChangeFontSize(ChangeFontSizeMessage msg) {
@@ -464,12 +453,11 @@ namespace EbookReader.Page
             {
                 Width = width,
                 Height = height,
-                UserSettings.Reader.Margin,
                 UserSettings.Reader.FontSize,
+                UserSettings.Reader.Margins,
                 UserSettings.Reader.ScrollSpeed,
-                UserSettings.Control.ClickEverywhere,
                 UserSettings.Control.DoubleSwipe,
-                UserSettings.Reader.NightMode,
+                UserSettings.Reader.Theme,
                 Commands = GridConfig.DefaultGrids[0].ToJson(),
                 StatusPanelData = new
                 {
@@ -522,7 +510,7 @@ namespace EbookReader.Page
             WebView.Messages.Send("loadHtml", json);
         }
 
-        private void SetFontSize(int fontSize) {
+        private void SetFontSize(double fontSize) {
             var json = new {
                 FontSize = fontSize
             };
@@ -530,12 +518,8 @@ namespace EbookReader.Page
             WebView.Messages.Send("changeFontSize", json);
         }
 
-        private void SetMargin(int margin) {
-            var json = new {
-                Margin = margin
-            };
-
-            WebView.Messages.Send("changeMargin", json);
+        private void SetMargins(Margin margins) {
+            WebView.Messages.Send("changeMargin", margins);
         }
 
         private void GoToPosition(int position) {
@@ -558,14 +542,9 @@ namespace EbookReader.Page
             WebView.Messages.Send("goToPage", json);
         }
 
-        private void SendNightMode(bool nightmode)
+        private void SendTheme(Theme theme)
         {
-            var json = new
-            {
-                NightMode = nightmode
-            };
-
-            WebView.Messages.Send("setNightMode", json);
+            WebView.Messages.Send("setTheme", theme);
         }
         #endregion
     }
