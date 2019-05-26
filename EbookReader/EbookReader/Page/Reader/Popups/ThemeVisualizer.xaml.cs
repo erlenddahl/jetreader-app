@@ -17,7 +17,7 @@ namespace EbookReader.Page.Reader.Popups
 
         public Theme Theme
         {
-            get => (Theme) GetValue(ThemeProperty);
+            get => (Theme)GetValue(ThemeProperty);
             set => SetValue(ThemeProperty, value);
         }
 

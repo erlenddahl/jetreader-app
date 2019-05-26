@@ -4,6 +4,7 @@
                  xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
                  xmlns:popups="clr-namespace:EbookReader.Page.Reader.Popups;assembly=EbookReader"
                  x:Class="EbookReader.Page.Reader.Popups.QuickMenuPopup"
+                 BackgroundColor="Transparent"
                  CloseWhenBackgroundIsClicked="True">
     <Frame HorizontalOptions="Fill" VerticalOptions="CenterAndExpand" BackgroundColor="#EEEEEE" BorderColor="#555555" CornerRadius="10" HasShadow="True" Margin="20">
         <StackLayout Orientation="Vertical" HorizontalOptions="Fill" Spacing="15">

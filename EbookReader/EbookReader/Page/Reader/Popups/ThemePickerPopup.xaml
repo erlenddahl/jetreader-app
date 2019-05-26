@@ -5,7 +5,9 @@
                  xmlns:popups="clr-namespace:EbookReader.Page.Reader.Popups;assembly=EbookReader"
                  x:Class="EbookReader.Page.Reader.Popups.ThemePickerPopup">
     <StackLayout VerticalOptions="Center" Margin="20">
-        <FlexLayout x:Name="Container" AlignItems="Center" JustifyContent="Center">
-        </FlexLayout>
+        <ScrollView>
+            <FlexLayout x:Name="Container" AlignItems="Center" Wrap="Wrap" JustifyContent="Center">
+            </FlexLayout>
+        </ScrollView>
     </StackLayout>
 </pages:PopupPage>

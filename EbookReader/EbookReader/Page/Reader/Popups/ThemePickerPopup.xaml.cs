@@ -44,7 +44,7 @@ namespace EbookReader.Page.Reader.Popups
                     Theme = theme,
                     HeightRequest = 150,
                     WidthRequest = 150,
-                    Margin = new Thickness(20)
+                    Margin = new Thickness(20),
                 };
 
 
