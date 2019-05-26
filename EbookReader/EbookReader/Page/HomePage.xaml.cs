@@ -175,6 +175,9 @@ namespace EbookReader.Page {
             var page = new ReaderPage();
             page.LoadBook(book);
             await Navigation.PushAsync(page);
+
+            book.LastRead = DateTime.Now;
+            _bookshelfService.SaveBook(book);
         }
 
         private void MyFloatButton_Clicked(object sender, EventArgs e) {

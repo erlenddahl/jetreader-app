@@ -14,5 +14,6 @@ namespace EbookReader.Service {
         void RemoveById(string id);
         void SaveBook(BookInfo info);
         void Clear();
+        Task<BookInfo> LoadMostRecentBook();
     }
 }

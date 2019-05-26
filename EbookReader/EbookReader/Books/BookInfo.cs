@@ -20,6 +20,7 @@ namespace EbookReader.Books
         public DateTime? BookmarksSyncLastChange { get; set; }
         public EbookFormat Format { get; set; }
         public DateTime? FinishedReading { get; set; }
+        public DateTime LastRead { get; set; }
         public string BookLocation { get; set; }
         public string CoverFilename { get; set; }
 

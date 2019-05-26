@@ -15,8 +15,9 @@ namespace EbookReader.Repository {
             _connection = databaseService.Connection;
         }
 
-        public Task<List<BookInfo>> GetAllBooksAsync() {
-            return _connection.Table<BookInfo>().ToListAsync();
+        public Task<List<BookInfo>> GetAllBooksAsync()
+        {
+            return _connection.Table<BookInfo>().OrderByDescending(p => p.LastRead).ToListAsync();
         }
 
         public Task<BookInfo> GetBookByIdAsync(string id) {
@@ -34,6 +35,11 @@ namespace EbookReader.Repository {
         public Task<int> DeleteAllBooksAsync()
         {
             return _connection.Table<BookInfo>().DeleteAsync(p => true);
+        }
+
+        public Task<BookInfo> GetMostRecentBook()
+        {
+            return _connection.Table<BookInfo>().OrderByDescending(p => p.LastRead).FirstOrDefaultAsync();
         }
     }
 }

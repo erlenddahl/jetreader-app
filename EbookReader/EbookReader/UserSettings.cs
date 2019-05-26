@@ -41,6 +41,12 @@ namespace EbookReader {
             private const int MarginDefault = 30;
             private const int ScrollSpeedDefault = 200;
 
+            public static bool OpenPreviousBookOnLaunch
+            {
+                get => AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(OpenPreviousBookOnLaunch)), true);
+                set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Reader), nameof(OpenPreviousBookOnLaunch)), value);
+            }
+
             public static double FontSize
             {
                 get => AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(FontSize)), FontSizeDefault);

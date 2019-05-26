@@ -66,6 +66,11 @@ namespace EbookReader.Service {
             _bookRepository.DeleteAllBooksAsync();
         }
 
+        public Task<BookInfo> LoadMostRecentBook()
+        {
+            return _bookRepository.GetMostRecentBook();
+        }
+
         public async Task<BookInfo> LoadBookById(string id) {
             return await _bookRepository.GetBookByIdAsync(id);
         }

@@ -3,7 +3,7 @@
     - Add more settings
     - Remove all references to the old QuickMenu
     - Re-implement bookmarks/chapters.
- - Automatically open previous book
+ - When automatically opening previous book, make sure there is a nav page surrounding it (left side drawer)
  - Add app themes (at least light/dark)
  - Implement statistics
  - Implement easy syncing using erlenddahl.net (or custom url)

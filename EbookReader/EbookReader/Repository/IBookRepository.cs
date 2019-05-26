@@ -12,5 +12,6 @@ namespace EbookReader.Repository {
         Task<int> DeleteBookAsync(BookInfo book);
         Task<int> SaveBookAsync(BookInfo item);
         Task<int> DeleteAllBooksAsync();
+        Task<BookInfo> GetMostRecentBook();
     }
 }

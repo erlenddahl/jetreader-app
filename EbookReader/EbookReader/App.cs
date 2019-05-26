@@ -12,6 +12,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using EbookReader.DependencyService;
 using System.Reflection;
+using EbookReader.Repository;
 using PCLAppConfig;
 
 namespace EbookReader {
@@ -28,17 +29,34 @@ namespace EbookReader {
 
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
 
-            if (App.HasMasterDetailPage) {
-                MainPage = new MainPage();
 
-            } else {
-                MainPage = new NavigationPage(new HomePage());
+            if (UserSettings.Reader.OpenPreviousBookOnLaunch)
+            {
+                var repo = IocManager.Container.Resolve<IBookRepository>();
+                var book = repo.GetMostRecentBook().Result;
+
+                var page = new ReaderPage();
+                page.LoadBook(book);
+                CreateNavPage(page);
             }
+            else
+                CreateNavPage(new HomePage());
+        }
 
+        private void CreateNavPage(Xamarin.Forms.Page page)
+        {
+            if (HasMasterDetailPage)
+            {
+                MainPage = page;
+            }
+            else
+            {
+                MainPage = new NavigationPage(page);
+            }
         }
 
         public static bool IsCurrentPageType(Type type) {
-            var currentPage = App.Current.MainPage;
+            var currentPage = Current.MainPage;
 
             if (currentPage.GetType() == type) {
                 return true;
@@ -49,8 +67,7 @@ namespace EbookReader {
                 return true;
             }
 
-            var masterDetail = currentPage as MainPage;
-            if (masterDetail != null) {
+            if (currentPage is MainPage masterDetail) {
                 var lastDetailPage = masterDetail.Detail.Navigation.NavigationStack.LastOrDefault();
                 if (lastDetailPage != null && lastDetailPage.GetType() == type) {
                     return true;
@@ -79,9 +96,7 @@ namespace EbookReader {
         }
 
         private async void BackPressedMessageSubscriber(BackPressedMessage msg) {
-            var master = MainPage as MainPage;
-
-            if (master != null)
+            if (MainPage is MainPage master)
             {
                 var detailPage = master.Detail.Navigation.NavigationStack.LastOrDefault();
 
