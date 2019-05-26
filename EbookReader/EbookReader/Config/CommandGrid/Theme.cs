@@ -24,6 +24,20 @@ namespace EbookReader.Config.CommandGrid
                 Name = "White",
                 BackgroundColor = "#ffffff",
                 ForegroundColor = "#000000"
+            },
+
+            new Theme()
+            {
+                Name = "Gray",
+                BackgroundColor = "#b3b3b3",
+                ForegroundColor = "#272727"
+            },
+
+            new Theme()
+            {
+                Name = "Yellow",
+                BackgroundColor = "#fff9d3",
+                ForegroundColor = "#704214"
             }
         };
 
