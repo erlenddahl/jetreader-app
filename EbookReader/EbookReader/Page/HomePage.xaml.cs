@@ -24,16 +24,13 @@ namespace EbookReader.Page {
     public partial class HomePage : ContentPage {
         readonly IBookshelfService _bookshelfService;
         readonly IMessageBus _messageBus;
-        readonly ISyncService _syncService;
 
         public HomePage() {
-
             InitializeComponent();
 
             // ioc
             _bookshelfService = IocManager.Container.Resolve<IBookshelfService>();
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
-            _syncService = IocManager.Container.Resolve<ISyncService>();
 
             _messageBus.Subscribe<AddBookClickedMessage>(AddBook);
             _messageBus.Subscribe<OpenBookMessage>(OpenBook);
@@ -68,8 +65,6 @@ namespace EbookReader.Page {
                 return false;
             });
 
-            ShowAnalyticsAgreement();
-
             UserSettings.FirstRun = false;
 
             LoadBookshelf();
@@ -81,13 +76,6 @@ namespace EbookReader.Page {
 
         private async void SettingsItem_Clicked(object sender, EventArgs e) {
             await Navigation.PushAsync(new SettingsPage());
-        }
-
-        private async void ShowAnalyticsAgreement() {
-            if (UserSettings.FirstRun) {
-                var result = await DisplayAlert("Agreement with collection of anonymous data", "I agree with collecting of anonymous information about using of the app. This is important for application improvements.", "I agree", "No");
-                UserSettings.AnalyticsAgreement = result;
-            }
         }
 
         private async void LoadBookshelf() {
@@ -165,8 +153,10 @@ namespace EbookReader.Page {
                 }
                 _bookshelfService.RemoveById(msg.Book.Id);
 
-                if (confirm == deleteSyncButton) {
-                    _syncService.DeleteBook(msg.Book.Id);
+                if (confirm == deleteSyncButton)
+                {
+                    var syncService = IocManager.Container.Resolve<ISyncService>();
+                    syncService.DeleteBook(msg.Book.Id);
                 }
             }
         }
