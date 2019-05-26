@@ -342,6 +342,26 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
+    <AndroidResource Include="..\EbookReader\Content\brightness_down.png">
+      <Link>Resources\drawable\brightness_down.png</Link>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="..\EbookReader\Content\brightness_up.png">
+      <Link>Resources\drawable\brightness_up.png</Link>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="..\EbookReader\Content\cheveron_down.png">
+      <Link>Resources\drawable\cheveron_down.png</Link>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="..\EbookReader\Content\cheveron_up.png">
+      <Link>Resources\drawable\cheveron_up.png</Link>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
     <AndroidResource Include="..\EbookReader\Content\info.png">
       <Link>Resources\drawable\info.png</Link>
     </AndroidResource>

@@ -51,15 +51,30 @@
       <Compile Update="Page\MainPageMaster.xaml.cs">
         <DependentUpon>MainPageMaster.xaml</DependentUpon>
       </Compile>
+      <Compile Update="Page\Popups\LoadingPopup.xaml.cs">
+        <DependentUpon>LoadingPopup.xaml</DependentUpon>
+      </Compile>
       <Compile Update="Page\Reader\Popups\BookInfoPopup.xaml.cs">
         <DependentUpon>BookInfoPopup.xaml</DependentUpon>
+      </Compile>
+      <Compile Update="Page\Reader\Popups\ThemePickerPopup.xaml.cs">
+        <DependentUpon>ThemePickerPopup.xaml</DependentUpon>
+      </Compile>
+      <Compile Update="Page\Reader\Popups\QuickMenuPopup.xaml.cs">
+        <DependentUpon>QuickMenuPopup.xaml</DependentUpon>
+      </Compile>
+      <Compile Update="Page\Reader\Popups\ThemeVisualizer.xaml.cs">
+        <DependentUpon>ThemeColorVisualizer.xaml</DependentUpon>
       </Compile>
       <Compile Update="Page\Settings\Popups\CommandGridConfigPopup.xaml.cs">
         <DependentUpon>CommandGridConfigPopup.xaml</DependentUpon>
       </Compile>
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Update="Page\Popups\LoadingPopupPage.xaml.xaml">
+      <EmbeddedResource Update="Page\Popups\LoadingPopup.xaml">
+        <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Page\Reader\Popups\ThemeVisualizer.xaml">
         <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       </EmbeddedResource>
       <EmbeddedResource Update="Page\Settings\Popups\CommandGridConfigPopup.xaml">
@@ -95,6 +110,12 @@
         <Generator>MSBuild:Compile</Generator>
       </None>
       <None Update="Page\Reader\Popups\BookInfoPopup.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+      <None Update="Page\Reader\Popups\QuickMenuPopup.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+      <None Update="Page\Reader\Popups\ThemeColorVisualizer.xaml">
         <Generator>MSBuild:Compile</Generator>
       </None>
       <None Update="Page\Reader\QuickPanel.xaml">

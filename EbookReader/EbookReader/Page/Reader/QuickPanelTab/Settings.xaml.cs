@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.Config.CommandGrid;
 using EbookReader.DependencyService;
 using EbookReader.Service;
 using EbookReader.Model.Messages;
@@ -24,8 +25,6 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
 
             InitializeComponent();
 
-            BindingContext = new QuickPanelSettingsVm();
-
             if (Device.RuntimePlatform == Device.Android) {
                 FontPicker.WidthRequest = 75;
                 FontPicker.Title = "Font size";
@@ -45,15 +44,13 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
 
         private void Brightness_ValueChanged(object sender, ValueChangedEventArgs e) {
             if (e.OldValue != e.NewValue) {
-                _messageBus.Send(new ChangesBrightnessMessage {
-                    Brightness = (float)e.NewValue / 100
-                });
+                _messageBus.Send(new ChangesBrightnessMessage(e.NewValue / 100d));
             }
         }
 
         private void Switch_OnToggled(object sender, ToggledEventArgs e)
         {
-            _messageBus.Send(new ChangeThemeMessage());
+            _messageBus.Send(new ChangeThemeMessage(Theme.DefaultThemes[e.Value ? 0 : 1])); //TODO: Fix this
         }
     }
 }

@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace EbookReader.Model.Messages {
     public class ChangesBrightnessMessage {
-        public float Brightness { get; set; }
+        public double Brightness { get; set; }
+
+        public ChangesBrightnessMessage(double brightness)
+        {
+            Brightness = brightness;
+        }
     }
 }

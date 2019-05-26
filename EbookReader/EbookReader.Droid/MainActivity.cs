@@ -124,11 +124,11 @@ namespace EbookReader.Droid {
         private void ChangeBrightness(ChangesBrightnessMessage msg) {
             RunOnUiThread(() => {
                 var brightness = Math.Min(msg.Brightness, 1);
-                brightness = Math.Max(brightness, 0);
+                brightness = Math.Max(brightness, 0.01); // Using a minimum of 0.01 because 0.00 seems to set it to system brightness
 
                 var attributesWindow = new WindowManagerLayoutParams();
                 attributesWindow.CopyFrom(Window.Attributes);
-                attributesWindow.ScreenBrightness = brightness;
+                attributesWindow.ScreenBrightness = (float)brightness;
                 Window.Attributes = attributesWindow;
             });
         }

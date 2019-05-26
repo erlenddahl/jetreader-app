@@ -11,14 +11,7 @@ using Xamarin.Forms;
 namespace EbookReader.Model.View {
     public class SettingsReaderVm {
 
-        public FontSizeVm FontSize { get; set; } = new FontSizeVm();
-
-        public MarginVm Margin { get; set; } = new MarginVm();
-
         public ScrollSpeedVm ScrollSpeed { get; set; } = new ScrollSpeedVm();
-
-        public NightModeVm NightMode { get; set; } = new NightModeVm();
-
         public FullscreenVm Fullscreen { get; set; } = new FullscreenVm();
     }
 }

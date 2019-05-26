@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<StackLayout xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="EbookReader.Page.Reader.Popups.ThemeVisualizer"
+             x:Name="this"
+             BackgroundColor="{Binding Theme.BackgroundColorXamarin, Source={x:Reference this}}">
+    <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="FillAndExpand" Text="{Binding Theme.Name, Source={x:Reference this}}" TextColor="{Binding Theme.ForegroundColorXamarin, Source={x:Reference this}}" />
+</StackLayout>

@@ -48,7 +48,7 @@ namespace EbookReader.Page
         Position _lastLoadedPosition = new Position();
         bool _syncPending = false;
 
-        QuickPanel _quickPanel;
+        QuickMenuPopup _quickPanel;
         private IToastService _toastService;
 
         LoadingPopup loadingPage = new LoadingPopup();
@@ -83,8 +83,8 @@ namespace EbookReader.Page
                 quickPanelPosition = new Rectangle(0, 0, 0.33, 1);
             }
             
-            _quickPanel = new QuickPanel();
-            _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
+            _quickPanel = new QuickMenuPopup();
+            //TODO: _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
 
             NavigationPage.SetHasNavigationBar(this, false);
             _messageBus.Send(new FullscreenRequestMessage(true, true));
@@ -171,8 +171,9 @@ namespace EbookReader.Page
 
             if ((UserSettings.Control.BrightnessChange != BrightnessChange.Left || e.X > edge) && (UserSettings.Control.BrightnessChange != BrightnessChange.Right || e.X < totalWidth - edge)) return;
 
-            var brightness = 1 - ((float)e.Y / ((int)WebView.Height + (2 * UserSettings.Reader.Margin)));
-            _messageBus.Send(new ChangesBrightnessMessage { Brightness = brightness });
+            var m = 30; //TODO: Fix this, AND fix the actual brightness setting function (relative, not absolute)
+            var brightness = 1 - ((float)e.Y / ((int)WebView.Height + (2 * m)));
+            _messageBus.Send(new ChangesBrightnessMessage(brightness));
         }
 
         private void Messages_OnLinkClicked(object sender, LinkClicked e)
@@ -254,7 +255,7 @@ namespace EbookReader.Page
             var position = _bookshelfBook.Position;
 
             Title = _ebook.Title + " - " + _ebook.Author;
-            _quickPanel.PanelContent.SetNavigation(_ebook.HtmlFiles);
+            //TODO: _quickPanel.PanelContent.SetNavigation(_ebook.HtmlFiles);
             RefreshBookmarks();
 
             var chapter = _ebook.HtmlFiles.First();
@@ -298,7 +299,7 @@ namespace EbookReader.Page
 
         private async void RefreshBookmarks() {
             var bookmarks = await _bookmarkService.LoadBookmarksByBookId(_bookshelfBook.Id);
-            _quickPanel.PanelBookmarks.SetBookmarks(bookmarks);
+            //TODO: _quickPanel.PanelBookmarks.SetBookmarks(bookmarks);
         }
 
         private void OpenBookmark(OpenBookmarkMessage msg) {

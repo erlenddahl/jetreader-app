@@ -1,19 +1,10 @@
-Active
- - Make more flexible control system (three columns/three rows? customizable)
-    - Working on configuration.
-        - Make full list of actions
-        - Select from presets or pick rows/cells manually
-        - Pick both tap and press action per area
- - Make the tiny status bar more flexible
-    - Implement remaining status bar items (book progress most important)
-    - Add configuration system
-
-Inactive
  - Optmimize launch time
+ - Rework the QuickPanel
+    - Add more settings
+    - Remove all references to the old QuickMenu
+    - Re-implement bookmarks/chapters.
  - Automatically open previous book
- - Change nightmode to general theme system
-    - Make sure it also (can) affect the app itself, and not only the reader
- - Rework status bar (more info, customizable info, smaller, position)
+ - Add app themes (at least light/dark)
  - Implement statistics
  - Implement easy syncing using erlenddahl.net (or custom url)
  - New icon
@@ -24,5 +15,12 @@ Inactive
  - Annotation/highlighting
  - Translation support
  - Fix crash if book file is deleted
- - Make close button/show back arrow on book info popup
- - Find a way to count/estimate number of pages per chapter (ghost Ebook loading every chapter?)
+ - Make all popups use the same frame design
+ - Find a way to count/estimate number of pages per chapter (ghost Ebook loading every chapter?), use this for BookProgress
+ - Add config for CommandGrid
+ - Add config for StatusPanel
+
+
+
+
+Ikon: https://www.iconfinder.com/iconsets/zondicons

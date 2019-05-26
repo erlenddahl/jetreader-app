@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+                 xmlns:popups="clr-namespace:EbookReader.Page.Reader.Popups;assembly=EbookReader"
+                 x:Class="EbookReader.Page.Reader.Popups.QuickMenuPopup"
+                 CloseWhenBackgroundIsClicked="True">
+    <Frame HorizontalOptions="Fill" VerticalOptions="CenterAndExpand" BackgroundColor="#EEEEEE" BorderColor="#555555" CornerRadius="10" HasShadow="True" Margin="20">
+        <StackLayout Orientation="Vertical" HorizontalOptions="Fill" Spacing="15">
+
+            <StackLayout Orientation="Horizontal">
+                <ImageButton Source="brightness_down.png" WidthRequest="24" HeightRequest="24" HorizontalOptions="Start" Clicked="BrightnessDownClicked" BackgroundColor="Transparent" />
+                <Slider Minimum="0" Maximum="100" Value="{Binding Brightness}" HorizontalOptions="FillAndExpand"></Slider>
+                <ImageButton Source="brightness_up.png" WidthRequest="24" HeightRequest="24"  HorizontalOptions="End" Clicked="BrightnessUpClicked" BackgroundColor="Transparent" />
+            </StackLayout>
+
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Text size" HorizontalOptions="StartAndExpand"></Label>
+                <ImageButton Source="cheveron_down.png" WidthRequest="24" HeightRequest="24" HorizontalOptions="End" Clicked="FontSizeDownClicked" BackgroundColor="Transparent"></ImageButton>
+                <Label Text="{Binding FontSize}" FontSize="20" HorizontalOptions="End"></Label>
+                <ImageButton Source="cheveron_up.png" WidthRequest="24" HeightRequest="24" HorizontalOptions="End" Clicked="FontSizeUpClicked" BackgroundColor="Transparent"></ImageButton>
+            </StackLayout>
+
+            <StackLayout x:Name="themeRow" Orientation="Horizontal">
+                <Label Text="Theme" HorizontalOptions="StartAndExpand"></Label>
+                <popups:ThemeVisualizer Theme="{Binding SelectedTheme}" WidthRequest="80" HeightRequest="40"></popups:ThemeVisualizer>
+            </StackLayout>
+
+        </StackLayout>
+    </Frame>
+</pages:PopupPage>

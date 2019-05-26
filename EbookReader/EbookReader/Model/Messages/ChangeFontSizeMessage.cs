@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace EbookReader.Model.Messages {
     public class ChangeFontSizeMessage {
-        public int FontSize { get; set; }
+        public double FontSize { get; set; }
+
+        public ChangeFontSizeMessage(double fontSize)
+        {
+            FontSize = fontSize;
+        }
     }
 }

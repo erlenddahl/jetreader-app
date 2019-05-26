@@ -5,9 +5,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using EbookReader.Config.CommandGrid;
 using EbookReader.DependencyService;
 using EbookReader.Provider;
 using Microsoft.AppCenter.Analytics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Plugin.Settings;
 using Plugin.Settings.Abstractions;
 using Xamarin.Forms;
@@ -34,28 +37,41 @@ namespace EbookReader {
         }
 
         public static class Reader {
-            private static readonly int FontSizeDefault = Device.RuntimePlatform == Device.Android ? 20 : 40;
-            private static readonly int MarginDefault = 30;
-            private static readonly int ScrollSpeedDefault = 200;
+            private static readonly double FontSizeDefault = Device.RuntimePlatform == Device.Android ? 20 : 40;
+            private const int MarginDefault = 30;
+            private const int ScrollSpeedDefault = 200;
 
-            public static int FontSize {
+            public static double FontSize
+            {
                 get => AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(FontSize)), FontSizeDefault);
                 set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Reader), nameof(FontSize)), value);
             }
 
-            public static int Margin {
-                get => AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(Margin)), MarginDefault);
-                set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Reader), nameof(Margin)), value);
+            public static Margin Margins
+            {
+                get => JsonConvert.DeserializeObject<Margin>(AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(Margins)), JsonConvert.SerializeObject(new Margin(MarginDefault))));
+                set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Reader), nameof(Margins)), JsonConvert.SerializeObject(value));
             }
 
-            public static int ScrollSpeed {
+
+            public static int ScrollSpeed
+            {
                 get => AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(ScrollSpeed)), ScrollSpeedDefault);
                 set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Reader), nameof(ScrollSpeed)), value);
             }
 
-            public static bool NightMode {
-                get => AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(NightMode)), false);
-                set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Reader), nameof(NightMode)), value);
+
+            public static Theme Theme
+            {
+                get => JsonConvert.DeserializeObject<Theme>(AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(Theme)), JsonConvert.SerializeObject(Theme.DefaultTheme)));
+                set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Reader), nameof(Theme)), JsonConvert.SerializeObject(value));
+            }
+
+
+            public static double Brightness
+            {
+                get => AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(Brightness)), 1d);
+                set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Reader), nameof(Brightness)), value);
             }
 
             public static bool Fullscreen {
