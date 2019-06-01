@@ -17,7 +17,7 @@ using EbookReader.Page;
 using Plugin.Permissions;
 
 namespace EbookReader.Droid {
-    [Activity(Label = "JetReader", Icon = "@drawable/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "JetReader", Icon = "@mipmap/ic_launcher", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity {
 
         BatteryBroadcastReceiver _batteryBroadcastReceiver;

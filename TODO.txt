@@ -4,6 +4,7 @@
     - Remove all references to the old QuickMenu
     - Re-implement bookmarks/chapters.
  - When automatically opening previous book, make sure there is a nav page surrounding it (left side drawer)
+    - Add this to settings
  - Add app themes (at least light/dark)
  - Implement statistics
  - Implement easy syncing using erlenddahl.net (or custom url)
@@ -24,3 +25,10 @@
 
 
 Ikon: https://www.iconfinder.com/iconsets/zondicons
+
+Appikon:
+https://www.iconfinder.com/icons/461367/book_bookmark_bookmarks_read_reading_icon
+https://www.iconfinder.com/icons/2120156/astronaut_astronomy_rocket_science_space_icon
+https://www.iconfinder.com/icons/4443283/book_open_book_pages_icon
+
+https://github.com/romannurik/AndroidAssetStudio
