@@ -37,22 +37,19 @@ namespace EbookReader {
 
                 var page = new ReaderPage();
                 page.LoadBook(book);
-                CreateNavPage(page);
-            }
-            else
-                CreateNavPage(new HomePage());
-        }
 
-        private void CreateNavPage(Xamarin.Forms.Page page)
-        {
+                if (HasMasterDetailPage)
+                    MainPage = new MainPage { Detail = new NavigationPage(page) };
+                else
+                    MainPage = new NavigationPage(page);
+
+                return;
+            }
+
             if (HasMasterDetailPage)
-            {
-                MainPage = page;
-            }
+                MainPage = new MainPage { Detail = new NavigationPage(new HomePage()) };
             else
-            {
-                MainPage = new NavigationPage(page);
-            }
+                MainPage = new NavigationPage(new HomePage());
         }
 
         public static bool IsCurrentPageType(Type type) {
