@@ -3,12 +3,9 @@
     - Add more settings
     - Remove all references to the old QuickMenu
     - Re-implement bookmarks/chapters.
- - When automatically opening previous book, make sure there is a nav page surrounding it (left side drawer)
-    - Add this to settings
  - Add app themes (at least light/dark)
  - Implement statistics
  - Implement easy syncing using erlenddahl.net (or custom url)
- - New icon
  - Smooth page turning on pan
  - Rename projects
  - Add support for more file formats (EPUB, PDF, DJVU, AZW3, MOBI, FB2, PRC, CHM, CBZ, CBR, UMD, DOCX, ODT, RTF, TXT, HTML, WEBP, OPDS)
@@ -18,8 +15,10 @@
  - Fix crash if book file is deleted
  - Make all popups use the same frame design
  - Find a way to count/estimate number of pages per chapter (ghost Ebook loading every chapter?), use this for BookProgress
- - Add config for CommandGrid
- - Add config for StatusPanel
+ - Add settings:
+    - CommandGrid
+    - StatusPanel
+    - Open previous book
 
 
 

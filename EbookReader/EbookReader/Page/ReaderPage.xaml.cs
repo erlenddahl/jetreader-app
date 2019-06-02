@@ -214,6 +214,12 @@ namespace EbookReader.Page
 
         protected override void OnAppearing() {
             base.OnAppearing();
+
+            // If this page was added directly as a result of UserSettings.Reader.OpenPreviousBookOnLaunch,
+            // add the home page "below" it on the stack to allow us to use the back button to "return" as usual.
+            if (Navigation.NavigationStack.Count == 1)
+                Navigation.InsertPageBefore(new HomePage(), this);
+
             _backgroundSync = true;
             _messageBus.Send(new FullscreenRequestMessage(true, true));
             SubscribeMessages();
