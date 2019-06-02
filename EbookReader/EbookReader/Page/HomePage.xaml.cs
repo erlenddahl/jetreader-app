@@ -25,6 +25,8 @@ namespace EbookReader.Page {
         readonly IBookshelfService _bookshelfService;
         readonly IMessageBus _messageBus;
 
+        LoadingPopup _loadingPopup = new LoadingPopup();
+
         public HomePage() {
             InitializeComponent();
 
@@ -103,8 +105,7 @@ namespace EbookReader.Page {
             var pickedFile = await CrossFilePicker.Current.PickFile();
             if (pickedFile == null) return;
 
-            var loadingPage = new LoadingPopup();
-            await Navigation.PushPopupAsync(loadingPage);
+            await Navigation.PushPopupAsync(_loadingPopup);
 
             try
             {
@@ -114,6 +115,7 @@ namespace EbookReader.Page {
                     Bookshelf.Children.Add(new BookCard(book));
                 }
 
+                await Navigation.RemovePopupPageAsync(_loadingPopup);
                 SendBookToReader(book);
             }
             catch (Exception e)
@@ -135,7 +137,7 @@ namespace EbookReader.Page {
                 await DisplayAlert("Error", "Failed to open this ebook file.", "OK");
             }
 
-            await Navigation.RemovePopupPageAsync(loadingPage);
+            await Navigation.RemovePopupPageAsync(_loadingPopup);
         }
 
         private void OpenBook(OpenBookMessage msg) {

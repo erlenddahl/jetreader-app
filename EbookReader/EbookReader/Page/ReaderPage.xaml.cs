@@ -32,7 +32,6 @@ namespace EbookReader.Page
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ReaderPage : ContentPage {
 
-        IAssetsManager _assetsManager;
         readonly IBookshelfService _bookshelfService;
         readonly IMessageBus _messageBus;
         readonly ISyncService _syncService;
@@ -48,16 +47,15 @@ namespace EbookReader.Page
         Position _lastLoadedPosition = new Position();
         bool _syncPending = false;
 
-        QuickMenuPopup _quickPanel;
-        private IToastService _toastService;
+        readonly QuickMenuPopup _quickPanel;
+        private readonly IToastService _toastService;
 
-        LoadingPopup loadingPage = new LoadingPopup();
+        readonly LoadingPopup _loadingPopup = new LoadingPopup();
 
         public ReaderPage() {
             InitializeComponent();
 
             // ioc
-            _assetsManager = IocManager.Container.Resolve<IAssetsManager>();
             _bookshelfService = IocManager.Container.Resolve<IBookshelfService>();
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
             _syncService = IocManager.Container.Resolve<ISyncService>();
@@ -76,12 +74,6 @@ namespace EbookReader.Page
             WebView.Messages.OnInteraction += Messages_OnInteraction;
             WebView.Messages.OnCommandRequest += Messages_OnCommandRequest;
             WebView.Messages.OnMessageReturned += Messages_OnMessageReturned;
-
-            var quickPanelPosition = new Rectangle(0, 0, 1, 0.75);
-
-            if (Device.RuntimePlatform == Device.UWP) {
-                quickPanelPosition = new Rectangle(0, 0, 0.33, 1);
-            }
             
             _quickPanel = new QuickMenuPopup();
             //TODO: _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
@@ -97,13 +89,9 @@ namespace EbookReader.Page
 
         private async void Messages_OnMessageReturned(Message msg, string result)
         {
-            if (msg.Action == "init")
+            if (msg.Action == "loadHtml")
             {
-                //await Navigation.RemovePopupPageAsync(loadingPage);
-            }
-            else if (msg.Action == "loadHtml")
-            {
-                await Navigation.RemovePopupPageAsync(loadingPage);
+                await Navigation.RemovePopupPageAsync(_loadingPopup);
             }
         }
 
@@ -247,7 +235,7 @@ namespace EbookReader.Page
 
         public async void LoadBook(BookInfo info) {
 
-            await Navigation.PushPopupAsync(loadingPage);
+            await Navigation.PushPopupAsync(_loadingPopup);
 
             _bookshelfBook = info;
             var loader = EbookFormatHelper.GetBookLoader(info.Format);

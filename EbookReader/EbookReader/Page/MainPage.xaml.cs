@@ -16,8 +16,7 @@ namespace EbookReader.Page {
         }
 
         private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e) {
-            var item = e.SelectedItem as MenuItem;
-            if (item == null)
+            if (!(e.SelectedItem is MenuItem item))
                 return;
 
             LoadPage(item);
@@ -25,9 +24,7 @@ namespace EbookReader.Page {
 
         public void LoadPage(MenuItem item)
         {
-            if (!Detail.Navigation.NavigationStack.Any() ||
-                Detail.Navigation.NavigationStack.Last().GetType() != item.TargetType
-            )
+            if (!Detail.Navigation.NavigationStack.Any() || Detail.Navigation.NavigationStack.Last().GetType() != item.TargetType)
             {
                 var page = (Xamarin.Forms.Page)Activator.CreateInstance(item.TargetType);
                 page.Title = item.Title;
