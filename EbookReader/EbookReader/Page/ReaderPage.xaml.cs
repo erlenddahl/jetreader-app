@@ -64,7 +64,7 @@ namespace EbookReader.Page
             _bookmarkService = IocManager.Container.Resolve<IBookmarkService>();
             _batteryProvider = IocManager.Container.Resolve<IBatteryProvider>();
             _toastService = IocManager.Container.Resolve<IToastService>();
-            IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>((_)=> { SetStatusPanelValue(StatusPanelItem.Battery, GetBatteryHtml()); });
+            IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>((_)=> { SetStatusPanelValue(StatusPanelItem.Battery, GetBatteryHtml()); }, nameof(ReaderPage));
 
             // webview events
             WebView.Messages.OnNextChapterRequest += _messages_OnNextChapterRequest;
@@ -144,16 +144,16 @@ namespace EbookReader.Page
 
         private void SubscribeMessages()
         {
-            _messageBus.Subscribe<ChangeThemeMessage>(ChangeTheme, new[] { nameof(ReaderPage) });
-            _messageBus.Subscribe<ChangeMarginMessage>(ChangeMargin, new[] { nameof(ReaderPage) });
-            _messageBus.Subscribe<ChangeFontSizeMessage>(ChangeFontSize, new[] { nameof(ReaderPage) });
-            _messageBus.Subscribe<AppSleepMessage>(AppSleepSubscriber, new[] { nameof(ReaderPage) });
-            _messageBus.Subscribe<AddBookmarkMessage>(AddBookmark, new[] { nameof(ReaderPage) });
-            _messageBus.Subscribe<OpenBookmarkMessage>(OpenBookmark, new[] { nameof(ReaderPage) });
-            _messageBus.Subscribe<DeleteBookmarkMessage>(DeleteBookmark, new[] { nameof(ReaderPage) });
-            _messageBus.Subscribe<ChangedBookmarkNameMessage>(ChangedBookmarkName, new[] { nameof(ReaderPage) });
-            _messageBus.Subscribe<GoToPageMessage>(GoToPageHandler, new[] { nameof(ReaderPage) });
-            _messageBus.Subscribe<KeyStrokeMessage>(KeyStrokeHandler, new[] { nameof(ReaderPage) });
+            _messageBus.Subscribe<ChangeThemeMessage>(ChangeTheme, nameof(ReaderPage));
+            _messageBus.Subscribe<ChangeMarginMessage>(ChangeMargin, nameof(ReaderPage));
+            _messageBus.Subscribe<ChangeFontSizeMessage>(ChangeFontSize, nameof(ReaderPage));
+            _messageBus.Subscribe<AppSleepMessage>(AppSleepSubscriber, nameof(ReaderPage));
+            _messageBus.Subscribe<AddBookmarkMessage>(AddBookmark, nameof(ReaderPage));
+            _messageBus.Subscribe<OpenBookmarkMessage>(OpenBookmark, nameof(ReaderPage));
+            _messageBus.Subscribe<DeleteBookmarkMessage>(DeleteBookmark, nameof(ReaderPage));
+            _messageBus.Subscribe<ChangedBookmarkNameMessage>(ChangedBookmarkName, nameof(ReaderPage));
+            _messageBus.Subscribe<GoToPageMessage>(GoToPageHandler, nameof(ReaderPage));
+            _messageBus.Subscribe<KeyStrokeMessage>(KeyStrokeHandler, nameof(ReaderPage));
         }
 
         private void UnSubscribeMessages() {

@@ -80,7 +80,7 @@ namespace EbookReader {
             Analytics.SetEnabledAsync(UserSettings.AnalyticsAgreement);
 
             _messageBus.UnSubscribe("App");
-            _messageBus.Subscribe<BackPressedMessage>(BackPressedMessageSubscriber, new[] { "App" });
+            _messageBus.Subscribe<BackPressedMessage>(BackPressedMessageSubscriber, "App");
         }
 
         protected override void OnSleep() {

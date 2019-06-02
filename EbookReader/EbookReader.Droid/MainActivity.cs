@@ -112,9 +112,9 @@ namespace EbookReader.Droid {
 
         private void SetUpSubscribers() {
             var messageBus = IocManager.Container.Resolve<IMessageBus>();
-            messageBus.Subscribe<ChangesBrightnessMessage>(ChangeBrightness, new[] { "MainActivity" });
-            messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, new[] { "MainActivity" });
-            messageBus.Subscribe<CloseAppMessage>(CloseAppMessageSubscriber, new[] { "MainActivity" });
+            messageBus.Subscribe<ChangesBrightnessMessage>(ChangeBrightness, "MainActivity");
+            messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, "MainActivity");
+            messageBus.Subscribe<CloseAppMessage>(CloseAppMessageSubscriber, "MainActivity");
         }
 
         private void CloseAppMessageSubscriber(CloseAppMessage msg) {

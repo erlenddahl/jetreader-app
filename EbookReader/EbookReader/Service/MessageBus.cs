@@ -21,7 +21,8 @@ namespace EbookReader.Service {
             }
         }
 
-        public void Subscribe<T>(Action<T> action, IEnumerable<string> tags = null) {
+        //TODO: Make tag obligatory to force unsubscription?
+        public void Subscribe<T>(Action<T> action, params string[] tags) {
             var messageType = typeof(T);
 
             var subscriber = new Subscriber {
