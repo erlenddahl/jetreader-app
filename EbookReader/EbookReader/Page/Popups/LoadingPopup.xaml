@@ -5,11 +5,11 @@
                  x:Class="EbookReader.Page.Popups.LoadingPopup"
                  CloseWhenBackgroundIsClicked="False">
     <ActivityIndicator
-        Color="White"
-        IsRunning="True"
-        IsEnabled="True"
-        VerticalOptions="Center"
-        HorizontalOptions="Center"
-        HeightRequest="70"
-        WidthRequest="70"/>
+          Color="White"
+          IsRunning="True"
+          IsEnabled="True"
+          VerticalOptions="Center"
+          HorizontalOptions="Center"
+          HeightRequest="70"
+          WidthRequest="70"/>
 </pages:PopupPage>

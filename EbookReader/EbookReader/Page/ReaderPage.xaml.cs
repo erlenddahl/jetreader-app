@@ -206,6 +206,7 @@ namespace EbookReader.Page
         protected override void OnDisappearing() {
             base.OnDisappearing();
             SaveProgress();
+            PopupNavigation.Instance.RemovePageAsync(_loadingPopup, false);
             _backgroundSync = false;
             _messageBus.Send(new FullscreenRequestMessage(null, false));
             UnSubscribeMessages();
