@@ -16,6 +16,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Plugin.FilePicker;
 using Rg.Plugins.Popup.Extensions;
+using Rg.Plugins.Popup.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -33,10 +34,6 @@ namespace EbookReader.Page {
             // ioc
             _bookshelfService = IocManager.Container.Resolve<IBookshelfService>();
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
-
-            _messageBus.Subscribe<AddBookClickedMessage>(AddBook);
-            _messageBus.Subscribe<OpenBookMessage>(OpenBook);
-            _messageBus.Subscribe<DeleteBookMessage>(DeleteBook);
 
             if (!App.HasMasterDetailPage) {
 
@@ -69,7 +66,18 @@ namespace EbookReader.Page {
 
             UserSettings.FirstRun = false;
 
+            _messageBus.Subscribe<AddBookClickedMessage>(AddBook, nameof(HomePage));
+            _messageBus.Subscribe<OpenBookMessage>(OpenBook, nameof(HomePage));
+            _messageBus.Subscribe<DeleteBookMessage>(DeleteBook, nameof(HomePage));
+
             LoadBookshelf();
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            PopupNavigation.Instance.RemovePageAsync(_loadingPopup, false);
+            _messageBus.UnSubscribe(nameof(HomePage));
         }
 
         private async void AboutItem_Clicked(object sender, EventArgs e) {
