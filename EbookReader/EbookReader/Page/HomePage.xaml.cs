@@ -67,8 +67,6 @@ namespace EbookReader.Page {
             UserSettings.FirstRun = false;
 
             _messageBus.Subscribe<AddBookClickedMessage>(AddBook, nameof(HomePage));
-            _messageBus.Subscribe<OpenBookMessage>(OpenBook, nameof(HomePage));
-            _messageBus.Subscribe<DeleteBookMessage>(DeleteBook, nameof(HomePage));
 
             LoadBookshelf();
         }
@@ -95,7 +93,10 @@ namespace EbookReader.Page {
             var books = await _bookshelfService.LoadBooks();
 
             foreach (var book in books) {
-                Bookshelf.Children.Add(new BookCard(book));
+                var bc = new BookCard(book);
+                bc.OnOpenBook += OpenBook;
+                bc.OnDeleteBook += DeleteBook;
+                Bookshelf.Children.Add(bc);
             }
         }
 
@@ -148,25 +149,25 @@ namespace EbookReader.Page {
             await Navigation.RemovePopupPageAsync(_loadingPopup);
         }
 
-        private void OpenBook(OpenBookMessage msg) {
-            SendBookToReader(msg.Book);
+        private void OpenBook(BookInfo book) {
+            SendBookToReader(book);
         }
 
-        private async void DeleteBook(DeleteBookMessage msg) {
+        private async void DeleteBook(BookInfo book) {
             var deleteButton = "Delete";
             var deleteSyncButton = "Delete including all synchronizations";
             var confirm = await DisplayActionSheet("Delete book?", deleteButton, "No", deleteSyncButton);
             if (confirm == deleteButton || confirm == deleteSyncButton) {
-                var card = Bookshelf.Children.FirstOrDefault(o => o.StyleId == msg.Book.Id);
+                var card = Bookshelf.Children.FirstOrDefault(o => o.StyleId == book.Id);
                 if (card != null) {
                     Bookshelf.Children.Remove(card);
                 }
-                _bookshelfService.RemoveById(msg.Book.Id);
+                _bookshelfService.RemoveById(book.Id);
 
                 if (confirm == deleteSyncButton)
                 {
                     var syncService = IocManager.Container.Resolve<ISyncService>();
-                    syncService.DeleteBook(msg.Book.Id);
+                    syncService.DeleteBook(book.Id);
                 }
             }
         }

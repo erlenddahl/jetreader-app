@@ -19,6 +19,9 @@ namespace EbookReader.Page.Home {
 
         private readonly BookInfo _book;
 
+        public event Action<BookInfo> OnOpenBook;
+        public event Action<BookInfo> OnDeleteBook;
+
         public BookCard(BookInfo book) {
 
             _book = book;
@@ -59,13 +62,12 @@ namespace EbookReader.Page.Home {
         }
 
         private void Open() {
-            var messageBus = IocManager.Container.Resolve<IMessageBus>();
-            messageBus.Send(new OpenBookMessage { Book = _book });
+            OnOpenBook?.Invoke(_book);
         }
 
-        private void Delete() {
-            var messageBus = IocManager.Container.Resolve<IMessageBus>();
-            messageBus.Send(new DeleteBookMessage { Book = _book });
+        private void Delete()
+        {
+            OnDeleteBook?.Invoke(_book);
         }
 
     }
