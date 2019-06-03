@@ -4,9 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EbookReader.Model.WebViewMessages {
-    public class PanEvent {
-        public int X { get; set; }
-        public int Y { get; set; }
+namespace EbookReader.Model.WebViewMessages
+{
+    public class PanEvent
+    {
+        public int StartX { get; set; }
+        public int StartY { get; set; }
+        public int CurrentX { get; set; }
+        public int CurrentY { get; set; }
+        public bool IsFinal { get; set; }
+
+        public int DiffX => CurrentX - StartX;
+        public int DiffY => CurrentY - StartY;
     }
 }

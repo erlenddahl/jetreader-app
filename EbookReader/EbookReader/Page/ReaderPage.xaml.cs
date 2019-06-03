@@ -81,6 +81,7 @@ namespace EbookReader.Page
             //TODO: _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
 
             _messageBus.Send(new FullscreenRequestMessage(true));
+            _messageBus.Send(new ChangeBrightnessMessage(UserSettings.Reader.Brightness));
         }
 
         private bool _isFullscreen = false;
@@ -163,18 +164,24 @@ namespace EbookReader.Page
 
         private void Messages_OnPanEvent(object sender, PanEvent e) {
 
-            if (UserSettings.Control.BrightnessChange == BrightnessChange.None) {
+            if (UserSettings.Control.BrightnessChange == BrightnessChange.None)
                 return;
-            }
 
             var totalWidth = (int)WebView.Width;
             var edge = totalWidth / 5;
 
-            if ((UserSettings.Control.BrightnessChange != BrightnessChange.Left || e.X > edge) && (UserSettings.Control.BrightnessChange != BrightnessChange.Right || e.X < totalWidth - edge)) return;
+            if ((UserSettings.Control.BrightnessChange != BrightnessChange.Left || e.StartX > edge) && (UserSettings.Control.BrightnessChange != BrightnessChange.Right || e.StartX < totalWidth - edge)) return;
 
-            var m = 30; //TODO: Fix this, AND fix the actual brightness setting function (relative, not absolute)
-            var brightness = 1 - ((float)e.Y / ((int)WebView.Height + (2 * m)));
-            _messageBus.Send(new ChangesBrightnessMessage(brightness));
+            var brightness = UserSettings.Reader.Brightness - e.DiffY / WebView.Height;
+            Debug.WriteLine(UserSettings.Reader.Brightness + ", " + e.DiffY + ", " + WebView.Height + ", " + (e.DiffY / WebView.Height) + ", " + brightness);
+            brightness = ChangeBrightnessMessage.Validate(brightness);
+            _messageBus.Send(new ChangeBrightnessMessage(brightness));
+
+            if (e.IsFinal)
+            {
+                UserSettings.Reader.Brightness = brightness;
+                Debug.WriteLine("Saved brightness: " + UserSettings.Reader.Brightness);
+            }
         }
 
         private void Messages_OnLinkClicked(object sender, LinkClicked e)

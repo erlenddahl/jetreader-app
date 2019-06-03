@@ -112,7 +112,7 @@ namespace EbookReader.Droid {
 
         private void SetUpSubscribers() {
             var messageBus = IocManager.Container.Resolve<IMessageBus>();
-            messageBus.Subscribe<ChangesBrightnessMessage>(ChangeBrightness, "MainActivity");
+            messageBus.Subscribe<ChangeBrightnessMessage>(ChangeBrightness, "MainActivity");
             messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, "MainActivity");
             messageBus.Subscribe<CloseAppMessage>(CloseAppMessageSubscriber, "MainActivity");
         }
@@ -121,14 +121,11 @@ namespace EbookReader.Droid {
             Finish();
         }
 
-        private void ChangeBrightness(ChangesBrightnessMessage msg) {
+        private void ChangeBrightness(ChangeBrightnessMessage msg) {
             RunOnUiThread(() => {
-                var brightness = Math.Min(msg.Brightness, 1);
-                brightness = Math.Max(brightness, 0.01); // Using a minimum of 0.01 because 0.00 seems to set it to system brightness
-
                 var attributesWindow = new WindowManagerLayoutParams();
                 attributesWindow.CopyFrom(Window.Attributes);
-                attributesWindow.ScreenBrightness = (float)brightness;
+                attributesWindow.ScreenBrightness = (float)ChangeBrightnessMessage.Validate(msg.Brightness);
                 Window.Attributes = attributesWindow;
             });
         }

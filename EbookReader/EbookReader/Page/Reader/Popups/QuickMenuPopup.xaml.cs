@@ -32,7 +32,7 @@ namespace EbookReader.Page.Reader.Popups
             set
             {
                 UserSettings.Reader.Brightness = value / 100d;
-                _messageBus.Send(new ChangesBrightnessMessage(value / 100d));
+                _messageBus.Send(new ChangeBrightnessMessage(value / 100d));
                 OnPropertyChanged();
             }
         }

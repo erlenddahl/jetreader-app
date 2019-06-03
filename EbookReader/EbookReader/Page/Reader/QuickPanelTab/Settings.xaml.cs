@@ -44,7 +44,7 @@ namespace EbookReader.Page.Reader.QuickPanelTab {
 
         private void Brightness_ValueChanged(object sender, ValueChangedEventArgs e) {
             if (e.OldValue != e.NewValue) {
-                _messageBus.Send(new ChangesBrightnessMessage(e.NewValue / 100d));
+                _messageBus.Send(new ChangeBrightnessMessage(e.NewValue / 100d));
             }
         }
 

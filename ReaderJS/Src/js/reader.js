@@ -448,21 +448,23 @@ window.Ebook = {
         $("img").css("max-height", (Ebook.webViewHeight - (2 * Ebook.margins.Top)) + "px");
     },
 
-    panEventCounter: 0,
+    panStart: null,
+    lastPanEvent: null,
     panEventHandler: function (e) {
 
-        if (Ebook.panEventCounter < 1) {
+        if (!Ebook.panStart) {
             Messages.send("Interaction", { type: "panupdown" });
+            Ebook.panStart = e.center;
         }
 
-        if (Ebook.panEventCounter % 10 === 0 || e.isFinal) {
-            Ebook.messagesHelper.sendPanEvent(e.center.x, e.center.y);
+        if (e.isFinal || !Ebook.lastPanEvent || Math.abs(e.center.x - Ebook.lastPanEvent.x) > 5 || Math.abs(e.center.y - Ebook.lastPanEvent.y) > 5) {
+            Ebook.messagesHelper.sendPanEvent(Ebook.panStart, e.center, e.isFinal);
+            Ebook.lastPanEvent = e.center;
         }
-
-        Ebook.panEventCounter++;
 
         if (e.isFinal) {
-            Ebook.panEventCounter = 0;
+            Ebook.panStart = null;
+            Ebook.lastPanEvent = null;
         }
     },
     htmlHelper: {
@@ -530,11 +532,14 @@ window.Ebook = {
                     Href: href
                 });
         },
-        sendPanEvent: function(x, y) {
+        sendPanEvent: function(start, current, isFinal) {
             Messages.send("PanEvent",
                 {
-                    X: x,
-                    Y: y
+                    StartX: start.x,
+                    StartY: start.y,
+                    CurrentX: current.x,
+                    CurrentY: current.y,
+                    IsFinal: isFinal
                 });
         },
         sendKeyStroke: function(keyCode) {
