@@ -74,12 +74,25 @@ namespace EbookReader.Page
             WebView.Messages.OnInteraction += Messages_OnInteraction;
             WebView.Messages.OnCommandRequest += Messages_OnCommandRequest;
             WebView.Messages.OnMessageReturned += Messages_OnMessageReturned;
+
+            _messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen);
             
             _quickPanel = new QuickMenuPopup();
             //TODO: _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
 
-            NavigationPage.SetHasNavigationBar(this, false);
-            _messageBus.Send(new FullscreenRequestMessage(true, true));
+            _messageBus.Send(new FullscreenRequestMessage(true));
+        }
+
+        private bool _isFullscreen = false;
+        private void ToggleFullscreen(FullscreenRequestMessage msg)
+        {
+            if (!UserSettings.Reader.Fullscreen) return;
+
+            _isFullscreen = msg.Fullscreen ?? !_isFullscreen;
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                NavigationPage.SetHasNavigationBar(this, !_isFullscreen);
+            });
         }
 
         private object GetBatteryHtml()
@@ -122,7 +135,7 @@ namespace EbookReader.Page
         private void Messages_OnInteraction(object sender, JObject e)
         {
             if (PopupNavigation.Instance.PopupStack.Contains(_quickPanel)) return;
-            _messageBus.Send(new FullscreenRequestMessage(true, true));
+            _messageBus.Send(new FullscreenRequestMessage(true));
         }
 
         private void ChangeTheme(ChangeThemeMessage msg = null)
@@ -208,7 +221,7 @@ namespace EbookReader.Page
             SaveProgress();
             PopupNavigation.Instance.RemovePageAsync(_loadingPopup, false);
             _backgroundSync = false;
-            _messageBus.Send(new FullscreenRequestMessage(null, false));
+            _messageBus.Send(new FullscreenRequestMessage(null));
             UnSubscribeMessages();
         }
 
@@ -221,7 +234,7 @@ namespace EbookReader.Page
                 Navigation.InsertPageBefore(new HomePage(), this);
 
             _backgroundSync = true;
-            _messageBus.Send(new FullscreenRequestMessage(true, true));
+            _messageBus.Send(new FullscreenRequestMessage(true));
             SubscribeMessages();
 
             Task.Run(() => {

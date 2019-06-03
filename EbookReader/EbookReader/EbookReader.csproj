@@ -103,6 +103,9 @@
       <None Update="Page\OAuth2LoginPage.xaml">
         <Generator>MSBuild:Compile</Generator>
       </None>
+      <None Update="Page\Popups\LoadingPopup.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
       <None Update="Page\Popups\LoadingPopupPage.xaml.xaml">
         <Generator>MSBuild:Compile</Generator>
       </None>
@@ -116,6 +119,12 @@
         <Generator>MSBuild:Compile</Generator>
       </None>
       <None Update="Page\Reader\Popups\ThemeColorVisualizer.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+      <None Update="Page\Reader\Popups\ThemePickerPopup.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+      <None Update="Page\Reader\Popups\ThemeVisualizer.xaml">
         <Generator>MSBuild:Compile</Generator>
       </None>
       <None Update="Page\Reader\QuickPanel.xaml">

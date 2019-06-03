@@ -134,7 +134,6 @@ namespace EbookReader.Droid {
         }
 
         private bool isFullscreen = false;
-        private bool hasStableLayout = false;
         private void ToggleFullscreen(FullscreenRequestMessage msg)
         {
             if (!UserSettings.Reader.Fullscreen) return;
@@ -142,45 +141,27 @@ namespace EbookReader.Droid {
             //TODO: See https://stackoverflow.com/questions/7692789/toggle-fullscreen-mode for more robust function (for more Android versions)
             RunOnUiThread(() =>
             {
-                var decorView = Window.DecorView;
-                var newUiOptions = (int)decorView.SystemUiVisibility;
+                isFullscreen = msg.Fullscreen ?? !isFullscreen;
 
-                var activateFullscreen = msg.Fullscreen.HasValue ? msg.Fullscreen.Value : !isFullscreen;
-                var stableLayout = msg.StableLayout.HasValue ? msg.StableLayout.Value : hasStableLayout;
-
-                if (stableLayout)
+                if (isFullscreen)
                 {
-                    newUiOptions |= (int) SystemUiFlags.LayoutStable;
-                    newUiOptions |= (int) SystemUiFlags.LayoutHideNavigation;
-                    newUiOptions |= (int) SystemUiFlags.LayoutFullscreen;
-                    hasStableLayout = true;
+                    Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(
+                        SystemUiFlags.Fullscreen
+                        | SystemUiFlags.HideNavigation
+                        | SystemUiFlags.Immersive
+                        | SystemUiFlags.ImmersiveSticky
+                        | SystemUiFlags.LowProfile
+                        | SystemUiFlags.LayoutStable
+                        | SystemUiFlags.LayoutHideNavigation
+                        | SystemUiFlags.LayoutFullscreen
+                    );
                 }
                 else
                 {
-                    newUiOptions &= ~(int)SystemUiFlags.LayoutStable;
-                    newUiOptions &= ~(int)SystemUiFlags.LayoutHideNavigation;
-                    newUiOptions &= ~(int)SystemUiFlags.LayoutFullscreen;
-                    hasStableLayout = false;
+                    Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(
+                        SystemUiFlags.LayoutStable
+                    );
                 }
-
-                if (activateFullscreen)
-                {
-                    newUiOptions |= (int)SystemUiFlags.Fullscreen;
-                    newUiOptions |= (int)SystemUiFlags.HideNavigation;
-                    newUiOptions |= (int)SystemUiFlags.Immersive;
-                    newUiOptions |= (int)SystemUiFlags.LowProfile;
-                    isFullscreen = true;
-                }
-                else
-                {
-                    newUiOptions &= ~(int)SystemUiFlags.Fullscreen;
-                    newUiOptions &= ~(int)SystemUiFlags.HideNavigation;
-                    newUiOptions &= ~(int)SystemUiFlags.Immersive;
-                    newUiOptions &= ~(int)SystemUiFlags.LowProfile;
-                    isFullscreen = false;
-                }
-
-                decorView.SystemUiVisibility = (StatusBarVisibility)newUiOptions;
             });
         }
 
