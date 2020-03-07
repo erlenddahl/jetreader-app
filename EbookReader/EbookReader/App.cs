@@ -29,21 +29,24 @@ namespace EbookReader {
 
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
 
-
             if (UserSettings.Reader.OpenPreviousBookOnLaunch)
             {
                 var repo = IocManager.Container.Resolve<IBookRepository>();
                 var book = repo.GetMostRecentBook().Result;
 
-                var page = new ReaderPage();
-                page.LoadBook(book);
+                if (book != null)
+                {
 
-                if (HasMasterDetailPage)
-                    MainPage = new MainPage { Detail = new NavigationPage(page) };
-                else
-                    MainPage = new NavigationPage(page);
+                    var page = new ReaderPage();
+                    page.LoadBook(book);
 
-                return;
+                    if (HasMasterDetailPage)
+                        MainPage = new MainPage {Detail = new NavigationPage(page)};
+                    else
+                        MainPage = new NavigationPage(page);
+
+                    return;
+                }
             }
 
             if (HasMasterDetailPage)
