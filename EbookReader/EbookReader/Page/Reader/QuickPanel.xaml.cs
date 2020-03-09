@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using EbookReader.BookLoaders;
+using EbookReader.Extensions;
 using EbookReader.Model.Messages;
 using EbookReader.Service;
 using Rg.Plugins.Popup.Services;
@@ -25,14 +26,12 @@ namespace EbookReader.Page.Reader {
 
             BindingContext = new Model.View.QuickPanelVm();
 
-            _messageBus.Subscribe<CloseQuickPanelMessage>(msg =>
-            {
-                PopupNavigation.Instance.RemovePageAsync(this, false);
-            });
+            _messageBus.Subscribe<CloseQuickPanelMessage>(msg => { this.Hide(); });
         }
         
-        private void PanelContent_OnChapterChange(object sender, EbookChapter e) {
-            PopupNavigation.Instance.RemovePageAsync(this, false);
+        private void PanelContent_OnChapterChange(object sender, EbookChapter e)
+        {
+            this.Hide();
         }
     }
 }

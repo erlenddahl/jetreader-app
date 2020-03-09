@@ -11,6 +11,7 @@ using EbookReader.Books;
 using EbookReader.Config.CommandGrid;
 using EbookReader.Config.StatusPanel;
 using EbookReader.DependencyService;
+using EbookReader.Extensions;
 using EbookReader.Helpers;
 using EbookReader.Model.Format;
 using EbookReader.Model.Messages;
@@ -105,8 +106,7 @@ namespace EbookReader.Page
         {
             if (msg.Action == "loadHtml")
             {
-                if (PopupNavigation.Instance.PopupStack.Contains(_loadingPopup))
-                    await PopupNavigation.Instance.RemovePageAsync(_loadingPopup);
+                _loadingPopup.Hide();
             }
         }
 
@@ -227,7 +227,7 @@ namespace EbookReader.Page
         protected override void OnDisappearing() {
             base.OnDisappearing();
             SaveProgress();
-            PopupNavigation.Instance.RemovePageAsync(_loadingPopup, false);
+            _loadingPopup.Hide();
             _backgroundSync = false;
             _messageBus.Send(new FullscreenRequestMessage(null));
             UnSubscribeMessages();

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using EbookReader.Books;
+using EbookReader.Extensions;
 using EbookReader.Helpers;
 using EbookReader.Model.Messages;
 using EbookReader.Page.Home;
@@ -74,8 +75,7 @@ namespace EbookReader.Page {
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            if (PopupNavigation.Instance.PopupStack.Contains(_loadingPopup))
-                PopupNavigation.Instance.RemovePageAsync(_loadingPopup, false);
+            _loadingPopup.Hide();
             _messageBus.UnSubscribe(nameof(HomePage));
         }
 

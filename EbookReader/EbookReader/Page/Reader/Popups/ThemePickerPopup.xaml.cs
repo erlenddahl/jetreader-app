@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EbookReader.Config.CommandGrid;
+using EbookReader.Extensions;
 using Rg.Plugins.Popup.Extensions;
 using Rg.Plugins.Popup.Pages;
 using Rg.Plugins.Popup.Services;
@@ -49,8 +50,9 @@ namespace EbookReader.Page.Reader.Popups
 
 
                 var tap = new TapGestureRecognizer();
-                tap.Tapped += async (sender, e) => {
-                    await PopupNavigation.Instance.RemovePageAsync(this, false);
+                tap.Tapped += async (sender, e) =>
+                {
+                    await this.Hide();
                     ThemeSelected?.Invoke(theme);
                 };
                 item.GestureRecognizers.Add(tap);
