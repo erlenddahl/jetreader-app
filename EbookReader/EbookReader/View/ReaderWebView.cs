@@ -21,7 +21,6 @@ namespace EbookReader.View {
 
         public ReaderWebView(IAssetsManager assetsManager) : base() {
             _assetsManager = assetsManager;
-
             Messages = new WebViewMessages(this);
         }
     }

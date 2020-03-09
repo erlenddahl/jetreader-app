@@ -54,7 +54,7 @@ namespace EbookReader.Page
 
         public ReaderPage() {
             InitializeComponent();
-
+            
             // ioc
             _bookshelfService = IocManager.Container.Resolve<IBookshelfService>();
             _messageBus = IocManager.Container.Resolve<IMessageBus>();

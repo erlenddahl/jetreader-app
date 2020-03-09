@@ -34,7 +34,6 @@ namespace EbookReader.Service {
             _queue = new List<Model.WebViewMessages.Message>();
 
             _webView.AddLocalCallback("csCallback", Parse);
-
             _webView.OnContentLoaded += WebView_OnContentLoaded;
         }
 
@@ -61,6 +60,7 @@ namespace EbookReader.Service {
             var toSend = Base64Helper.Encode(json);
 
             Device.BeginInvokeOnMainThread(async () => {
+                // Exception "HRESULT: 0x80020101" on this line means that there is a syntax error in the JavaScript. Typically on Windows, when using IE.
                 var res = await _webView.InjectJavascriptAsync($"Messages.parse('{toSend}')");
                 OnMessageReturned?.Invoke(message, res);
             });
