@@ -105,7 +105,8 @@ namespace EbookReader.Page
         {
             if (msg.Action == "loadHtml")
             {
-                await Navigation.RemovePopupPageAsync(_loadingPopup);
+                if (PopupNavigation.Instance.PopupStack.Contains(_loadingPopup))
+                    await PopupNavigation.Instance.RemovePageAsync(_loadingPopup);
             }
         }
 

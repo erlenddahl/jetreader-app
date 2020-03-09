@@ -74,7 +74,8 @@ namespace EbookReader.Page {
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            PopupNavigation.Instance.RemovePageAsync(_loadingPopup, false);
+            if (PopupNavigation.Instance.PopupStack.Contains(_loadingPopup))
+                PopupNavigation.Instance.RemovePageAsync(_loadingPopup, false);
             _messageBus.UnSubscribe(nameof(HomePage));
         }
 
