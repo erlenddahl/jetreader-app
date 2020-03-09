@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -17,7 +17,7 @@ namespace EbookReader.Droid.DependencyService
 {
     public class AndroidFileService : FileService
     {
-        public override Stream LoadFileStream(string filePath)
+        public override async Task<Stream> LoadFileStreamAsync(string filePath)
         {
             if (IOUtil.IsMediaStore(filePath))
             {

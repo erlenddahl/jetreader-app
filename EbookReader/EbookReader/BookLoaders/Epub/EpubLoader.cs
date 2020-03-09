@@ -33,7 +33,7 @@ namespace EbookReader.BookLoaders.Epub
         public async Task<Ebook> OpenBook(string filePath, BookInfo info = null)
         {
             return await Task.Run(() => {
-                var book = EpubReader.Read(_fileService.LoadFileStream(filePath), false);
+                var book = EpubReader.Read(_fileService.LoadFileStreamAsync(filePath).Result, false);
                 var epub = new EpubEbook(book, filePath, info);
                 return epub;
             });
@@ -41,7 +41,6 @@ namespace EbookReader.BookLoaders.Epub
 
         public async Task<string> PrepareHtml(string html, Ebook book, EbookChapter chapter)
         {
-
             return await Task.Run(() =>
             {
                 var doc = new HtmlDocument();

@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using JetReader.DependencyService;
 using Xam.Plugin.WebView.UWP;
 
 namespace EbookReader.UWP {
@@ -109,7 +110,9 @@ namespace EbookReader.UWP {
             deferral.Complete();
         }
 
-        private void SetUpIoc() {
+        private void SetUpIoc()
+        {
+            IocManager.ContainerBuilder.RegisterType<UWPFileService>().As<FileService>();
             IocManager.ContainerBuilder.RegisterType<UWPAssetsManager>().As<IAssetsManager>();
             IocManager.ContainerBuilder.RegisterType<BatteryProvider>().As<IBatteryProvider>();
             IocManager.ContainerBuilder.RegisterType<FileHelper>().As<IFileHelper>();

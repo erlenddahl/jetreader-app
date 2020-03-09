@@ -55,12 +55,7 @@ namespace EbookReader.Service
             });
         }
 
-        public async Task<Stream> LoadFileStreamAsync(string filePath)
-        {
-            return await Task.Run(() => LoadFileStream(ToAbsolute(filePath)));
-        }
-
-        public virtual Stream LoadFileStream(string filePath)
+        public virtual async Task<Stream> LoadFileStreamAsync(string filePath)
         {
             return File.OpenRead(filePath);
         }
@@ -83,7 +78,7 @@ namespace EbookReader.Service
             {
                 using (var hasher = SHA1.Create())
                 {
-                    using (var stream = LoadFileStream(path))
+                    using (var stream = LoadFileStreamAsync(path).Result)
                     {
                         var hash = hasher.ComputeHash(stream);
                         return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
@@ -92,14 +87,9 @@ namespace EbookReader.Service
             });
         }
 
-        public async Task<long> GetFileSizeInBytes(string path)
+        public virtual async Task<long> GetFileSizeInBytes(string path)
         {
-            using(var input = LoadFileStream(path))
-            using (var ms = new MemoryStream())
-            {
-                input.CopyTo(ms);
-                return ms.Length;
-            }
+            return await Task.Run(() => new FileInfo(path).Length);
         }
 
     }
