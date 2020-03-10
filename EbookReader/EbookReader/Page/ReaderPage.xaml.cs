@@ -106,7 +106,7 @@ namespace EbookReader.Page
         {
             if (msg.Action == "loadHtml")
             {
-                _loadingPopup.Hide();
+                await _loadingPopup.Hide();
             }
         }
 

@@ -147,7 +147,7 @@ namespace EbookReader.Page {
                 await DisplayAlert("Error", "Failed to open this ebook file.", "OK");
             }
 
-            await Navigation.RemovePopupPageAsync(_loadingPopup);
+            await _loadingPopup.Hide();
         }
 
         private void OpenBook(BookInfo book) {
