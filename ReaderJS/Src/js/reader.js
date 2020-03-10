@@ -721,7 +721,7 @@ window.Gestures = {
             if (isLink(e)) return;
 
             var cell = Ebook.getCommandCell(e.center);
-            if(!cell || !cell["tap"] || cell["tap"] !="toggleFullscreen")
+            if(!cell || !cell["tap"] || cell["tap"] != "ToggleFullscreen")
                 Messages.send("Interaction", { type: "tap" });
 
             perform("tap", e.center);

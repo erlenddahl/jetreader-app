@@ -76,7 +76,7 @@ namespace EbookReader.Page
             WebView.Messages.OnCommandRequest += Messages_OnCommandRequest;
             WebView.Messages.OnMessageReturned += Messages_OnMessageReturned;
 
-            _messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen);
+            _messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, nameof(ReaderPage));
             
             _quickPanel = new QuickMenuPopup();
             //TODO: _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
@@ -117,7 +117,7 @@ namespace EbookReader.Page
                 case GridCommand.ToggleFullscreen:
                     try
                     {
-                        _messageBus.Send(new FullscreenRequestMessage(null, null));
+                        _messageBus.Send(new FullscreenRequestMessage(null));
                     }
                     catch(Exception ex)
                     {
