@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Autofac;
 using EbookReader.DependencyService;
 using EbookReader.Service;
-using Xam.Plugin.WebView.Abstractions;
+using Plugin.HybridWebView.Shared;
 
 namespace EbookReader.View {
-    public class ReaderWebView : FormsWebView {
+    public class ReaderWebView : HybridWebViewControl {
 
         public WebViewMessages Messages { get; }
 

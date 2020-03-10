@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using JetReader.DependencyService;
-using Xam.Plugin.WebView.UWP;
+using Plugin.HybridWebView.UWP;
 
 namespace EbookReader.UWP {
     /// <summary>
@@ -57,10 +57,10 @@ namespace EbookReader.UWP {
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
                 var assemblies = new List<Assembly> {
-                    typeof(FormsWebViewRenderer).GetTypeInfo().Assembly
+                    typeof(HybridWebViewRenderer).GetTypeInfo().Assembly
                 };
 
-                FormsWebViewRenderer.Initialize();
+                HybridWebViewRenderer.Initialize();
 
                 //Rg initialization, see: https://github.com/rotorgames/Rg.Plugins.Popup/wiki/Getting-started
                 Rg.Plugins.Popup.Popup.Init();
