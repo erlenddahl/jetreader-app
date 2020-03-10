@@ -7,7 +7,7 @@ namespace EbookReader.Config.CommandGrid
     public class GridRow
     {
         public List<GridCell> Cells { get; set; } = new List<GridCell>();
-        public int Weight { get; set; }
+        public int Weight { get; set; } = 1;
 
         public int WeightSum => Cells.Sum(p => p.Weight);
 

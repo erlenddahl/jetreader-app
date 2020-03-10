@@ -6,7 +6,7 @@ namespace EbookReader.Config.CommandGrid
     {
         public GridCommand Tap { get; set; }
         public GridCommand Press { get; set; }
-        public int Weight { get; set; }
+        public int Weight { get; set; } = 1;
         public bool Discrete { get; set; }
 
         public JObject ToJson(int weightSum)

@@ -47,6 +47,14 @@
                         <Label Text="Tap anywhere to move to the next page. You can go to the previous page by swipe left." Style="{StaticResource note}" />
                     </StackLayout>
 
+                    <StackLayout Style="{StaticResource wrapper}">
+                        <StackLayout Orientation="Horizontal" CompressedLayout.IsHeadless="true">
+                            <Label Text="Touch control" Style="{StaticResource title}" />
+                            <ImageButton Source="edit.png" Clicked="EditCommandGrid_OnClicked" Style="{StaticResource control}" Aspect="Fill"></ImageButton>
+                        </StackLayout>
+                        <Label Text="Tap anywhere to move to the next page. You can go to the previous page by swipe left." Style="{StaticResource note}" />
+                    </StackLayout>
+
                     <StackLayout Style="{StaticResource wrapper}" IsVisible="{Binding VolumeButton.Show}">
                         <StackLayout Orientation="Horizontal" CompressedLayout.IsHeadless="true">
                             <Label Text="Volume buttons" Style="{StaticResource title}" />

@@ -29,5 +29,13 @@ namespace EbookReader.Config.CommandGrid
         {
             return new JArray(Rows.Select(p => p.ToJson(WeightSum)));
         }
+
+        public GridRow GetRow(GridCell cell)
+        {
+            foreach(var row in Rows)
+                if (row.Cells.Contains(cell))
+                    return row;
+            return null;
+        }
     }
 }
