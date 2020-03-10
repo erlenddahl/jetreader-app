@@ -3,7 +3,7 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    sass: {
+    'dart-sass': {
       dist: {
         files: [
           {
@@ -41,12 +41,12 @@ module.exports = function(grunt) {
     },
   });
 
-  grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-dart-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-eslint');
 
-  grunt.registerTask('build_css', ['sass']);
+  grunt.registerTask('build_css', ['dart-sass']);
   grunt.registerTask('build_js', ['uglify']);
   grunt.registerTask('build', ['build_css', 'build_js']);
   grunt.registerTask('default', ['watch']);
