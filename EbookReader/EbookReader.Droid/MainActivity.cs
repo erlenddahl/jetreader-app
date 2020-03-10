@@ -9,11 +9,11 @@ using Android.OS;
 using EbookReader.DependencyService;
 using EbookReader.Droid.DependencyService;
 using Autofac;
-using Xam.Plugin.WebView.Droid;
 using EbookReader.Service;
 using EbookReader.Model.Messages;
 using Android.Content;
 using EbookReader.Page;
+using Plugin.HybridWebView.Droid;
 using Plugin.Permissions;
 
 namespace EbookReader.Droid {
@@ -31,9 +31,9 @@ namespace EbookReader.Droid {
 
             SetUpIoc();
 
-            FormsWebViewRenderer.Initialize();
+            HybridWebViewRenderer.Initialize();
 
-            FormsWebViewRenderer.OnControlChanged += (sender, webView) => {
+            HybridWebViewRenderer.OnControlChanged += (sender, webView) => {
                 webView.SetLayerType(LayerType.Software, null);
                 webView.Settings.LoadWithOverviewMode = true;
                 webView.Settings.UseWideViewPort = true;
