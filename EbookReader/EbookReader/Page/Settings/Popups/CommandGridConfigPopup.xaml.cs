@@ -19,31 +19,6 @@ namespace EbookReader.Page.Settings.Popups
     {
         public GridCommand[] Commands { get; set; }
 
-        public GridCommand SelectedTapCommand
-        {
-            get => _selectedCell.Cell?.Tap ?? GridCommand.None;
-            set
-            {
-                if (_selectedCell.Cell == null) return;
-                if (_selectedCell.Cell.Tap == value) return;
-                _selectedCell.Cell.Tap = value;
-                ResetColors(_selectedCell);
-                OnPropertyChanged();
-            }
-        }
-
-        public GridCommand SelectedPressCommand
-        {
-            get => _selectedCell.Cell?.Press ?? GridCommand.None;
-            set
-            {
-                if (_selectedCell.Cell == null) return;
-                if (_selectedCell.Cell.Press == value) return;
-                _selectedCell.Cell.Press = value;
-                ResetColors(_selectedCell);
-            }
-        }
-
         private (Frame Frame, Label Label, GridCell Cell) _selectedCell = (null, null, null);
 
         private List<(Frame Frame, Label Label, GridCell Cell)> _cells = new List<(Frame Frame, Label Label, GridCell Cell)>();
@@ -74,7 +49,7 @@ namespace EbookReader.Page.Settings.Popups
 
             InitializeComponent();
 
-            _editorPopup = new CellEditorPopup(ResetColors, VisualizeGrid);
+            _editorPopup = new CellEditorPopup(this);
 
             VisualizeGrid();
         }
@@ -159,13 +134,16 @@ namespace EbookReader.Page.Settings.Popups
 
             _selectedCell = item;
 
-            OnPropertyChanged(nameof(SelectedTapCommand));
-            OnPropertyChanged(nameof(SelectedPressCommand));
-
             _editorPopup.Edit(_grid, _selectedCell);
         }
 
-        private void ResetColors((Frame Frame, Label Label, GridCell Cell) item)
+        public void UnselectCell()
+        {
+            ResetColors(_selectedCell);
+            _selectedCell = (null, null, null);
+        }
+
+        public void ResetColors((Frame Frame, Label Label, GridCell Cell) item)
         {
             item.Frame.BorderColor = Color.Transparent;
             item.Frame.BackgroundColor = GetCommandColor(item.Cell);

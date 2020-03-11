@@ -17,8 +17,7 @@ namespace EbookReader.Page.Settings.Popups
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CellEditorPopup : Rg.Plugins.Popup.Pages.PopupPage
     {
-        private readonly Action<(Frame Frame, Label Label, GridCell Cell)> _resetColorsAction;
-        private readonly Action _visualizeGridAction;
+        private readonly CommandGridConfigPopup _parent;
         public GridCommand[] Commands { get; set; }
 
         public GridCommand SelectedTapCommand
@@ -29,7 +28,7 @@ namespace EbookReader.Page.Settings.Popups
                 if (_selectedCell.Cell == null) return;
                 if (_selectedCell.Cell.Tap == value) return;
                 _selectedCell.Cell.Tap = value;
-                _resetColorsAction(_selectedCell);
+                _parent.ResetColors(_selectedCell);
                 OnPropertyChanged();
             }
         }
@@ -42,20 +41,17 @@ namespace EbookReader.Page.Settings.Popups
                 if (_selectedCell.Cell == null) return;
                 if (_selectedCell.Cell.Press == value) return;
                 _selectedCell.Cell.Press = value;
-                _resetColorsAction(_selectedCell);
+                _parent.ResetColors(_selectedCell);
             }
         }
 
         private (Frame Frame, Label Label, GridCell Cell) _selectedCell = (null, null, null);
 
-        private List<(Frame Frame, Label Label, GridCell Cell)> _cells = new List<(Frame Frame, Label Label, GridCell Cell)>();
-        private Dictionary<string, Color> _commandColor= new Dictionary<string, Color>();
         private CommandGrid _grid;
 
-        public CellEditorPopup(Action<(Frame Frame, Label Label, GridCell Cell)> resetColorsAction, Action visualizeGridAction)
+        public CellEditorPopup(CommandGridConfigPopup parent)
         {
-            _resetColorsAction = resetColorsAction;
-            _visualizeGridAction = visualizeGridAction;
+            _parent = parent;
 
             Commands = (GridCommand[]) Enum.GetValues(typeof(GridCommand));
 
@@ -77,7 +73,7 @@ namespace EbookReader.Page.Settings.Popups
         {
             if (_selectedCell.Cell == null) return;
             _selectedCell.Cell.Weight++;
-            _visualizeGridAction();
+            _parent.VisualizeGrid();
         }
 
         private void DecreaseWidth_Clicked(object sender, EventArgs e)
@@ -86,14 +82,21 @@ namespace EbookReader.Page.Settings.Popups
             if (_selectedCell.Cell == null) return;
             if (_selectedCell.Cell.Weight > 1)
                 _selectedCell.Cell.Weight--;
-            _visualizeGridAction();
+            else
+            {
+                var row = _grid.GetRow(_selectedCell.Cell);
+                foreach(var c in row.Cells)
+                    if (c != _selectedCell.Cell)
+                        c.Weight++;
+            }
+            _parent.VisualizeGrid();
         }
 
         private void IncreaseHeight_Clicked(object sender, EventArgs e)
         {
             if (_selectedCell.Cell == null) return;
             _grid.GetRow(_selectedCell.Cell).Weight++;
-            _visualizeGridAction();
+            _parent.VisualizeGrid();
         }
 
         private void DecreaseHeight_Clicked(object sender, EventArgs e)
@@ -102,7 +105,13 @@ namespace EbookReader.Page.Settings.Popups
             var row = _grid.GetRow(_selectedCell.Cell);
             if (row.Weight > 1)
                 row.Weight--;
-            _visualizeGridAction();
+            else
+            {
+                foreach(var r in _grid.Rows)
+                    if (r != row)
+                        r.Weight++;
+            }
+            _parent.VisualizeGrid();
         }
 
         private void DeleteRow_Clicked(object sender, EventArgs e)
@@ -110,7 +119,7 @@ namespace EbookReader.Page.Settings.Popups
             if (_selectedCell.Cell == null) return;
             var row = _grid.GetRow(_selectedCell.Cell);
             _grid.Rows.Remove(row);
-            _visualizeGridAction();
+            _parent.VisualizeGrid();
             this.Hide();
         }
 
@@ -119,7 +128,7 @@ namespace EbookReader.Page.Settings.Popups
             if (_selectedCell.Cell == null) return;
             var row = _grid.GetRow(_selectedCell.Cell);
             _grid.Rows.Insert(_grid.Rows.IndexOf(row), new GridRow() {Cells = new List<GridCell>() {new GridCell(), new GridCell()}});
-            _visualizeGridAction();
+            _parent.VisualizeGrid();
         }
 
         private void AddRowBelow_Clicked(object sender, EventArgs e)
@@ -127,7 +136,7 @@ namespace EbookReader.Page.Settings.Popups
             if (_selectedCell.Cell == null) return;
             var row = _grid.GetRow(_selectedCell.Cell);
             _grid.Rows.Insert(_grid.Rows.IndexOf(row) + 1, new GridRow() { Cells = new List<GridCell>() { new GridCell(), new GridCell() } });
-            _visualizeGridAction();
+            _parent.VisualizeGrid();
         }
 
         private void AddCellBefore_Clicked(object sender, EventArgs e)
@@ -135,7 +144,7 @@ namespace EbookReader.Page.Settings.Popups
             if (_selectedCell.Cell == null) return;
             var row = _grid.GetRow(_selectedCell.Cell);
             row.Cells.Insert(row.Cells.IndexOf(_selectedCell.Cell), new GridCell());
-            _visualizeGridAction();
+            _parent.VisualizeGrid();
         }
 
         private void AddCellAfter_Clicked(object sender, EventArgs e)
@@ -143,7 +152,7 @@ namespace EbookReader.Page.Settings.Popups
             if (_selectedCell.Cell == null) return;
             var row = _grid.GetRow(_selectedCell.Cell);
             row.Cells.Insert(row.Cells.IndexOf(_selectedCell.Cell) + 1, new GridCell());
-            _visualizeGridAction();
+            _parent.VisualizeGrid();
         }
 
         private void DeleteCell_Clicked(object sender, EventArgs e)
@@ -151,13 +160,13 @@ namespace EbookReader.Page.Settings.Popups
             if (_selectedCell.Cell == null) return;
             var row = _grid.GetRow(_selectedCell.Cell);
             row.Cells.Remove(_selectedCell.Cell);
-            _visualizeGridAction();
+            _parent.VisualizeGrid();
             this.Hide();
         }
 
         private void CellEditorPopup_OnBackgroundClicked(object sender, EventArgs e)
         {
-            _resetColorsAction(_selectedCell);
+            _parent.UnselectCell();
         }
     }
 }
