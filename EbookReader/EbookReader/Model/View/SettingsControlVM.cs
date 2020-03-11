@@ -15,17 +15,6 @@ namespace EbookReader.Model.View {
             VolumeButton = new VolumeButtonVm();
         }
 
-        public bool ClickEverywhere {
-            get => UserSettings.Control.ClickEverywhere;
-            set {
-                if (UserSettings.Control.ClickEverywhere == value)
-                    return;
-
-                UserSettings.Control.ClickEverywhere = value;
-                OnPropertyChanged();
-            }
-        }
-
         public bool DoubleSwipe {
             get => UserSettings.Control.DoubleSwipe;
             set {

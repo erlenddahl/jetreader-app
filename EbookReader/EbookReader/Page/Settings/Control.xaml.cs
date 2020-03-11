@@ -13,6 +13,7 @@ using Xamarin.Forms.Xaml;
 namespace EbookReader.Page.Settings {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Control : ContentPage {
+
         private CommandGridConfigPopup _commandGridPopup;
 
         public Control() {
