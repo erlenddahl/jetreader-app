@@ -9,20 +9,49 @@ namespace EbookReader.Config.CommandGrid
         {
             new CommandGrid()
                 .Row(3)
-                .Cell(tap: GridCommand.PrevPage, discrete: true)
+                .Cell(tap: GridCommand.PrevPage)
                 .Cell(tap: GridCommand.VisualizeCommandCells, press: GridCommand.OpenQuickSettings)
-                .Cell(tap: GridCommand.NextPage, discrete: true)
+                .Cell(tap: GridCommand.NextPage)
                 .Row(3)
-                .Cell(tap: GridCommand.PrevPage, discrete: true)
+                .Cell(tap: GridCommand.PrevPage)
                 .Cell(tap: GridCommand.ToggleFullscreen, press: GridCommand.OpenQuickSettings)
-                .Cell(tap: GridCommand.NextPage, discrete: true)
+                .Cell(tap: GridCommand.NextPage)
                 .Row(3)
                 .Cell(tap: GridCommand.PrevPage)
                 .Cell(tap: GridCommand.NextPage)
                 .Row(1)
                 .Cell(tap: GridCommand.Sync)
                 .Cell(tap: GridCommand.Backup)
-                .Cell(tap: GridCommand.BookInfo)
+                .Cell(tap: GridCommand.BookInfo),
+
+            new CommandGrid()
+                .Row(1)
+                .Cell(tap: GridCommand.PrevPage)
+                .Cell(tap: GridCommand.NextPage),
+
+            new CommandGrid()
+                .Row(1)
+                .Cell(tap: GridCommand.NextPage),
+
+            new CommandGrid()
+                .Row(1)
+                .Cell(tap: GridCommand.PrevPage)
+                .Cell(tap: GridCommand.NextPage, weight:2),
+
+            new CommandGrid()
+                .Row(1)
+                .Cell(tap: GridCommand.PrevPage)
+                .Cell(tap: GridCommand.OpenQuickSettings)
+                .Cell(tap: GridCommand.NextPage),
+
+            new CommandGrid()
+                .Row(3)
+                .Cell(tap: GridCommand.PrevPage)
+                .Cell(tap: GridCommand.OpenQuickSettings)
+                .Cell(tap: GridCommand.NextPage)
+                .Row(2)
+                .Cell(tap: GridCommand.PrevPage)
+                .Cell(tap: GridCommand.NextPage)
         };
     }
 }
