@@ -21,13 +21,12 @@ namespace EbookReader.Page.Settings.Popups
 
         private (Frame Frame, Label Label, GridCell Cell) _selectedCell = (null, null, null);
 
-        private List<(Frame Frame, Label Label, GridCell Cell)> _cells = new List<(Frame Frame, Label Label, GridCell Cell)>();
-        private Dictionary<string, Color> _commandColor= new Dictionary<string, Color>();
-        private CommandGrid _grid;
+        private readonly List<(Frame Frame, Label Label, GridCell Cell)> _cells = new List<(Frame Frame, Label Label, GridCell Cell)>();
+        private readonly Dictionary<string, Color> _commandColor= new Dictionary<string, Color>();
+        private readonly CommandGrid _grid;
 
 
-        Color[] _colors = new[]
-        {
+        readonly Color[] _colors = {
             Color.FromRgba(255 / 255d, 206 / 255d, 95 / 255d, 0.85),
             Color.FromRgba(215 / 255d, 236 / 255d, 95 / 255d, 0.85),
             Color.FromRgba(255 / 255d, 176 / 255d, 95 / 255d, 0.85),
@@ -40,12 +39,12 @@ namespace EbookReader.Page.Settings.Popups
             Color.FromRgba(255 / 255d, 206 / 255d, 235 / 255d, 0.85)
         };
 
-        private CellEditorPopup _editorPopup;
+        private readonly CellEditorPopup _editorPopup;
 
         public CommandGridConfigPopup()
         {
             Commands = (GridCommand[]) Enum.GetValues(typeof(GridCommand));
-            _grid = GridConfig.DefaultGrids[0];
+            _grid = UserSettings.Control.CommandGrid;
 
             InitializeComponent();
 
@@ -145,8 +144,10 @@ namespace EbookReader.Page.Settings.Popups
 
         public void ResetColors((Frame Frame, Label Label, GridCell Cell) item)
         {
+            if (item.Frame == null) return;
             item.Frame.BorderColor = Color.Transparent;
             item.Frame.BackgroundColor = GetCommandColor(item.Cell);
+            item.Label.Text = "Tap: " + item.Cell.Tap + Environment.NewLine + "Long: " + item.Cell.Press;
         }
 
         private Color GetCommandColor(GridCell cell)
@@ -154,6 +155,17 @@ namespace EbookReader.Page.Settings.Popups
             var cmd = cell.Tap + "_" + cell.Press;
             if (!_commandColor.ContainsKey(cmd)) _commandColor.Add(cmd, _colors[_commandColor.Keys.Count % _colors.Length]);
             return _commandColor[cell.Tap + "_" + cell.Press];
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            SaveConfig();
+            return base.OnBackButtonPressed();
+        }
+
+        private void SaveConfig()
+        {
+            UserSettings.Control.CommandGrid = _grid;
         }
     }
 }

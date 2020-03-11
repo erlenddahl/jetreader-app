@@ -475,7 +475,7 @@ namespace EbookReader.Page
                 UserSettings.Reader.ScrollSpeed,
                 UserSettings.Control.DoubleSwipe,
                 UserSettings.Reader.Theme,
-                Commands = GridConfig.DefaultGrids[0].ToJson(),
+                Commands = UserSettings.Control.CommandGrid.ToJson(),
                 StatusPanelData = new
                 {
                     PanelDefinition = StatusPanelConfig.DefaultPanelDefinitions[0].ToJson(),

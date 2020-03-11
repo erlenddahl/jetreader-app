@@ -153,9 +153,16 @@ namespace EbookReader {
                 set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Control), nameof(BrightnessChange)), (int)value);
             }
 
-            public static bool VolumeButtons {
+            public static bool VolumeButtons
+            {
                 get => AppSettings.GetValueOrDefault(CreateKey(nameof(Control), nameof(VolumeButtons)), false);
                 set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Control), nameof(VolumeButtons)), value);
+            }
+
+            public static CommandGrid CommandGrid
+            {
+                get => JsonConvert.DeserializeObject<CommandGrid>(AppSettings.GetValueOrDefault(CreateKey(nameof(Reader), nameof(CommandGrid)), JsonConvert.SerializeObject(GridConfig.DefaultGrids[0])));
+                set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Reader), nameof(CommandGrid)), JsonConvert.SerializeObject(value));
             }
         }
 

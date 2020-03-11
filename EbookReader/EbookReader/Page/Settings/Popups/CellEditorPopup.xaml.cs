@@ -164,6 +164,12 @@ namespace EbookReader.Page.Settings.Popups
             this.Hide();
         }
 
+        protected override bool OnBackButtonPressed()
+        {
+            _parent.UnselectCell();
+            return base.OnBackButtonPressed();
+        }
+
         private void CellEditorPopup_OnBackgroundClicked(object sender, EventArgs e)
         {
             _parent.UnselectCell();
