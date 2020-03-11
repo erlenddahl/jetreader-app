@@ -15,5 +15,11 @@ namespace EbookReader.Extensions
             if (PopupNavigation.Instance.PopupStack.Contains(page))
                 await PopupNavigation.Instance.RemovePageAsync(page, animate);
         }
+
+        public static async Task Show(this PopupPage page, bool animate = false)
+        {
+            if (!PopupNavigation.Instance.PopupStack.Contains(page))
+                await PopupNavigation.Instance.PushAsync(page, animate);
+        }
     }
 }

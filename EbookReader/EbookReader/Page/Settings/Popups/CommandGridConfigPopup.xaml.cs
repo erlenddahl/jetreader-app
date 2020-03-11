@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using EbookReader.Config.CommandGrid;
+using EbookReader.Extensions;
+using Rg.Plugins.Popup.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -42,21 +44,28 @@ namespace EbookReader.Page.Settings.Popups
             }
         }
 
-        public bool IsEditorOpen
-        {
-            get => _isEditorOpen;
-            set
-            {
-                _isEditorOpen = value; 
-                OnPropertyChanged();
-            }
-        }
-
         private (Frame Frame, Label Label, GridCell Cell) _selectedCell = (null, null, null);
 
         private List<(Frame Frame, Label Label, GridCell Cell)> _cells = new List<(Frame Frame, Label Label, GridCell Cell)>();
         private Dictionary<string, Color> _commandColor= new Dictionary<string, Color>();
         private CommandGrid _grid;
+
+
+        Color[] _colors = new[]
+        {
+            Color.FromRgba(255 / 255d, 206 / 255d, 95 / 255d, 0.85),
+            Color.FromRgba(215 / 255d, 236 / 255d, 95 / 255d, 0.85),
+            Color.FromRgba(255 / 255d, 176 / 255d, 95 / 255d, 0.85),
+            Color.FromRgba(255 / 255d, 46 / 255d, 95 / 255d, 0.85),
+            Color.FromRgba(255 / 255d, 106 / 255d, 95 / 255d, 0.85),
+            Color.FromRgba(205 / 255d, 206 / 255d, 95 / 255d, 0.85),
+            Color.FromRgba(155 / 255d, 206 / 255d, 95 / 255d, 0.85),
+            Color.FromRgba(55 / 255d, 206 / 255d, 95 / 255d, 0.85),
+            Color.FromRgba(255 / 255d, 206 / 255d, 105 / 255d, 0.85),
+            Color.FromRgba(255 / 255d, 206 / 255d, 235 / 255d, 0.85)
+        };
+
+        private CellEditorPopup _editorPopup;
 
         public CommandGridConfigPopup()
         {
@@ -64,6 +73,8 @@ namespace EbookReader.Page.Settings.Popups
             _grid = GridConfig.DefaultGrids[0];
 
             InitializeComponent();
+
+            _editorPopup = new CellEditorPopup(ResetColors, VisualizeGrid);
 
             VisualizeGrid();
         }
@@ -132,13 +143,11 @@ namespace EbookReader.Page.Settings.Popups
         {
             if (item == _selectedCell)
             {
-                IsEditorOpen = false;
+                _editorPopup.Hide();
                 _selectedCell = (null, null, null);
                 ResetColors(item);
                 return;
             }
-
-            IsEditorOpen = true;
 
             if (_selectedCell.Frame != null)
             {
@@ -152,6 +161,8 @@ namespace EbookReader.Page.Settings.Popups
 
             OnPropertyChanged(nameof(SelectedTapCommand));
             OnPropertyChanged(nameof(SelectedPressCommand));
+
+            _editorPopup.Edit(_grid, _selectedCell);
         }
 
         private void ResetColors((Frame Frame, Label Label, GridCell Cell) item)
@@ -160,110 +171,11 @@ namespace EbookReader.Page.Settings.Popups
             item.Frame.BackgroundColor = GetCommandColor(item.Cell);
         }
 
-
-        Color[] _colors = new[]
-        {
-            Color.FromRgba(255 / 255d, 206 / 255d, 95 / 255d, 0.85),
-            Color.FromRgba(215 / 255d, 236 / 255d, 95 / 255d, 0.85),
-            Color.FromRgba(255 / 255d, 176 / 255d, 95 / 255d, 0.85),
-            Color.FromRgba(255 / 255d, 46 / 255d, 95 / 255d, 0.85),
-            Color.FromRgba(255 / 255d, 106 / 255d, 95 / 255d, 0.85),
-            Color.FromRgba(205 / 255d, 206 / 255d, 95 / 255d, 0.85),
-            Color.FromRgba(155 / 255d, 206 / 255d, 95 / 255d, 0.85),
-            Color.FromRgba(55 / 255d, 206 / 255d, 95 / 255d, 0.85),
-            Color.FromRgba(255 / 255d, 206 / 255d, 105 / 255d, 0.85),
-            Color.FromRgba(255 / 255d, 206 / 255d, 235 / 255d, 0.85)
-        };
-
-        private bool _isEditorOpen;
-
         private Color GetCommandColor(GridCell cell)
         {
             var cmd = cell.Tap + "_" + cell.Press;
             if (!_commandColor.ContainsKey(cmd)) _commandColor.Add(cmd, _colors[_commandColor.Keys.Count % _colors.Length]);
             return _commandColor[cell.Tap + "_" + cell.Press];
-        }
-
-        private void CloseEditor_Clicked(object sender, EventArgs e)
-        {
-            IsEditorOpen = false;
-        }
-
-        private void IncreaseWidth_Clicked(object sender, EventArgs e)
-        {
-            if (_selectedCell.Cell == null) return;
-            _selectedCell.Cell.Weight++;
-            VisualizeGrid();
-        }
-
-        private void DecreaseWidth_Clicked(object sender, EventArgs e)
-        {
-
-            if (_selectedCell.Cell == null) return;
-            _selectedCell.Cell.Weight--;
-            VisualizeGrid();
-        }
-
-        private void IncreaseHeight_Clicked(object sender, EventArgs e)
-        {
-            if (_selectedCell.Cell == null) return;
-            _grid.GetRow(_selectedCell.Cell).Weight++;
-            VisualizeGrid();
-        }
-
-        private void DecreaseHeight_Clicked(object sender, EventArgs e)
-        {
-            if (_selectedCell.Cell == null) return;
-            _grid.GetRow(_selectedCell.Cell).Weight--;
-            VisualizeGrid();
-        }
-
-        private void DeleteRow_Clicked(object sender, EventArgs e)
-        {
-            if (_selectedCell.Cell == null) return;
-            var row = _grid.GetRow(_selectedCell.Cell);
-            _grid.Rows.Remove(row);
-            VisualizeGrid();
-        }
-
-        private void AddRowAbove_Clicked(object sender, EventArgs e)
-        {
-            if (_selectedCell.Cell == null) return;
-            var row = _grid.GetRow(_selectedCell.Cell);
-            _grid.Rows.Insert(_grid.Rows.IndexOf(row), new GridRow() {Cells = new List<GridCell>() {new GridCell(), new GridCell()}});
-            VisualizeGrid();
-        }
-
-        private void AddRowBelow_Clicked(object sender, EventArgs e)
-        {
-            if (_selectedCell.Cell == null) return;
-            var row = _grid.GetRow(_selectedCell.Cell);
-            _grid.Rows.Insert(_grid.Rows.IndexOf(row) + 1, new GridRow() { Cells = new List<GridCell>() { new GridCell(), new GridCell() } });
-            VisualizeGrid();
-        }
-
-        private void AddCellBefore_Clicked(object sender, EventArgs e)
-        {
-            if (_selectedCell.Cell == null) return;
-            var row = _grid.GetRow(_selectedCell.Cell);
-            row.Cells.Insert(row.Cells.IndexOf(_selectedCell.Cell), new GridCell());
-            VisualizeGrid();
-        }
-
-        private void AddCellAfter_Clicked(object sender, EventArgs e)
-        {
-            if (_selectedCell.Cell == null) return;
-            var row = _grid.GetRow(_selectedCell.Cell);
-            row.Cells.Insert(row.Cells.IndexOf(_selectedCell.Cell) + 1, new GridCell());
-            VisualizeGrid();
-        }
-
-        private void DeleteCell_Clicked(object sender, EventArgs e)
-        {
-            if (_selectedCell.Cell == null) return;
-            var row = _grid.GetRow(_selectedCell.Cell);
-            row.Cells.Remove(_selectedCell.Cell);
-            VisualizeGrid();
         }
     }
 }

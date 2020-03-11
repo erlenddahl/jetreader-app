@@ -28,49 +28,5 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" x:Name="PreviewGrid" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"></Grid>
-
-        <Grid Grid.Row="1" IsVisible="{Binding IsEditorOpen}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">Selected cell:</Label>
-
-            <Picker Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Commands}" SelectedItem="{Binding SelectedTapCommand}"></Picker>
-            <Picker Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Commands}" SelectedItem="{Binding SelectedPressCommand}"></Picker>
-
-            <Button Grid.Row="2" Grid.Column="0" Text="Increase width" Clicked="IncreaseWidth_Clicked"></Button>
-            <Button Grid.Row="2" Grid.Column="1" Text="Decrease width" Clicked="DecreaseWidth_Clicked"></Button>
-
-            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">Selected row:</Label>
-
-            <Button Grid.Row="4" Grid.Column="0" Text="Add cell before" Clicked="AddCellBefore_Clicked"></Button>
-            <Button Grid.Row="4" Grid.Column="1" Text="Add cell after" Clicked="AddCellAfter_Clicked"></Button>
-
-            <Button Grid.Row="5" Grid.Column="0" Text="Delete cell" Clicked="DeleteCell_Clicked"></Button>
-            <Button Grid.Row="5" Grid.Column="1" Text="Delete row" Clicked="DeleteRow_Clicked"></Button>
-
-            <Button Grid.Row="6" Grid.Column="0" Text="Add row above" Clicked="AddRowAbove_Clicked"></Button>
-            <Button Grid.Row="6" Grid.Column="1" Text="Add row below" Clicked="AddRowBelow_Clicked"></Button>
-
-            <Button Grid.Row="7" Grid.Column="0" Text="Increase height" Clicked="IncreaseHeight_Clicked"></Button>
-            <Button Grid.Row="7" Grid.Column="1" Text="Decrease height" Clicked="DecreaseHeight_Clicked"></Button>
-
-            <Button Grid.Row="8" Grid.Column="1" Text="Close" Clicked="CloseEditor_Clicked"></Button>
-
-        </Grid>
     </Grid>
 </pages:PopupPage>
