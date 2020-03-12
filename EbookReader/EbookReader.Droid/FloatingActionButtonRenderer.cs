@@ -11,6 +11,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V4.Content;
+using Android.Support.V4.View;
 using Android.Views;
 using EbookReader.Droid;
 using EbookReader.View;
@@ -29,14 +30,13 @@ namespace EbookReader.Droid {
 
         protected override void OnElementChanged(ElementChangedEventArgs<MyFloatButton> e) {
             base.OnElementChanged(e);
-
-
+            
             if (Control == null) {
                 _fab = new FloatingActionButton(Context);
                 _fab.LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent);
                 _fab.Clickable = true;
                 _fab.SetImageDrawable(ContextCompat.GetDrawable(Context, Resource.Drawable.add));
-                _fab.BackgroundTintList = new ColorStateList(new[] { new int[0] }, new int[] { Android.Graphics.Color.ParseColor(e.NewElement.ButtonBackgroundColor) });
+                ViewCompat.SetBackgroundTintList(_fab, new ColorStateList(new[] {new int[0]}, new int[] {Android.Graphics.Color.ParseColor(e.NewElement.ButtonBackgroundColor)}));
                 SetNativeControl(_fab);
             }
 
