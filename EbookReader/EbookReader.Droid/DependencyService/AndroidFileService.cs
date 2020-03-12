@@ -27,5 +27,16 @@ namespace EbookReader.Droid.DependencyService
 
             return File.OpenRead(filePath);
         }
+
+        public override async Task<long> GetFileSizeInBytes(string filePath)
+        {
+            if (IOUtil.IsMediaStore(filePath))
+            {
+                var contentUri = Android.Net.Uri.Parse(filePath);
+                return Application.Context.ContentResolver.OpenAssetFileDescriptor(contentUri, "r").Length;
+            }
+
+            return await base.GetFileSizeInBytes(filePath);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -89,7 +90,18 @@ namespace EbookReader.Service
 
         public virtual async Task<long> GetFileSizeInBytes(string path)
         {
-            return await Task.Run(() => new FileInfo(path).Length);
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    return new FileInfo(path).Length;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                    return 0;
+                }
+            });
         }
 
     }
