@@ -35,6 +35,10 @@ window.Ebook = {
     scrollSpeed: 0,
     doubleSwipe: false,
     debugging: true,
+    stats: {
+        minPageTime: 3,
+        maxPageTime: 120
+    },
     init: function (data) {
 
         this.webViewWidth = data.Width;
@@ -324,7 +328,32 @@ window.Ebook = {
         Ebook.goToPositionFast(position);
         Ebook.htmlHelper.showContent();
     },
+    reportReadStats: function() {
+        var now = Date.now() / 1000;
+        var diff = (now - this.stats.startPageTime);
+        this.resumeStatsTimer(now);
+        this.stats.storedReadingTime = 0;
+        if (diff < Ebook.stats.minPageTime || diff > Ebook.stats.maxPageTime) {
+            return;
+        }
+
+        var c = Ebook.chapterInfo || {};
+
+        this.messagesHelper.sendDebug({
+            seconds: diff,
+            totalPages: Ebook.totalPages,
+            words: c.wordsCurrent / Ebook.totalPages,
+            progress: (c.wordsBefore + (c.wordsCurrent / Ebook.totalPages) * Ebook.currentPage) / (c.wordsBefore + c.wordsCurrent + c.wordsAfter) * 100
+        });
+    },
+    pauseStatsTime: function () {
+        this.stats.storedReadingTime += Date.now() / 1000 - this.stats.startPageTime;
+    },
+    resumeStatsTimer: function(now) {
+        this.stats.startPageTime = now || Date.now() / 1000;
+    },
     goToNextPage: function (saveNewPosition) {
+        this.reportReadStats();
         var page = this.currentPage + 1;
         if (page <= this.totalPages) {
             this.goToPage(page, null, saveNewPosition);
@@ -332,7 +361,8 @@ window.Ebook = {
             this.messagesHelper.nextChapterRequest();
         }
     },
-    goToPreviousPage: function(saveNewPosition) {
+    goToPreviousPage: function (saveNewPosition) {
+        this.reportReadStats();
         var page = this.currentPage - 1;
         if (page >= 1) {
             this.goToPage(page, null, saveNewPosition);
@@ -340,7 +370,8 @@ window.Ebook = {
             this.messagesHelper.prevChapterRequest();
         }
     },
-    goToPage: function(page, duration, saveNewPosition) {
+    goToPage: function (page, duration, saveNewPosition) {
+        this.reportReadStats();
         if (duration === undefined || duration === null) {
             duration = Ebook.scrollSpeed;
         }
@@ -354,7 +385,9 @@ window.Ebook = {
     goToPageFast: function(page) {
         this.goToPageInternal(page, 0);
     },
-    goToPageInternal: function(page, duration, callback) {
+    goToPageInternal: function (page, duration, callback) {
+        this.reportReadStats();
+
         if (page < 1) {
             page = 1;
         }
@@ -444,7 +477,7 @@ window.Ebook = {
         }
     },
     resizeImages: function() {
-        $("img").css("max-width", (Ebook.webViewWidth - (2 * Ebook.margins.Left)) + "px");
+        $("img").css("max-width", (Ebook.webViewWidth - (2 * Ebook.margins.Left)) + "px"); //TODO: Crashes on .margins == null when adding and auto-opening new book (Ace Atkins => Kickback)
         $("img").css("max-height", (Ebook.webViewHeight - (2 * Ebook.margins.Top)) + "px");
     },
 
@@ -594,6 +627,12 @@ window.Messages = {
         getPageCount: function() {
             return Ebook.getPageCount();
         },
+        pauseStatsTime: function() {
+            Ebook.pauseStatsTime();
+        },
+        resumeStatsTime: function() {
+            Ebook.resumeStatsTimer();
+        },
         setStatusPanelData: function (data) {
             if (data.PanelDefinition) {
                 Ebook.statusPanel = data.PanelDefinition;
@@ -628,6 +667,7 @@ window.Messages = {
         
             Ebook.htmlHelper.showContent();
             Ebook.isLoaded = true;
+            Ebook.resumeStatsTimer();
 
             return performance.now() - pageLoadTime;
         },

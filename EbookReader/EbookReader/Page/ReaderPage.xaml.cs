@@ -226,6 +226,7 @@ namespace EbookReader.Page
 
         protected override void OnDisappearing() {
             base.OnDisappearing();
+            WebView.Messages.Send("pauseStatsTime", null);
             SaveProgress();
             _loadingPopup.Hide();
             _backgroundSync = false;
@@ -259,6 +260,8 @@ namespace EbookReader.Page
 
                 return _backgroundSync;
             });
+
+            WebView.Messages.Send("resumeStatsTime", null);
         }
 
         public async void LoadBook(BookInfo info) {
