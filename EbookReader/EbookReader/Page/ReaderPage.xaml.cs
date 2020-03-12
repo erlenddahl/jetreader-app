@@ -75,14 +75,10 @@ namespace EbookReader.Page
             WebView.Messages.OnInteraction += Messages_OnInteraction;
             WebView.Messages.OnCommandRequest += Messages_OnCommandRequest;
             WebView.Messages.OnMessageReturned += Messages_OnMessageReturned;
-
-            _messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, nameof(ReaderPage));
             
             _quickPanel = new QuickMenuPopup();
             //TODO: _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
 
-            _messageBus.Send(new FullscreenRequestMessage(true));
-            _messageBus.Send(new ChangeBrightnessMessage(UserSettings.Reader.Brightness));
         }
 
         private bool _isFullscreen = false;
@@ -157,6 +153,7 @@ namespace EbookReader.Page
             _messageBus.Subscribe<ChangedBookmarkNameMessage>(ChangedBookmarkName, nameof(ReaderPage));
             _messageBus.Subscribe<GoToPageMessage>(GoToPageHandler, nameof(ReaderPage));
             _messageBus.Subscribe<KeyStrokeMessage>(KeyStrokeHandler, nameof(ReaderPage));
+            _messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, nameof(ReaderPage));
         }
 
         private void UnSubscribeMessages() {
@@ -243,8 +240,10 @@ namespace EbookReader.Page
                 Navigation.InsertPageBefore(new HomePage(), this);
 
             _backgroundSync = true;
-            _messageBus.Send(new FullscreenRequestMessage(true));
             SubscribeMessages();
+
+            _messageBus.Send(new FullscreenRequestMessage(true));
+            _messageBus.Send(new ChangeBrightnessMessage(UserSettings.Reader.Brightness));
 
             Task.Run(() => {
                 LoadProgress();

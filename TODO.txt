@@ -1,6 +1,5 @@
  - Optmimize launch time
  - Bug: changing scroll speed does not affect currently open book (must close and re-open)
- - Bug: entering settings from an open book leads to a stuck action bar. Also happens when minimizing and re-opening the app.
  - Rework the QuickPanel
     - Add more settings
     - Remove all references to the old QuickMenu
