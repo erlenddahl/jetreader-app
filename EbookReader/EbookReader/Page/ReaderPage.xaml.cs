@@ -75,6 +75,7 @@ namespace EbookReader.Page
             WebView.Messages.OnInteraction += Messages_OnInteraction;
             WebView.Messages.OnCommandRequest += Messages_OnCommandRequest;
             WebView.Messages.OnMessageReturned += Messages_OnMessageReturned;
+            WebView.Messages.OnReadStats += MessagesOnReadStats;
             
             _quickPanel = new QuickMenuPopup();
             //TODO: _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
@@ -268,6 +269,7 @@ namespace EbookReader.Page
             await Navigation.PushPopupAsync(_loadingPopup);
 
             _bookshelfBook = info;
+            _bookshelfBook.ReadStats.OpenedBook();
             var loader = EbookFormatHelper.GetBookLoader(info.Format);
             _ebook = await loader.OpenBook(info);
             var position = _bookshelfBook.Position;
@@ -396,7 +398,7 @@ namespace EbookReader.Page
 
             var syncPosition = await _syncService.LoadProgress(_bookshelfBook.Id);
 
-            if (_syncPending || syncPosition == null || syncPosition.Position == null || syncPosition.Position.Equals(_bookshelfBook.Position) || syncPosition.Position.Equals(_lastLoadedPosition) || syncPosition.D == UserSettings.Synchronization.DeviceName) return;
+            if (_syncPending || syncPosition?.Position == null || syncPosition.Position.Equals(_bookshelfBook.Position) || syncPosition.Position.Equals(_lastLoadedPosition) || syncPosition.D == UserSettings.Synchronization.DeviceName) return;
 
             var loadedChapter = _ebook.HtmlFiles[syncPosition.Position.Spine];
 
@@ -405,7 +407,7 @@ namespace EbookReader.Page
             _lastLoadedPosition = new Position(syncPosition.Position);
             Device.BeginInvokeOnMainThread(async () => {
                 _syncPending = true;
-                var loadPosition = await DisplayAlert("Reading position at the another device", $"Load reading position from the device {syncPosition.D}?", "Yes, load it", "No");
+                var loadPosition = await DisplayAlert("Reading position at another device", $"Load reading position from the device {syncPosition.D}?", "Yes, load it", "No");
                 if (loadPosition) {
                     if (_currentChapter != syncPosition.Position.Spine) {
                         SendChapter(loadedChapter, position: syncPosition.Position.SpinePosition);

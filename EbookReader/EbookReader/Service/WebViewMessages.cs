@@ -20,6 +20,7 @@ namespace EbookReader.Service {
         readonly List<Model.WebViewMessages.Message> _queue;
 
         public event EventHandler<Model.WebViewMessages.PageChange> OnPageChange;
+        public event EventHandler<Model.WebViewMessages.ReadStats> OnReadStats;
         public event EventHandler<Model.WebViewMessages.NextChapterRequest> OnNextChapterRequest;
         public event EventHandler<Model.WebViewMessages.PrevChapterRequest> OnPrevChapterRequest;
         public event EventHandler<Model.WebViewMessages.LinkClicked> OnLinkClicked;

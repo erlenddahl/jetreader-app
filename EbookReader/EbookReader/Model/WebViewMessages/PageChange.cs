@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace EbookReader.Model.WebViewMessages {
-    public class PageChange {
+    public class PageChange
+    {
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
         public int Position { get; set; }

@@ -339,11 +339,11 @@ window.Ebook = {
 
         var c = Ebook.chapterInfo || {};
 
-        this.messagesHelper.sendDebug({
-            seconds: diff,
-            totalPages: Ebook.totalPages,
-            words: c.wordsCurrent / Ebook.totalPages,
-            progress: (c.wordsBefore + (c.wordsCurrent / Ebook.totalPages) * Ebook.currentPage) / (c.wordsBefore + c.wordsCurrent + c.wordsAfter) * 100
+        this.messagesHelper.sendStats({
+            Seconds: diff,
+            TotalPages: Ebook.totalPages,
+            Words: c.wordsCurrent / Ebook.totalPages,
+            Progress: (c.wordsBefore + (c.wordsCurrent / Ebook.totalPages) * Ebook.currentPage) / (c.wordsBefore + c.wordsCurrent + c.wordsAfter) * 100
         });
     },
     pauseStatsTime: function () {
@@ -553,8 +553,11 @@ window.Ebook = {
         nextChapterRequest: function() {
             Messages.send("NextChapterRequest");
         },
-        prevChapterRequest: function() {
+        prevChapterRequest: function () {
             Messages.send("PrevChapterRequest");
+        },
+        sendStats: function (stats) {
+            Messages.send("ReadStats", stats);
         },
         sendOpenQuickPanelRequest: function() {
             Messages.send("OpenQuickPanelRequest");

@@ -25,10 +25,23 @@ namespace EbookReader.Books
         public string CoverFilename { get; set; }
 
         [Ignore]
+        public ReadingStatistics ReadStats
+        {
+            get => _readStats ?? (_readStats = new ReadingStatistics());
+            set => _readStats = value;
+        }
+
+        public string ReadingStatisticsJson
+        {
+            get => JsonConvert.SerializeObject(ReadStats);
+            set => ReadStats = string.IsNullOrWhiteSpace(value) ? new ReadingStatistics() : JsonConvert.DeserializeObject<ReadingStatistics>(value);
+        }
+
+        [Ignore]
         public List<ChapterData> ChapterInfo { get; set; }
         public string ChapterDataJson {
             get => JsonConvert.SerializeObject(ChapterInfo);
-            set => ChapterInfo = JsonConvert.DeserializeObject<List<ChapterData>>(value);
+            set => ChapterInfo = string.IsNullOrWhiteSpace(value) ? new List<ChapterData>() : JsonConvert.DeserializeObject<List<ChapterData>>(value);
         }
 
         public int Spine { get; set; }
@@ -46,6 +59,7 @@ namespace EbookReader.Books
         public long BookFileSize { get; set; }
 
         private int _processingStatus = 0;
+        private ReadingStatistics _readStats;
 
         private string GetTempLocation()
         {

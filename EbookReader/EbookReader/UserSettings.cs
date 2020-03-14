@@ -19,6 +19,20 @@ namespace EbookReader {
     public static class UserSettings {
         private static ISettings AppSettings => CrossSettings.Current;
 
+        public static string DeviceId
+        {
+            get
+            {
+                var id = AppSettings.GetValueOrDefault(CreateKey(nameof(Synchronization), nameof(DeviceId)), default(string));
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    id = Guid.NewGuid().ToString();
+                    AppSettings.AddOrUpdateValue(CreateKey(nameof(Synchronization), nameof(DeviceId)), id);
+                }
+                return id;
+            }
+        }
+
         public static bool FirstRun {
             get => AppSettings.GetValueOrDefault(CreateKey(nameof(FirstRun)), true);
             set => AppSettings.AddOrUpdateValue(CreateKey(nameof(FirstRun)), value);
@@ -93,19 +107,8 @@ namespace EbookReader {
                 set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Synchronization), nameof(Enabled)), value);
             }
 
-            public static long DeviceId {
-                get {
-                    var id = AppSettings.GetValueOrDefault(CreateKey(nameof(Synchronization), nameof(DeviceId)), default(long));
-                    if (id == default(long)) {
-                        id = DeviceIdProvider.Id;
-                        AppSettings.AddOrUpdateValue(CreateKey(nameof(Synchronization), nameof(DeviceId)), id);
-                    }
-                    return id;
-                }
-            }
-
             public static string DeviceName {
-                get => AppSettings.GetValueOrDefault(CreateKey(nameof(Synchronization), nameof(DeviceName)), DeviceNameProvider.Name);
+                get => AppSettings.GetValueOrDefault(CreateKey(nameof(Synchronization), nameof(DeviceName)), "My device");
                 set => AppSettings.AddOrUpdateValue(CreateKey(nameof(Synchronization), nameof(DeviceName)), value);
             }
 

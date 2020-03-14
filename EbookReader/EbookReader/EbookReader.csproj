@@ -159,6 +159,9 @@
       <None Update="Page\Settings\Control.xaml">
         <Generator>MSBuild:Compile</Generator>
       </None>
+      <None Update="Page\Settings\Popups\CellEditorPopup.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
       <None Update="Page\Settings\Popups\CommandGridConfigPopup.xaml">
         <Generator>MSBuild:Compile</Generator>
       </None>
