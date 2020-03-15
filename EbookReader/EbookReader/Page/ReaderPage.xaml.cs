@@ -135,12 +135,18 @@ namespace EbookReader.Page
                     await Navigation.PushPopupAsync(_quickPanel, false);
                     break;
                 case GridCommand.Sync:
+                    WebView.Messages.ShowProgressMessage("Loading sync data from other devices ...");
                     await LoadProgress();
+                    WebView.Messages.ShowProgressMessage("Saving sync data from this device ...");
                     SaveProgress();
+                    WebView.Messages.ShowProgressMessage("Synchronizing bookmarks ...");
                     SynchronizeBookmarks();
+                    WebView.Messages.ShowProgressMessage("Synchronization successful.", preset: ProgressMessagePreset.Success);
                     break;
                 case GridCommand.Backup:
+                    WebView.Messages.ShowProgressMessage("Performing backup ...");
                     await Backup();
+                    WebView.Messages.ShowProgressMessage("Backup successful.", preset: ProgressMessagePreset.Success);
                     break;
             }
         }

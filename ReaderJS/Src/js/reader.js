@@ -134,6 +134,43 @@ window.Ebook = {
 
         this.statusPanelItems = items;
     },
+    showProgressMessage: function (data) {
+
+        if (data.preset === "Success") {
+            data.color = "#d1ffcd";
+            data.duration = 3;
+            data.icon = '<svg version="1.1" style="height: 8px;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><g><path d="M504.502,75.496c-9.997-9.998-26.205-9.998-36.204,0L161.594,382.203L43.702,264.311c-9.997-9.998-26.205-9.997-36.204,0c-9.998,9.997-9.998,26.205,0,36.203l135.994,135.992c9.994,9.997,26.214,9.99,36.204,0L504.502,111.7C514.5,101.703,514.499,85.494,504.502,75.496z"/></g></g></svg>';
+        } else if (data.preset === "Failure") {
+            data.color = "#ffcfcd";
+            data.duration = 3;
+            data.icon = '<svg version="1.1" style="height: 8px;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><g><path d="M501.362,383.95L320.497,51.474c-29.059-48.921-99.896-48.986-128.994,0L10.647,383.95c-29.706,49.989,6.259,113.291,64.482,113.291h361.736C495.039,497.241,531.068,433.99,501.362,383.95z M256,437.241c-16.538,0-30-13.462-30-30c0-16.538,13.462-30,30-30c16.538,0,30,13.462,30,30C286,423.779,272.538,437.241,256,437.241zM286,317.241c0,16.538-13.462,30-30,30c-16.538,0-30-13.462-30-30v-150c0-16.538,13.462-30,30-30c16.538,0,30,13.462,30,30V317.241z"/></g></g></svg>';
+        }
+
+        $("#status-panel-progress .progress-message").html(data.icon + " " + data.message);
+
+        if (data.color) {
+            $("#status-panel-progress").css("background-color", data.color);
+        } else {
+            $("#status-panel-progress").css("background-color", "");
+        }
+
+        $("#status-panel-bottom").hide();
+
+        var queue = $("#status-panel-progress").stop(true, true).fadeIn(1);
+
+        if (data.duration && data.duration > 0) {
+            queue.animate({opacity:1}, data.duration * 1000).fadeOut(500,
+                function() {
+                    $("#status-panel-bottom").fadeIn(500);
+                });
+        }
+
+    },
+    hideProgressMessage: function () {
+        $("#status-panel-progress").fadeOut(500, function() {
+            $("#status-panel-bottom").fadeIn(500);
+        });
+    },
     setTheme: function(theme) {
         this.theme = theme;
         Ebook.htmlHelper.setColors();
@@ -328,7 +365,8 @@ window.Ebook = {
         Ebook.goToPositionFast(position);
         Ebook.htmlHelper.showContent();
     },
-    reportReadStats: function() {
+    reportReadStats: function () {
+        if (!this.stats.startPageTime) return;
         var now = Date.now() / 1000;
         var diff = (now - this.stats.startPageTime);
         this.resumeStatsTimer(now);
@@ -338,6 +376,8 @@ window.Ebook = {
         }
 
         var c = Ebook.chapterInfo || {};
+
+        if (Ebook.totalPages <= 0) return;
 
         this.messagesHelper.sendStats({
             Seconds: diff,
@@ -605,13 +645,16 @@ window.Messages = {
 
         Ebook.messagesHelper.sendDebug("Received action: '" + json.Action + "'");
 
-        if (!this.actions[json.Action]) {
-            Ebook.messagesHelper.sendDebug("Missing action: '" + json.Action + "'");
-            return "";
-        }
-        var res = this.actions[json.Action](json.Data);
+        if (typeof this.actions[json.Action] === 'function')
+            return this.actions[json.Action](json.Data) || "";
+
+        if (typeof Ebook[json.Action] === 'function')
+            return Ebook[json.Action](json.Data) || "";
+
         Ebook.log("IN: " + json.Action);
-        return res || "";
+
+        Ebook.messagesHelper.sendDebug("Missing action: '" + json.Action + "'");
+        return "";
     },
     actions: {
         init: function(data) {
@@ -626,15 +669,6 @@ window.Messages = {
         setChapterInfo: function(data) {
             Ebook.chapterInfo = data;
             Ebook.refreshChapterInfo();
-        },
-        getPageCount: function() {
-            return Ebook.getPageCount();
-        },
-        pauseStatsTime: function() {
-            Ebook.pauseStatsTime();
-        },
-        resumeStatsTime: function() {
-            Ebook.resumeStatsTimer();
         },
         setStatusPanelData: function (data) {
             if (data.PanelDefinition) {
@@ -677,15 +711,6 @@ window.Messages = {
         goToPosition: function(data) {
             Ebook.goToPositionFast(data.Position);
         },
-        changeFontSize: function(data) {
-            Ebook.changeFontSize(data.FontSize);
-        },
-        resize: function (data) {
-            Ebook.resize(data.Width, data.Height);
-        },
-        changeMargins: function(data) {
-            Ebook.changeMargins(data);
-        },
         goToPage: function(data) {
             if (data.Page > 0) {
                 Ebook.goToPage(data.Page);
@@ -694,9 +719,6 @@ window.Messages = {
             } else if (data.Previous) {
                 Ebook.goToPreviousPage();
             }
-        },
-        setTheme: function(data) {
-            Ebook.setTheme(data);
         }
     },
 };

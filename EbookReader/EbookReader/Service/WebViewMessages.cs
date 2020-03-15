@@ -38,6 +38,16 @@ namespace EbookReader.Service {
             _webView.OnContentLoaded += WebView_OnContentLoaded;
         }
 
+        public void ShowProgressMessage(string message, double duration = 0, string color = "", string icon = "", ProgressMessagePreset preset = ProgressMessagePreset.None)
+        {
+            Send("showProgressMessage", new {message, duration, color, icon, preset = preset.ToString()});
+        }
+
+        public void HideProgressMessage()
+        {
+            Send("hideProgressMessage", null);
+        }
+
         public void Send(string action, object data) {
 
             var message = new Model.WebViewMessages.Message {
