@@ -11,16 +11,16 @@ namespace EbookReader.Service {
             return false;
         }
 
+        public async Task BackupFile(string file, string[] path)
+        {
+        }
+
         public async Task<T> LoadJson<T>(string[] path) {
-            return await Task.Run(() => {
-                return default(T);
-            });
+            return await Task.Run(() => default(T));
         }
 
         public async Task<List<T>> LoadJsonList<T>(string[] path) {
-            return await Task.Run(() => {
-                return new List<T>();
-            });
+            return await Task.Run(() => new List<T>());
         }
 
         public void SaveJson<T>(T json, string[] path) {

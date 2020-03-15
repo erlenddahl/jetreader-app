@@ -15,6 +15,11 @@ namespace EbookReader.Service {
             return !string.IsNullOrEmpty(UserSettings.Synchronization.Firebase.Email) && !string.IsNullOrEmpty(UserSettings.Synchronization.Firebase.Password);
         }
 
+        public Task BackupFile(string file, string[] path)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<T> LoadJson<T>(string[] path) {
             try {
                 var auth = await GetAuth();

@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
 using Dropbox.Api;
 using Dropbox.Api.Files;
+using EbookReader.DependencyService;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 
@@ -16,6 +18,35 @@ namespace EbookReader.Service {
 
         public bool IsConnected() {
             return !string.IsNullOrEmpty(UserSettings.Synchronization.Dropbox.AccessToken);
+        }
+
+        public async Task BackupFile(string sourcePath, string[] path)
+        {
+            try
+            {
+                var accessToken = UserSettings.Synchronization.Dropbox.AccessToken;
+                var io = IocManager.Container.Resolve<FileService>();
+
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+
+                    using (var dbx = new DropboxClient(accessToken))
+                    {
+                        using (var mem = await io.LoadFileStreamAsync(sourcePath))
+                        {
+                            await dbx.Files.UploadAsync(
+                                $"/{string.Join("/", path)}",
+                                WriteMode.Overwrite.Instance,
+                                body: mem,
+                                mute: true);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Crashes.TrackError(e);
+            }
         }
 
         public async Task<T> LoadJson<T>(string[] path) {

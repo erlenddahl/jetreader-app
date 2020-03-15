@@ -40,11 +40,13 @@ namespace EbookReader.Service
             return await _cloudStorageService.LoadJson<Progress>(path);
         }
 
-        public void SaveProgress(string bookId, Position position) {
+        public void SaveProgress(string bookId, Position position)
+        {
 
             if (!CanSync()) return;
 
-            var progress = new Progress {
+            var progress = new Progress
+            {
                 DeviceName = UserSettings.Synchronization.DeviceName,
                 Position = position,
             };
@@ -52,6 +54,13 @@ namespace EbookReader.Service
             var path = PathGenerator(bookId, ProgressNode);
 
             _cloudStorageService.SaveJson(progress, path);
+        }
+
+        public async Task BackupFile(string filePath)
+        {
+            if (!CanSync()) return;
+
+            await _cloudStorageService.BackupFile(filePath, new[] {"backup", UserSettings.DeviceId, DateTime.Now.ToString("yyyy-MM-dd"), System.IO.Path.GetFileName(filePath)});
         }
 
         public void DeleteBook(string bookId) {

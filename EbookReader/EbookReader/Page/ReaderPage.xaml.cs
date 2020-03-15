@@ -38,6 +38,7 @@ namespace EbookReader.Page
         readonly ISyncService _syncService;
         readonly IBookmarkService _bookmarkService;
         private readonly IBatteryProvider _batteryProvider;
+        private IFileHelper _fileHelper;
         int _currentChapter;
 
         Ebook _ebook;
@@ -63,6 +64,7 @@ namespace EbookReader.Page
             _bookmarkService = IocManager.Container.Resolve<IBookmarkService>();
             _batteryProvider = IocManager.Container.Resolve<IBatteryProvider>();
             _toastService = IocManager.Container.Resolve<IToastService>();
+            _fileHelper = IocManager.Container.Resolve<IFileHelper>();
             IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>((_)=> { SetStatusPanelValue(StatusPanelItem.Battery, GetBatteryHtml()); }, nameof(ReaderPage));
 
             // webview events
@@ -80,9 +82,13 @@ namespace EbookReader.Page
             _quickPanel = new QuickMenuPopup();
             //TODO: _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
 
+        private void MessagesOnReadStats(object sender, ReadStats e)
+        {
+            _bookshelfBook.ReadStats.Save(e);
         }
 
         private bool _isFullscreen = false;
+
         private void ToggleFullscreen(FullscreenRequestMessage msg)
         {
             if (!UserSettings.Reader.Fullscreen) return;
@@ -128,7 +134,21 @@ namespace EbookReader.Page
                 case GridCommand.OpenQuickSettings:
                     await Navigation.PushPopupAsync(_quickPanel, false);
                     break;
+                case GridCommand.Sync:
+                    await LoadProgress();
+                    SaveProgress();
+                    SynchronizeBookmarks();
+                    break;
+                case GridCommand.Backup:
+                    await Backup();
+                    break;
             }
+        }
+
+        private async Task Backup()
+        {
+            var path = _fileHelper.GetLocalFilePath(AppSettings.Bookshelft.SqlLiteFilename);
+            await _syncService.BackupFile(path);
         }
 
         private void Messages_OnInteraction(object sender, JObject e)
@@ -394,7 +414,7 @@ namespace EbookReader.Page
             _syncService.SaveProgress(_bookshelfBook.Id, _bookshelfBook.Position);
         }
 
-        private async void LoadProgress() {
+        private async Task LoadProgress() {
             if (_bookshelfBook == null) return;
 
             var syncPosition = await _syncService.LoadProgress(_bookshelfBook.Id);
