@@ -3,6 +3,7 @@ ReaderJS/Build/*
 !ReaderJS/Build/layout.html
 ReaderJS/package-lock.json
 EbookReader/EbookReader/ReaderApp.Release.config
+EbookReader/EbookReader/ReaderApp.config
 EbookReader/EbookReader.UWP/Package.xml
 
 # Created by https://www.gitignore.io/api/visualstudio,csharp
