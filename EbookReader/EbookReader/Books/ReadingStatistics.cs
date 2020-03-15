@@ -17,7 +17,14 @@ namespace EbookReader.Books
 
         public ReadingDate GetCurrent()
         {
-            return Dates.FirstOrDefault(p => p.Date == DateTime.Now.Date) ?? new ReadingDate();
+            var d = Dates.FirstOrDefault(p => p.Date == DateTime.Now.Date);
+            if (d == null)
+            {
+                d = new ReadingDate();
+                Dates.Add(d);
+            }
+
+            return d;
         }
 
         public void Save(ReadStats readStats)
