@@ -178,7 +178,6 @@ namespace EbookReader.Page {
             page.LoadBook(book);
             await Navigation.PushAsync(page);
 
-            book.LastRead = DateTime.Now;
             _bookshelfService.SaveBook(book);
         }
 

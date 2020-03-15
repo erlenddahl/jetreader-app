@@ -269,6 +269,7 @@ namespace EbookReader.Page
             await Navigation.PushPopupAsync(_loadingPopup);
 
             _bookshelfBook = info;
+            _bookshelfBook.LastRead = DateTime.Now;
             _bookshelfBook.ReadStats.OpenedBook();
             var loader = EbookFormatHelper.GetBookLoader(info.Format);
             _ebook = await loader.OpenBook(info);
