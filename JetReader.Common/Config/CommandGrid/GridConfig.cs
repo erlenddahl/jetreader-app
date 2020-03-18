@@ -10,7 +10,7 @@ namespace JetReader.Config.CommandGrid
             new CommandGrid()
                 .Row(3)
                 .Cell(tap: GridCommand.PrevPage)
-                .Cell(tap: GridCommand.VisualizeCommandCells, press: GridCommand.OpenQuickSettings)
+                .Cell(tap: GridCommand.VisualizeCommandCells, press: GridCommand.ShowChapters)
                 .Cell(tap: GridCommand.NextPage)
                 .Row(3)
                 .Cell(tap: GridCommand.PrevPage)

@@ -11,16 +11,14 @@ namespace JetReader.Service
 {
     public class BookmarkService : IBookmarkService {
         readonly IBookmarkRepository _bookmarkRepository;
-        IBookRepository _bookRepository;
         readonly ISyncService _syncService;
 
-        public BookmarkService(IBookmarkRepository bookmarkRepository, IBookRepository bookRepository, ISyncService syncService) {
+        public BookmarkService(IBookmarkRepository bookmarkRepository, ISyncService syncService) {
             _bookmarkRepository = bookmarkRepository;
-            _bookRepository = bookRepository;
             _syncService = syncService;
         }
 
-        public void CreateBookmark(string name, string bookId, Position position) {
+        public Bookmark CreateBookmark(string name, string bookId, Position position) {
             var bookmark = new Bookmark {
                 Id = BookmarkIdProvider.Id,
                 Name = name,
@@ -30,6 +28,8 @@ namespace JetReader.Service
 
             SaveBookmark(bookmark);
             _syncService.SaveBookmark(bookId, bookmark);
+
+            return bookmark;
         }
 
         public async void DeleteBookmark(Bookmark bookmark, string bookId) {

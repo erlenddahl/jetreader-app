@@ -26,6 +26,8 @@
         FontSizeMinus,
         BrightnessPlus,
         BrightnessMinus,
-        Restore
+        Restore,
+        ShowChapters,
+        ShowBookmarks
     }
 }

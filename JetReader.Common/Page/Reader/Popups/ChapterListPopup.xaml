@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+             x:Class="JetReader.Page.Reader.Popups.ChapterListPopup"
+             CloseWhenBackgroundIsClicked="True"
+             x:Name="ControlSelf">
+
+    <StackLayout VerticalOptions="FillAndExpand"
+                 HorizontalOptions="FillAndExpand"
+                 BindingContext="{Reference ControlSelf}"
+                 Padding="7,5"
+                 BackgroundColor="#ffffff"
+                 AbsoluteLayout.LayoutFlags="SizeProportional"
+                 AbsoluteLayout.LayoutBounds="0, 0, 1, 1">
+
+        <StackLayout.Margin>
+            <OnPlatform x:TypeArguments="Thickness" Android="20,30" WinPhone="100" />
+        </StackLayout.Margin>
+
+        <Grid Padding="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Button Text="Content" Grid.Column="0" Clicked="SelectContentTab" />
+            <Button Text="Bookmarks" Grid.Column="1" Clicked="SelectBookmarksTab" />
+        </Grid>
+
+        <StackLayout IsVisible="{Binding ChaptersVisible}">
+            <ListView ItemsSource="{Binding Chapters}"
+                      ItemTapped="ChapterTapped"
+                      CachingStrategy="RecycleElement">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout VerticalOptions="Center">
+                                <Label Text="{Binding Title}"  Style="{DynamicResource ListItemTextStyle}" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+
+        <StackLayout IsVisible="{Binding BookmarksVisible}">
+            <Button Text="Add bookmark" Clicked="AddBookmarkClicked"></Button>
+
+            <ListView ItemsSource="{Binding Bookmarks}"
+                      ItemTapped="BookmarkTapped"
+                      CachingStrategy="RecycleElement">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout VerticalOptions="Center" Orientation="Horizontal">
+                                <Label Text="{Binding Name}"  Style="{DynamicResource ListItemTextStyle}" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </StackLayout>
+</pages:PopupPage>

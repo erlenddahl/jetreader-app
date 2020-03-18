@@ -10,7 +10,7 @@ namespace JetReader.Service
     public interface IBookmarkService {
         void DeleteBookmark(Bookmark bookmark, string bookId);
         Task<List<Bookmark>> LoadBookmarksByBookId(string bookId);
-        void CreateBookmark(string name, string bookId, Position position);
+        Bookmark CreateBookmark(string name, string bookId, Position position);
         void SaveBookmark(Bookmark bookmark);
     }
 }

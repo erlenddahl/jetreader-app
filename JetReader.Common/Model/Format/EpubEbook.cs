@@ -60,10 +60,11 @@ namespace JetReader.Model.Format
 
         private IEnumerable<EbookChapter> GetHtmlFilesInReadingOrder(EpubBook book)
         {
-            var dict = book.TableOfContents.ToDictionary(k => k.FileName, v => v);
+            var dict = book.TableOfContents.FlattenWithDepth(p => p.SubChapters).ToDictionary(k => k.Item.FileName, v => v);
+            var titleDict = dict.ToDictionary(k => k.Key, v => v.Value.Item);
             foreach (var chapter in book.SpecialResources.HtmlInReadingOrder)
             {
-                yield return new EbookChapter(GetTitle(dict, chapter), chapter.TextContent, chapter.FileName);
+                yield return new EbookChapter(GetTitle(titleDict, chapter), chapter.TextContent, chapter.FileName, dict.TryGetValue(chapter.FileName, out var c) ? c.Depth : 0);
             }
         }
     }

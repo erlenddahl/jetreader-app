@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -36,9 +37,7 @@ namespace JetReader.Page
         readonly IBookshelfService _bookshelfService;
         readonly IMessageBus _messageBus;
         readonly ISyncService _syncService;
-        readonly IBookmarkService _bookmarkService;
         private readonly IBatteryProvider _batteryProvider;
-        private IFileHelper _fileHelper;
         int _currentChapter;
 
         Ebook _ebook;
@@ -62,10 +61,8 @@ namespace JetReader.Page
             _bookshelfService = IocManager.Container.Resolve<IBookshelfService>();
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
             _syncService = IocManager.Container.Resolve<ISyncService>();
-            _bookmarkService = IocManager.Container.Resolve<IBookmarkService>();
             _batteryProvider = IocManager.Container.Resolve<IBatteryProvider>();
             _toastService = IocManager.Container.Resolve<IToastService>();
-            _fileHelper = IocManager.Container.Resolve<IFileHelper>();
             IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>((_) => { SetStatusPanelValue(StatusPanelItem.Battery, GetBatteryHtml()); }, nameof(ReaderPage));
 
             // webview events
@@ -81,7 +78,15 @@ namespace JetReader.Page
             WebView.Messages.OnReadStats += MessagesOnReadStats;
 
             _quickPanel = new QuickMenuPopup();
-            //TODO: _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
+            _chapterListPopup = new ChapterListPopup();
+            _chapterListPopup.OnChapterClicked += ChapterList_OnChapterClicked;
+            _chapterListPopup.OnBookmarkClicked += ChapterListPopupOnBookmarkClicked;
+        }
+
+        private void ChapterListPopupOnBookmarkClicked(object sender, Bookmark e)
+        {
+            _chapterListPopup.Hide();
+            OpenBookmark(e);
         }
 
         private void MessagesOnReadStats(object sender, ReadStats e)
@@ -90,6 +95,7 @@ namespace JetReader.Page
         }
 
         private bool _isFullscreen = false;
+        private readonly ChapterListPopup _chapterListPopup;
 
         private void ToggleFullscreen(FullscreenRequestMessage msg)
         {
@@ -173,6 +179,12 @@ namespace JetReader.Page
                     else
                         WebView.Messages.ShowProgressMessage("No backup files found.", preset: ProgressMessagePreset.Failure);
                     break;
+                case GridCommand.ShowChapters:
+                    _chapterListPopup.Show();
+                    break;
+                case GridCommand.ShowBookmarks:
+                    _chapterListPopup.Show();
+                    break;
             }
         }
 
@@ -194,14 +206,11 @@ namespace JetReader.Page
 
         private void SubscribeMessages()
         {
+            _messageBus.Subscribe<BookmarksChangedMessage>(p => _chapterListPopup.RefreshBookmarks(), nameof(ReaderPage));
             _messageBus.Subscribe<ChangeThemeMessage>(ChangeTheme, nameof(ReaderPage));
             _messageBus.Subscribe<ChangeMarginMessage>(ChangeMargin, nameof(ReaderPage));
             _messageBus.Subscribe<ChangeFontSizeMessage>(ChangeFontSize, nameof(ReaderPage));
             _messageBus.Subscribe<AppSleepMessage>(AppSleepSubscriber, nameof(ReaderPage));
-            _messageBus.Subscribe<AddBookmarkMessage>(AddBookmark, nameof(ReaderPage));
-            _messageBus.Subscribe<OpenBookmarkMessage>(OpenBookmark, nameof(ReaderPage));
-            _messageBus.Subscribe<DeleteBookmarkMessage>(DeleteBookmark, nameof(ReaderPage));
-            _messageBus.Subscribe<ChangedBookmarkNameMessage>(ChangedBookmarkName, nameof(ReaderPage));
             _messageBus.Subscribe<GoToPageMessage>(GoToPageHandler, nameof(ReaderPage));
             _messageBus.Subscribe<KeyStrokeMessage>(KeyStrokeHandler, nameof(ReaderPage));
             _messageBus.Subscribe<FullscreenRequestMessage>(ToggleFullscreen, nameof(ReaderPage));
@@ -326,8 +335,6 @@ namespace JetReader.Page
             var position = _bookshelfBook.Position;
 
             Title = _ebook.Title + " - " + _ebook.Author;
-            //TODO: _quickPanel.PanelContent.SetNavigation(_ebook.HtmlFiles);
-            RefreshBookmarks();
 
             var chapter = _ebook.HtmlFiles.First();
             var positionInChapter = 0;
@@ -342,6 +349,7 @@ namespace JetReader.Page
 
             SendChapter(chapter, positionInChapter);
 
+            _chapterListPopup.SetBook(_ebook, _bookshelfBook);
         }
 
         private void AppSleepSubscriber(AppSleepMessage msg) {
@@ -350,37 +358,19 @@ namespace JetReader.Page
             }
         }
 
-        private void AddBookmark(AddBookmarkMessage msg) {
-            _bookmarkService.CreateBookmark(DateTime.Now.ToString(), _bookshelfBook.Id, _bookshelfBook.Position);
-
-            RefreshBookmarks();
-        }
-
-        private void DeleteBookmark(DeleteBookmarkMessage msg) {
-            _bookmarkService.DeleteBookmark(msg.Bookmark, _bookshelfBook.Id);
-
-            RefreshBookmarks();
-        }
-
-        public void ChangedBookmarkName(ChangedBookmarkNameMessage msg) {
-            _bookmarkService.SaveBookmark(msg.Bookmark);
-            _syncService.SaveBookmark(_bookshelfBook.Id, msg.Bookmark);
-            RefreshBookmarks();
-        }
-
-        private async void RefreshBookmarks() {
-            var bookmarks = await _bookmarkService.LoadBookmarksByBookId(_bookshelfBook.Id);
-            //TODO: _quickPanel.PanelBookmarks.SetBookmarks(bookmarks);
-        }
-
-        private void OpenBookmark(OpenBookmarkMessage msg) {
-            var loadedChapter = _ebook.HtmlFiles[msg.Bookmark.Position.Spine];
-            if (loadedChapter != null) {
-                if (_currentChapter != msg.Bookmark.Position.Spine) {
-                    SendChapter(loadedChapter, position: msg.Bookmark.Position.SpinePosition);
-                } else {
-                    _bookshelfBook.SpinePosition = msg.Bookmark.Position.SpinePosition;
-                    GoToPosition(msg.Bookmark.Position.SpinePosition);
+        private void OpenBookmark(Bookmark bookmark)
+        {
+            var loadedChapter = _ebook.HtmlFiles[bookmark.Position.Spine];
+            if (loadedChapter != null)
+            {
+                if (_currentChapter != bookmark.Position.Spine)
+                {
+                    SendChapter(loadedChapter, bookmark.Position.SpinePosition);
+                }
+                else
+                {
+                    _bookshelfBook.SpinePosition = bookmark.Position.SpinePosition;
+                    GoToPosition(bookmark.Position.SpinePosition);
                 }
             }
         }
@@ -480,8 +470,9 @@ namespace JetReader.Page
 
         #region events
 
-        private void PanelContent_OnChapterChange(object sender, EbookChapter e)
+        private void ChapterList_OnChapterClicked(object sender, EbookChapter e)
         {
+            _chapterListPopup.Hide();
             LoadChapter(e.Href);
         }
 
