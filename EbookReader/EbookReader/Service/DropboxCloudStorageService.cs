@@ -49,25 +49,26 @@ namespace EbookReader.Service {
             }
         }
 
-        public async Task<List<string>> GetRestoreList()
+        public async Task<List<string>> GetFileList(string path, Func<string, bool> filter = null)
         {
             try
             {
                 var accessToken = UserSettings.Synchronization.Dropbox.AccessToken;
-                var io = IocManager.Container.Resolve<FileService>();
+                var items = new List<string>();
 
                 if (!string.IsNullOrEmpty(accessToken))
                 {
 
                     using (var dbx = new DropboxClient(accessToken))
                     {
-                        var list = await dbx.Files.ListFolderAsync("/backup/");
+                        var list = await dbx.Files.ListFolderAsync("/backup/", recursive:true);
                         var more = true;
                         while (more)
                         {
                             foreach (var item in list.Entries.Where(i => i.IsFile))
                             {
-                                // Process the file
+                                if (filter != null && !filter(item.Name)) continue;
+                                items.Add(item.PathDisplay);
                             }
                             more = list.HasMore;
                             if (more)
@@ -77,10 +78,37 @@ namespace EbookReader.Service {
                         }
                     }
                 }
+
+                return items;
             }
             catch (Exception e)
             {
                 Crashes.TrackError(e);
+                return null;
+            }
+        }
+
+        public async Task<bool> RestoreFile(string toPath, string fromPath)
+        {
+            try
+            {
+                var accessToken = UserSettings.Synchronization.Dropbox.AccessToken;
+
+                if (string.IsNullOrEmpty(accessToken)) throw new Exception("No Dropbox access token");
+
+                using (var dbx = new DropboxClient(accessToken))
+                using (var response = await dbx.Files.DownloadAsync(fromPath))
+                using (var fileStream = File.Create(toPath))
+                using (var responseStream = await response.GetContentAsStreamAsync())
+                {
+                    responseStream.CopyTo(fileStream);
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Crashes.TrackError(e);
+                return false;
             }
         }
 

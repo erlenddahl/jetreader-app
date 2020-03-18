@@ -30,6 +30,11 @@ namespace EbookReader.Service {
             return default(T);
         }
 
+        public Task<List<string>> GetFileList(string path, Func<string, bool> filter = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<T>> LoadJsonList<T>(string[] path) {
             try {
                 var auth = await GetAuth();
@@ -54,6 +59,11 @@ namespace EbookReader.Service {
                 var auth = await GetAuth();
                 await GetFirebase().Child($"{PathGenerator(path, auth)}").DeleteAsync();
             } catch { }
+        }
+
+        public Task<bool> RestoreFile(string toPath, string fromPath)
+        {
+            throw new NotImplementedException();
         }
 
         private FirebaseClient GetFirebase() {

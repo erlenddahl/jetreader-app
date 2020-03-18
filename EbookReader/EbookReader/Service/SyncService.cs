@@ -65,6 +65,19 @@ namespace EbookReader.Service
             await _cloudStorageService.BackupFile(filePath, new[] {"backup", DateTime.Now.ToString("yyyy-MM-dd") + " (" + UserSettings.Synchronization.DeviceName + ").backup"});
         }
 
+        public async Task<List<string>> GetDatabaseRestorationList()
+        {
+            if (!CanSync()) return null;
+            return await _cloudStorageService.GetFileList("/backup/", p => p.EndsWith(".backup"));
+        }
+
+        public async Task<bool> RestoreBackup(string fromPath)
+        {
+            if (!CanSync()) return false;
+            var toPath = IocManager.Container.Resolve<IFileHelper>().GetLocalFilePath(AppSettings.Bookshelft.SqlLiteFilename);
+            return await _cloudStorageService.RestoreFile(toPath, fromPath);
+        }
+
         public void DeleteBook(string bookId) {
 
             if (!CanSync()) return;

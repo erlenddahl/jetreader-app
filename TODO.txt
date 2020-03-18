@@ -5,6 +5,7 @@
     - Remove all references to the old QuickMenu
     - Re-implement bookmarks/chapters.
  - Add app themes (at least light/dark)
+ - Move command actions from ReaderPage.xaml.cs to some central location so that they can also be used from other places (settings menu).
  - Implement statistics
  - Implement easy syncing using erlenddahl.net (or custom url)
  - Smooth page turning on pan
@@ -13,6 +14,7 @@
  - Cut-off for long chapters (for example max 10 000 words or something)
  - Dictionary
  - Annotation/highlighting
+ - Include cover files (and other important files) in backup/restore actions.
  - Translation support
  - Fix crash if book file is deleted
  - Make all popups use the same frame design

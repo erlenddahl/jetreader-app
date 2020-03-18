@@ -12,7 +12,9 @@ namespace EbookReader.Service
         void SaveProgress(string bookId, Position position);
         Task<Progress> LoadProgress(string bookId);
         void DeleteBook(string bookId);
-        Task BackupFile(string filePath);
+        Task BackupDatabase();
+        Task<List<string>> GetDatabaseRestorationList();
+        Task<bool> RestoreBackup(string path);
         void SaveBookmark(string bookId, Books.Bookmark bookmark);
         void SynchronizeBookmarks(BookInfo book);
     }

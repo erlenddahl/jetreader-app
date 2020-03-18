@@ -150,6 +150,29 @@ namespace EbookReader.Page
                     await Backup();
                     WebView.Messages.ShowProgressMessage("Backup successful.", preset: ProgressMessagePreset.Success);
                     break;
+                case GridCommand.Restore:
+                    WebView.Messages.ShowProgressMessage("Fetching restore list ...");
+                    var files = await _syncService.GetDatabaseRestorationList();
+                    if (files != null && files.Any())
+                        await new ItemPickerPopup("Pick backup file to restore:", files.Select(p => p.Split('/').Last().Split('.').First()).ToArray(), async (_, ix) =>
+                        {
+                            WebView.Messages.ShowProgressMessage("Restoring backup ...");
+                            try
+                            {
+                                var res = await _syncService.RestoreBackup(files[ix]);
+                                if (res)
+                                    WebView.Messages.ShowProgressMessage("Backup restored.", preset: ProgressMessagePreset.Success);
+                                else
+                                    WebView.Messages.ShowProgressMessage("Restore failed.", preset: ProgressMessagePreset.Failure);
+                            }
+                            catch (Exception ex)
+                            {
+                                WebView.Messages.ShowProgressMessage("Restore failed: " + ex.Message, preset: ProgressMessagePreset.Failure);
+                            }
+                        }).Show();
+                    else
+                        WebView.Messages.ShowProgressMessage("No backup files found.", preset: ProgressMessagePreset.Failure);
+                    break;
             }
         }
 
