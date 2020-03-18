@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+                 x:Class="EbookReader.Page.Popups.ItemPickerPopup"
+                 x:Name="ItemPicker"
+                 CloseWhenBackgroundIsClicked="True">
+    <Frame HorizontalOptions="Fill" VerticalOptions="CenterAndExpand" BackgroundColor="#EEEEEE" BorderColor="#555555" CornerRadius="10" HasShadow="True" Margin="20">
+        <ScrollView>
+            <StackLayout>
+                <Label Style="{DynamicResource TitleStyle}" BindingContext="{Reference ItemPicker}" Text="{Binding Description}"></Label>
+                <ListView x:Name="MyListView"
+                          ItemsSource="{Binding Items}"
+                          ItemTapped="Handle_ItemTapped"
+                          CachingStrategy="RecycleElement">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout VerticalOptions="Center">
+                                    <Label Text="{Binding .}"  Style="{DynamicResource ListItemTextStyle}" />
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </ScrollView>
+    </Frame>
+</pages:PopupPage>

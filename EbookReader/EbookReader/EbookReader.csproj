@@ -79,6 +79,9 @@
       </Compile>
     </ItemGroup>
     <ItemGroup>
+      <EmbeddedResource Update="Page\Popups\ItemPickerPopup.xaml">
+        <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      </EmbeddedResource>
       <EmbeddedResource Update="Page\Popups\LoadingPopup.xaml">
         <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       </EmbeddedResource>
