@@ -49,6 +49,41 @@ namespace EbookReader.Service {
             }
         }
 
+        public async Task<List<string>> GetRestoreList()
+        {
+            try
+            {
+                var accessToken = UserSettings.Synchronization.Dropbox.AccessToken;
+                var io = IocManager.Container.Resolve<FileService>();
+
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+
+                    using (var dbx = new DropboxClient(accessToken))
+                    {
+                        var list = await dbx.Files.ListFolderAsync("/backup/");
+                        var more = true;
+                        while (more)
+                        {
+                            foreach (var item in list.Entries.Where(i => i.IsFile))
+                            {
+                                // Process the file
+                            }
+                            more = list.HasMore;
+                            if (more)
+                            {
+                                list = await dbx.Files.ListFolderContinueAsync(list.Cursor);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Crashes.TrackError(e);
+            }
+        }
+
         public async Task<T> LoadJson<T>(string[] path) {
 
             try {

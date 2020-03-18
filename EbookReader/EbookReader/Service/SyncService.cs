@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using EbookReader.Books;
+using EbookReader.DependencyService;
 using EbookReader.Model.Messages;
 using EbookReader.Model.Sync;
 using EbookReader.Provider;
@@ -56,11 +57,12 @@ namespace EbookReader.Service
             _cloudStorageService.SaveJson(progress, path);
         }
 
-        public async Task BackupFile(string filePath)
+        public async Task BackupDatabase()
         {
             if (!CanSync()) return;
 
-            await _cloudStorageService.BackupFile(filePath, new[] {"backup", UserSettings.DeviceId, DateTime.Now.ToString("yyyy-MM-dd"), System.IO.Path.GetFileName(filePath)});
+            var filePath = IocManager.Container.Resolve<IFileHelper>().GetLocalFilePath(AppSettings.Bookshelft.SqlLiteFilename);
+            await _cloudStorageService.BackupFile(filePath, new[] {"backup", DateTime.Now.ToString("yyyy-MM-dd") + " (" + UserSettings.Synchronization.DeviceName + ").backup"});
         }
 
         public void DeleteBook(string bookId) {

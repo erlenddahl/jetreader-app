@@ -54,9 +54,10 @@ namespace EbookReader.Page
 
         readonly LoadingPopup _loadingPopup = new LoadingPopup();
 
-        public ReaderPage() {
+        public ReaderPage()
+        {
             InitializeComponent();
-            
+
             // ioc
             _bookshelfService = IocManager.Container.Resolve<IBookshelfService>();
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
@@ -65,7 +66,7 @@ namespace EbookReader.Page
             _batteryProvider = IocManager.Container.Resolve<IBatteryProvider>();
             _toastService = IocManager.Container.Resolve<IToastService>();
             _fileHelper = IocManager.Container.Resolve<IFileHelper>();
-            IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>((_)=> { SetStatusPanelValue(StatusPanelItem.Battery, GetBatteryHtml()); }, nameof(ReaderPage));
+            IocManager.Container.Resolve<IMessageBus>().Subscribe<BatteryChangeMessage>((_) => { SetStatusPanelValue(StatusPanelItem.Battery, GetBatteryHtml()); }, nameof(ReaderPage));
 
             // webview events
             WebView.Messages.OnNextChapterRequest += _messages_OnNextChapterRequest;
@@ -78,9 +79,10 @@ namespace EbookReader.Page
             WebView.Messages.OnCommandRequest += Messages_OnCommandRequest;
             WebView.Messages.OnMessageReturned += Messages_OnMessageReturned;
             WebView.Messages.OnReadStats += MessagesOnReadStats;
-            
+
             _quickPanel = new QuickMenuPopup();
             //TODO: _quickPanel.PanelContent.OnChapterChange += PanelContent_OnChapterChange;
+        }
 
         private void MessagesOnReadStats(object sender, ReadStats e)
         {
@@ -153,8 +155,7 @@ namespace EbookReader.Page
 
         private async Task Backup()
         {
-            var path = _fileHelper.GetLocalFilePath(AppSettings.Bookshelft.SqlLiteFilename);
-            await _syncService.BackupFile(path);
+            await _syncService.BackupDatabase();
         }
 
         private void Messages_OnInteraction(object sender, JObject e)
