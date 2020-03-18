@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using EbookReader;
-using EbookReader.BookLoaders;
-using EbookReader.BookLoaders.Epub;
-using EbookReader.Model.Format;
-using EbookReader.Service;
+using JetReader;
+using JetReader.BookLoaders;
+using JetReader.BookLoaders.Epub;
+using JetReader.Model.Format;
+using JetReader.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace JetReader.Tests

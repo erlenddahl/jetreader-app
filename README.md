@@ -21,7 +21,7 @@ yarn install
 grunt build
 ```
 
-Go to EbookReader/EbookReader folder, create copy of ReaderApp.config and name it ReaderApp.Release.config. Here is place for you production setting of app.
+Go to JetReader/JetReader folder, create copy of ReaderApp.config and name it ReaderApp.Release.config. Here is place for you production setting of app.
 
 What you can configure:
 * Firebase_BaseUrl

@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JetReader.Page.Settings.Control"
+             Title="Controls">
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style TargetType="Label" x:Key="title">
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="WidthRequest" Value="200" />
+                <Setter Property="VerticalOptions" Value="FillAndExpand" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="Medium" />
+            </Style>
+
+            <Style TargetType="StackLayout" x:Key="wrapper">
+                <Setter Property="Orientation" Value="Vertical" />
+                <Setter Property="Margin" Value="13, 5" />
+            </Style>
+
+            <Style TargetType="Label" x:Key="note">
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+            </Style>
+
+            <Style TargetType="View" x:Key="control">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="VerticalOptions" Value="CenterAndExpand" />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+
+        <ScrollView Orientation="Vertical" Margin="0,20,0,0">
+            <StackLayout VerticalOptions="Fill" Orientation="Vertical" CompressedLayout.IsHeadless="true">
+
+                <StackLayout Orientation="Vertical" CompressedLayout.IsHeadless="true">
+
+                    <StackLayout Style="{StaticResource wrapper}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="50" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Text="Touch control" Style="{StaticResource title}" />
+                            <ImageButton Grid.Column="1" Source="edit.png" Clicked="EditCommandGrid_OnClicked" Style="{StaticResource control}" Aspect="AspectFit"></ImageButton>
+                        </Grid>
+                        <Label Text="Edit the which parts of the screen you can tap to do different actions." Style="{StaticResource note}" />
+                    </StackLayout>
+
+                    <StackLayout Style="{StaticResource wrapper}" IsVisible="{Binding VolumeButton.Show}">
+                        <StackLayout Orientation="Horizontal" CompressedLayout.IsHeadless="true">
+                            <Label Text="Volume buttons" Style="{StaticResource title}" />
+                            <Switch IsToggled="{Binding VolumeButton.Enabled}" Style="{StaticResource control}" />
+                        </StackLayout>
+                        <Label Text="Use volume buttons for navigation." Style="{StaticResource note}" />
+                    </StackLayout>
+                    
+                    <StackLayout Style="{StaticResource wrapper}">
+                        <StackLayout Orientation="Horizontal" CompressedLayout.IsHeadless="true">
+                            <Label Text="Change brightness" Style="{StaticResource title}" />
+                            <Picker ItemsSource="{Binding PanBrightnessChange.Items}" SelectedItem="{Binding PanBrightnessChange.Value}" Style="{StaticResource control}">
+                                <Picker.Title>
+                                    <OnPlatform x:TypeArguments="x:String" Android="Set brightness control" />
+                                </Picker.Title>
+                            </Picker>
+                        </StackLayout>
+                        <Label Text="Pan on the edge of display for brightness control." Style="{StaticResource note}" />
+                    </StackLayout>
+
+                    <StackLayout Style="{StaticResource wrapper}">
+                        <StackLayout Orientation="Horizontal" CompressedLayout.IsHeadless="true">
+                            <Label Text="Two fingers swipe" Style="{StaticResource title}" />
+                            <Switch IsToggled="{Binding DoubleSwipe}" Style="{StaticResource control}" />
+                        </StackLayout>
+                        <Label Text="Swipe with two fingers to move between chapters." Style="{StaticResource note}" />
+                    </StackLayout>
+
+                </StackLayout>
+
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JetReader.Page.Settings.Application"
+             Title="Application">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style TargetType="Label" x:Key="title">
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="WidthRequest" Value="200" />
+                <Setter Property="VerticalOptions" Value="FillAndExpand" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="Medium" />
+            </Style>
+
+            <Style TargetType="StackLayout" x:Key="wrapper">
+                <Setter Property="Orientation" Value="Vertical" />
+                <Setter Property="Margin" Value="13, 5" />
+            </Style>
+
+            <Style TargetType="Label" x:Key="note">
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+            </Style>
+
+            <Style TargetType="View" x:Key="control">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="VerticalOptions" Value="CenterAndExpand" />
+            </Style>
+
+            <Style x:Key="link" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Italic"></Setter>
+                <Setter Property="TextColor" Value="Blue"></Setter>
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+
+        <ScrollView Orientation="Vertical" Margin="0,20,0,0">
+            <StackLayout VerticalOptions="Fill" Orientation="Vertical" CompressedLayout.IsHeadless="true">
+
+                <StackLayout Orientation="Vertical">
+
+                    <StackLayout Style="{StaticResource wrapper}">
+                        <StackLayout Orientation="Horizontal" CompressedLayout.IsHeadless="true">
+                            <Label Text="Anonymous data" Style="{StaticResource title}" />
+                            <Switch IsToggled="{Binding AnalyticsAgreement}" Style="{StaticResource control}" />
+                        </StackLayout>
+                        <Label Text="I agree with collecting of anonymous information about using of the app. This is important for application improvements." Style="{StaticResource note}" />
+                        <Label Text="What can be collected: that you successfully sign up into Dropbox or Firebase or that your login failed (no usernames, passwords etc). That some book failed to open and name of the file." Style="{StaticResource note}" />
+                        <Label Text="Privacy Policy" Style="{StaticResource link}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenUrlCommand}" CommandParameter="https://bares43.github.io/onesync-reader/privacy.html"></TapGestureRecognizer>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </StackLayout>
+                </StackLayout>
+
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

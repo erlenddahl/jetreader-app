@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage 
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+    xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
+    x:Name="GridEditor"
+    BackgroundColor="Transparent"
+    BackgroundInputTransparent="False"
+    CloseWhenBackgroundIsClicked="True"
+    BackgroundClicked="CellEditorPopup_OnBackgroundClicked"
+    x:Class="JetReader.Page.Settings.Popups.CellEditorPopup">
+
+    <pages:PopupPage.Resources>
+        <Style TargetType="Label">
+            <Setter Property="HorizontalTextAlignment" Value="Center"></Setter>
+            <Setter Property="FontAttributes" Value="Bold"></Setter>
+            <Setter Property="FontSize" Value="16"></Setter>
+        </Style>
+    </pages:PopupPage.Resources>
+
+    <!--You can use any elements here which are extended from Xamarin.Forms.View-->
+    <Frame Margin="20" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" BackgroundColor="#BBEEEEEE" BorderColor="#555555" CornerRadius="10" HasShadow="True">
+        <Grid BindingContext="{Reference GridEditor}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">Tap:</Label>
+            <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2">Long press:</Label>
+
+            <Picker Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding Commands}" SelectedItem="{Binding SelectedTapCommand}"></Picker>
+            <Picker Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" ItemsSource="{Binding Commands}" SelectedItem="{Binding SelectedPressCommand}"></Picker>
+
+            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">Width</Label>
+            <Button Grid.Row="3" Grid.Column="0" Text="+" Clicked="IncreaseWidth_Clicked"></Button>
+            <Button Grid.Row="3" Grid.Column="1" Text="-" Clicked="DecreaseWidth_Clicked"></Button>
+
+            <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2">Height</Label>
+            <Button Grid.Row="3" Grid.Column="2" Text="+" Clicked="IncreaseHeight_Clicked"></Button>
+            <Button Grid.Row="3" Grid.Column="3" Text="-" Clicked="DecreaseHeight_Clicked"></Button>
+
+            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">Add cell</Label>
+
+            <Button Grid.Row="5" Grid.Column="0" Text="Before" Clicked="AddCellBefore_Clicked"></Button>
+            <Button Grid.Row="5" Grid.Column="1" Text="After" Clicked="AddCellAfter_Clicked"></Button>
+
+            <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">Add row</Label>
+
+            <Button Grid.Row="5" Grid.Column="2" Text="Above" Clicked="AddRowAbove_Clicked"></Button>
+            <Button Grid.Row="5" Grid.Column="3" Text="Below" Clicked="AddRowBelow_Clicked"></Button>
+
+            <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="Delete cell" Clicked="DeleteCell_Clicked"></Button>
+            <Button Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" Text="Delete row" Clicked="DeleteRow_Clicked"></Button>
+
+        </Grid>
+    </Frame>
+
+</pages:PopupPage>

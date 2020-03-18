@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using EbookReader;
-using EbookReader.BookLoaders.Epub;
-using EbookReader.Service;
+using JetReader;
+using JetReader.BookLoaders.Epub;
+using JetReader.Service;
 using EpubSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

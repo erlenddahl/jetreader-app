@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JetReader.Page.AboutPage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Label">
+                <Setter Property="HorizontalOptions" Value="CenterAndExpand" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+            
+            <Style x:Key="link" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Italic"></Setter>
+                <Setter Property="TextColor" Value="Blue"></Setter>
+                <Setter Property="HorizontalOptions" Value="CenterAndExpand" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
+    <ContentPage.Content>
+        <StackLayout Padding="15" CompressedLayout.IsHeadless="true">
+            <Label Text="JetReader"
+                   FontSize="Large"
+                   Margin="10"/>
+            <Label Text="{Binding Version}" FontSize="Small" />
+            <Label Text="{Binding Copyright}"></Label>
+            <Label Text="https://github.com/erlenddahl/jetreader" Style="{StaticResource link}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenUrlCommand}" CommandParameter="https://github.com/erlenddahl/jetreader"></TapGestureRecognizer>
+                </Label.GestureRecognizers>
+            </Label>
+            <Label Text="erlenddahl.net" Style="{StaticResource link}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenUrlCommand}" CommandParameter="https://erlenddahl.net"></TapGestureRecognizer>
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Label Text="Copyright" FontSize="Medium" Margin="10,0,0,0"></Label>
+            <WebView x:Name="Flaticon" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"></WebView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

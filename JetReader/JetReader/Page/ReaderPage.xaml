@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:JetReader.Page.Reader"
+             xmlns:wv="clr-namespace:JetReader.View"
+             xmlns:webView="clr-namespace:JetReader.View"
+             x:Class="JetReader.Page.ReaderPage">
+    <ContentPage.Content>
+        <wv:ReaderWebView x:Name="WebView"
+                            x:FactoryMethod="Factory"
+                            VerticalOptions="FillAndExpand"
+                            HorizontalOptions="FillAndExpand"
+                            OnContentLoaded="WebView_OnContentLoaded"
+                            ContentType="LocalFile"
+                            Source="layout.html"
+                            Margin="0,0,0,0" 
+                            AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+                            AbsoluteLayout.LayoutFlags="SizeProportional" />
+    </ContentPage.Content>
+</ContentPage>
