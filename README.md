@@ -21,7 +21,7 @@ yarn install
 grunt build
 ```
 
-Go to JetReader/JetReader folder, create copy of ReaderApp.config and name it ReaderApp.Release.config. Here is place for you production setting of app.
+Go to the JetReader folder, create a copy of ReaderApp.config and name it ReaderApp.Release.config. This is the place for your app's production settings.
 
 What you can configure:
 * Firebase_BaseUrl
@@ -32,6 +32,7 @@ What you can configure:
 
 ## Authors
 
+* **Erlend Dahl** - *Work since May 2019*
 * **Jan Bareš** - *Initial work* - [bares43](https://github.com/bares43)
 
 See also the list of [contributors](https://github.com/bares43/onesync-reader-app/graphs/contributors) who participated in this project.

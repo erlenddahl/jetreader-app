@@ -18,8 +18,8 @@
  - Fix crash if book file is deleted
  - Make all popups use the same frame design
  - Find a way to count/estimate number of pages per chapter (ghost Ebook loading every chapter?), use this for BookProgress
+ - Implement search
  - Add settings:
-    - CommandGrid
     - StatusPanel
     - Open previous book
 

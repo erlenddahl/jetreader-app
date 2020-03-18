@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JetReader.Common", "JetReader\JetReader\JetReader.Common.csproj", "{76BE50C7-110F-45F2-A3D7-D3A283B67F07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JetReader.Common", "JetReader.Common\JetReader.Common.csproj", "{76BE50C7-110F-45F2-A3D7-D3A283B67F07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetReader.Droid", "JetReader\JetReader.Droid\JetReader.Droid.csproj", "{C70E2B35-6462-4234-9DAF-03E964F5FD29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetReader.Droid", "JetReader.Droid\JetReader.Droid.csproj", "{C70E2B35-6462-4234-9DAF-03E964F5FD29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetReader.UWP", "JetReader\JetReader.UWP\JetReader.UWP.csproj", "{A9599E94-F257-4F2D-ACC7-141FC3756291}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetReader.UWP", "JetReader.UWP\JetReader.UWP.csproj", "{A9599E94-F257-4F2D-ACC7-141FC3756291}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReaderJS", "ReaderJS\ReaderJS.csproj", "{106CABEF-086A-478D-81FF-67CF385EFD71}"
 EndProject

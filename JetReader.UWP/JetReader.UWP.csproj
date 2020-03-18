@@ -124,46 +124,46 @@
     <None Include="JetReader.UWP_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\ReaderJS\Build\layout.html">
+    <Content Include="..\ReaderJS\Build\layout.html">
       <Link>layout.html</Link>
     </Content>
-    <Content Include="..\..\ReaderJS\Build\reader.css">
+    <Content Include="..\ReaderJS\Build\reader.css">
       <Link>reader.css</Link>
     </Content>
-    <Content Include="..\..\ReaderJS\Build\reader.js">
+    <Content Include="..\ReaderJS\Build\reader.js">
       <Link>reader.js</Link>
     </Content>
-    <Content Include="..\JetReader\Content\book.png">
+    <Content Include="..\JetReader.Common\Content\book.png">
       <Link>book.png</Link>
     </Content>
-    <Content Include="..\JetReader\Content\delete.png">
+    <Content Include="..\JetReader.Common\Content\delete.png">
       <Link>delete.png</Link>
     </Content>
-    <Content Include="..\JetReader\Content\delete_white.png">
+    <Content Include="..\JetReader.Common\Content\delete_white.png">
       <Link>delete_white.png</Link>
     </Content>
-    <Content Include="..\JetReader\Content\edit.png">
+    <Content Include="..\JetReader.Common\Content\edit.png">
       <Link>edit.png</Link>
     </Content>
-    <Content Include="..\JetReader\Content\edit_white.png">
+    <Content Include="..\JetReader.Common\Content\edit_white.png">
       <Link>edit_white.png</Link>
     </Content>
-    <Content Include="..\JetReader\Content\info.png">
+    <Content Include="..\JetReader.Common\Content\info.png">
       <Link>info.png</Link>
     </Content>
-    <Content Include="..\JetReader\Content\info_white.png">
+    <Content Include="..\JetReader.Common\Content\info_white.png">
       <Link>info_white.png</Link>
     </Content>
-    <Content Include="..\JetReader\Content\save.png">
+    <Content Include="..\JetReader.Common\Content\save.png">
       <Link>save.png</Link>
     </Content>
-    <Content Include="..\JetReader\Content\save_white.png">
+    <Content Include="..\JetReader.Common\Content\save_white.png">
       <Link>save_white.png</Link>
     </Content>
-    <Content Include="..\JetReader\Content\settings.png">
+    <Content Include="..\JetReader.Common\Content\settings.png">
       <Link>settings.png</Link>
     </Content>
-    <Content Include="..\JetReader\Content\settings_white.png">
+    <Content Include="..\JetReader.Common\Content\settings_white.png">
       <Link>settings_white.png</Link>
     </Content>
     <Content Include="Assets\LargeTile.scale-100.png" />
@@ -227,7 +227,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JetReader\JetReader.Common.csproj">
+    <ProjectReference Include="..\JetReader.Common\JetReader.Common.csproj">
       <Project>{76be50c7-110f-45f2-a3d7-d3a283b67f07}</Project>
       <Name>JetReader.Common</Name>
     </ProjectReference>

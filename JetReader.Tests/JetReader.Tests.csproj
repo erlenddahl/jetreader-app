@@ -96,7 +96,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JetReader\JetReader\JetReader.Common.csproj">
+    <ProjectReference Include="..\JetReader.Common\JetReader.Common.csproj">
       <Project>{76BE50C7-110F-45F2-A3D7-D3A283B67F07}</Project>
       <Name>JetReader.Common</Name>
     </ProjectReference>

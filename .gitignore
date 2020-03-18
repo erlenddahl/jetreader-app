@@ -2,9 +2,9 @@ ReaderJS/Build/*
 !ReaderJS/Build/empty
 !ReaderJS/Build/layout.html
 ReaderJS/package-lock.json
-JetReader/JetReader/ReaderApp.Release.config
-JetReader/JetReader/ReaderApp.config
-JetReader/JetReader.UWP/Package.xml
+JetReader/ReaderApp.Release.config
+JetReader/ReaderApp.config
+JetReader.UWP/Package.xml
 
 # Created by https://www.gitignore.io/api/visualstudio,csharp
 
