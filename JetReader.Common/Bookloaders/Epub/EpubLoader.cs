@@ -46,7 +46,7 @@ namespace JetReader.BookLoaders.Epub
                 var doc = new HtmlDocument();
                 doc.LoadHtml(html);
 
-                HtmlHelper.StripHtmlTags(doc, new[] { "iframe" });
+                HtmlHelper.StripHtmlTags(doc, "iframe");
 
                 var data = ((EpubEbook) book);
                 InlineCss(data, doc, chapter);

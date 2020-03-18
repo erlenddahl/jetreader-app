@@ -26,6 +26,7 @@ namespace JetReader.BookLoaders
         public (int wordCount, int letterCount) GetStatistics()
         {
             var rawHtml = Content;
+            if (string.IsNullOrWhiteSpace(rawHtml)) return (0, 0);
 
             var doc = new HtmlDocument();
             doc.LoadHtml(rawHtml);
