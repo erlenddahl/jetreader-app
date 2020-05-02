@@ -12,6 +12,7 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using JetReader.DependencyService;
 using System.Reflection;
+using JetReader.Page.Home;
 using JetReader.Repository;
 using PCLAppConfig;
 
@@ -29,6 +30,20 @@ namespace JetReader {
 
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
 
+            if (UserSettings.OpenBookImmediately != null)
+            {
+                var page = new ReaderPage();
+                page.LoadBook(UserSettings.OpenBookImmediately);
+                UserSettings.OpenBookImmediately = null;
+
+                if (HasMasterDetailPage)
+                    MainPage = new MainPage { Detail = new NavigationPage(page) };
+                else
+                    MainPage = new NavigationPage(page);
+
+                return;
+            }
+
             if (UserSettings.Reader.OpenPreviousBookOnLaunch)
             {
                 var repo = IocManager.Container.Resolve<IBookRepository>();
@@ -36,7 +51,6 @@ namespace JetReader {
 
                 if (book != null)
                 {
-
                     var page = new ReaderPage();
                     page.LoadBook(book);
 

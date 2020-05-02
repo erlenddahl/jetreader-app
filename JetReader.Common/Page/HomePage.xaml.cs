@@ -16,6 +16,7 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Plugin.FilePicker;
+using Plugin.FilePicker.Abstractions;
 using Rg.Plugins.Popup.Extensions;
 using Rg.Plugins.Popup.Services;
 using Xamarin.Forms;
@@ -27,14 +28,14 @@ namespace JetReader.Page {
         readonly IBookshelfService _bookshelfService;
         readonly IMessageBus _messageBus;
 
-        LoadingPopup _loadingPopup = new LoadingPopup();
+        readonly LoadingPopup _loadingPopup = new LoadingPopup();
 
-        public HomePage() {
-            InitializeComponent();
-
-            // ioc
+        public HomePage()
+        {
             _bookshelfService = IocManager.Container.Resolve<IBookshelfService>();
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
+
+            InitializeComponent();
 
             if (!App.HasMasterDetailPage) {
 
@@ -52,7 +53,6 @@ namespace JetReader.Page {
                 aboutItem.Clicked += AboutItem_Clicked;
 
                 ToolbarItems.Add(aboutItem);
-
             }
         }
 
@@ -103,7 +103,6 @@ namespace JetReader.Page {
 
         private async void AddBook(AddBookClickedMessage msg)
         {
-
             var permissionStatus = await PermissionHelper.CheckAndRequestPermission(Plugin.Permissions.Abstractions.Permission.Storage);
 
             if (permissionStatus != Plugin.Permissions.Abstractions.PermissionStatus.Granted)
@@ -115,6 +114,11 @@ namespace JetReader.Page {
             var pickedFile = await CrossFilePicker.Current.PickFile();
             if (pickedFile == null) return;
 
+            await OpenPickedBook(pickedFile);
+        }
+
+        private async Task OpenPickedBook(FileData pickedFile)
+        {
             await Navigation.PushPopupAsync(_loadingPopup);
 
             try

@@ -11,6 +11,7 @@ using JetReader.Provider;
 using Microsoft.AppCenter.Analytics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Plugin.FilePicker.Abstractions;
 using Plugin.Settings;
 using Plugin.Settings.Abstractions;
 using Xamarin.Forms;
@@ -45,6 +46,8 @@ namespace JetReader {
                 AppSettings.AddOrUpdateValue(CreateKey(nameof(AnalyticsAgreement)), value);
             }
         }
+
+        public static FileData OpenBookImmediately { get; set; }
 
         private static async void SetAnalytics(bool enabled) {
             await Analytics.SetEnabledAsync(enabled);

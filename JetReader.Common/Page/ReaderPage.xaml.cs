@@ -22,8 +22,10 @@ using JetReader.Page.Reader;
 using JetReader.Page.Reader.Popups;
 using JetReader.Provider;
 using JetReader.Service;
+using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json.Linq;
+using Plugin.FilePicker.Abstractions;
 using Rg.Plugins.Popup.Extensions;
 using Rg.Plugins.Popup.Services;
 using Xamarin.Forms;
@@ -322,10 +324,39 @@ namespace JetReader.Page
 
             WebView.Messages.Send("resumeStatsTime", null);
         }
+        public async Task LoadBook(FileData file)
+        {
+            try
+            {
+                await _loadingPopup.Show();
+                var (book, _) = await _bookshelfService.AddBook(file);
+                await LoadBook(book);
+            }
+            catch (Exception e)
+            {
+                var ext = string.Empty;
+                if (!string.IsNullOrEmpty(file.FileName))
+                    ext = Path.GetExtension(file.FileName);
 
-        public async void LoadBook(BookInfo info) {
+                Analytics.TrackEvent("Failed to open book", new Dictionary<string, string>
+                {
+                    {"Extension", ext}
+                });
+                Crashes.TrackError(e, new Dictionary<string, string>
+                {
+                    {"Filename", file.FileName}
+                });
+                Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.StackTrace);
+                await DisplayAlert("Error", "Failed to open this ebook file.", "OK");
+            }
 
-            await Navigation.PushPopupAsync(_loadingPopup);
+            await _loadingPopup.Hide();
+        }
+
+        public async Task LoadBook(BookInfo info)
+        {
+            await _loadingPopup.Show();
 
             _bookshelfBook = info;
             _bookshelfBook.LastRead = DateTime.Now;
@@ -610,5 +641,6 @@ namespace JetReader.Page
             WebView.Messages.Send("setTheme", theme);
         }
         #endregion
+
     }
 }

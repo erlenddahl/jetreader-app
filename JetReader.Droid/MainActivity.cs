@@ -1,5 +1,6 @@
 ﻿using System;
-
+using System.IO;
+using System.Net;
 using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
@@ -12,22 +13,46 @@ using Autofac;
 using JetReader.Service;
 using JetReader.Model.Messages;
 using Android.Content;
+using Android.Provider;
+using Android.Webkit;
 using JetReader.Page;
+using Plugin.FilePicker;
+using Plugin.FilePicker.Abstractions;
 using Plugin.HybridWebView.Droid;
 using Plugin.Permissions;
 
 namespace JetReader.Droid {
     [Activity(Label = "JetReader", Icon = "@mipmap/ic_launcher", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [IntentFilter(new[]{Intent.ActionView}, Categories = new []{Intent.CategoryBrowsable, Intent.CategoryDefault}, DataMimeType = "application/epub+zip")]
+    [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault }, DataScheme = "file", DataHost = "*", DataMimeType = "*/*", DataPathPattern = ".*\\.epub")]
+    [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryBrowsable, Intent.CategoryDefault }, DataScheme = "http", DataHost = "*", DataMimeType = "*/*", DataPathPattern = ".*\\.epub")]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity {
 
         BatteryBroadcastReceiver _batteryBroadcastReceiver;
         private bool _disposed = false;
 
         protected override void OnCreate(Bundle bundle) {
+
+            if (!string.IsNullOrWhiteSpace(Intent.DataString))
+            {
+                var uri = Android.Net.Uri.Parse(Intent.DataString);
+                var filePath = IOUtil.GetPath(ApplicationContext, uri);
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    filePath = IOUtil.IsMediaStore(Intent.Scheme) ? uri.ToString() : uri.Path;
+                }
+
+                var fileName = GetFileName(ApplicationContext, uri);
+
+                var fs = IocManager.Container.Resolve<FileService>();
+                UserSettings.OpenBookImmediately = new FileData(filePath, fileName, () => fs.LoadFileStreamAsync(filePath).Result);
+            }
+
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
+            Xamarin.Essentials.Platform.Init(this, bundle);
 
             SetUpIoc();
 
@@ -49,7 +74,7 @@ namespace JetReader.Droid {
 
             //TODO: Make sure to compile for all Android versions: https://forums.xamarin.com/discussion/382/suggestions-on-how-to-support-multiple-api-levels-from-a-single-application-apk
 #if __ANDROID_28__
-            Window.Attributes.LayoutInDisplayCutoutMode = LayoutInDisplayCutoutMode.ShortEdges;
+            //Window.Attributes.LayoutInDisplayCutoutMode = LayoutInDisplayCutoutMode.ShortEdges;
 #endif
 
             LoadApplication(new App());
@@ -58,6 +83,64 @@ namespace JetReader.Droid {
 
             _batteryBroadcastReceiver = new BatteryBroadcastReceiver();
             Application.Context.RegisterReceiver(_batteryBroadcastReceiver, new IntentFilter(Intent.ActionBatteryChanged));
+        }
+
+        /// <summary>
+        /// Retrieves file name part from given Uri
+        /// </summary>
+        /// <param name="context">Android context to access content resolver</param>
+        /// <param name="uri">Uri to get filename for</param>
+        /// <returns>file name part</returns>
+        private string GetFileName(Context context, Android.Net.Uri uri)
+        {
+            string[] projection = { MediaStore.MediaColumns.DisplayName };
+
+            var resolver = context.ContentResolver;
+            var name = string.Empty;
+            var metaCursor = resolver.Query(uri, projection, null, null, null);
+
+            if (metaCursor != null)
+            {
+                try
+                {
+                    if (metaCursor.MoveToFirst())
+                    {
+                        name = metaCursor.GetString(0);
+                    }
+                }
+                finally
+                {
+                    metaCursor.Close();
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                if (!Path.HasExtension(name))
+                    name = name.TrimEnd('.') + '.' + GetExtensionFromUri(context, uri);
+
+                return name;
+            }
+            else
+            {
+                var extension = GetExtensionFromUri(context, uri);
+                if (!string.IsNullOrEmpty(extension))
+                    return "filename." + extension;
+                else
+                    return Path.GetFileName(WebUtility.UrlDecode(uri.ToString()));
+            }
+        }
+
+        /// <summary>
+        /// Returns a file extension for given content Uri
+        /// </summary>
+        /// <param name="context">context to use</param>
+        /// <param name="uri">content Uri to check</param>
+        /// <returns>file extension, without leading dot, or empty string</returns>
+        public static string GetExtensionFromUri(Context context, Android.Net.Uri uri)
+        {
+            string mimeType = context.ContentResolver.GetType(uri);
+            return mimeType != null ? MimeTypeMap.Singleton.GetExtensionFromMimeType(mimeType) : string.Empty;
         }
 
         protected override void OnStart() {
