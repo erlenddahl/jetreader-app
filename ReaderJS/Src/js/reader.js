@@ -12,7 +12,6 @@ if (!Math.trunc) {
     };
 }
 
-
 function CodeTimer() {
     this.timings = [];
     this.prev = performance.now();
@@ -319,6 +318,8 @@ window.Ebook = {
         this.pageHeight = rect.height;
 
         columnsInner.style["column-width"] = this.pageWidth + "px";
+        columnsInner.style["-moz-column-width"] = this.pageWidth + "px";
+        columnsInner.style["-webkit-column-width"] = this.pageWidth + "px";
     },
     resize: function (width, height) {
         var timer = new CodeTimer();
