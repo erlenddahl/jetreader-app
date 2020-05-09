@@ -342,12 +342,12 @@ window.Ebook = {
 
         timer.sendDebug("resize");
     },
-    changeFontSize: function(fontSize) {
+    changeFontSize: function(message) {
         Ebook.htmlHelper.hideContent();
         var position = Ebook.getCurrentPosition();
 
         Ebook.goToPageFast(1);
-        Ebook.fontSize = fontSize;
+        Ebook.fontSize = message.FontSize;
         Ebook.htmlHelper.setFontSize();
 
         Ebook.setUpColumns();
