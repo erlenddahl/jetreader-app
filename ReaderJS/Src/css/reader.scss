@@ -14,6 +14,9 @@
 #columns-inner {
     height: 100%;
     column-gap: 0px;
+    -webkit-column-gap: 0px;
+    -moz-column-gap: 0px;
+    grid-gap: 0px;
 }
 
 .js-ebook-page-begin {

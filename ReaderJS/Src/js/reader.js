@@ -799,7 +799,7 @@ window.Gestures = {
             perform("tap", e.center);
         });
 
-        hammer.on("press", function(e) {
+        hammer.on("press", function (e) {
             Messages.send("Interaction", { type: "press" });
             perform("press", e.center);
         });
