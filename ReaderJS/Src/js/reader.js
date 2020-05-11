@@ -524,8 +524,8 @@ window.Ebook = {
         }
     },
     resizeImages: function() {
-        $("img").css("max-width", (Ebook.webViewWidth - (2 * Ebook.margins.Left)) + "px"); //TODO: Crashes on .margins == null when adding and auto-opening new book (Ace Atkins => Kickback)
-        $("img").css("max-height", (Ebook.webViewHeight - (2 * Ebook.margins.Top)) + "px");
+        $("img").css("max-width", (Ebook.webViewWidth - (Ebook.margins.Left + Ebook.margins.Right)) + "px"); //TODO: Crashes on .margins == null when adding and auto-opening new book (Ace Atkins => Kickback)
+        $("img").css("max-height", (Ebook.webViewHeight - (Ebook.margins.Top + Ebook.margins.Bottom)) + "px");
     },
 
     panStart: null,
@@ -554,10 +554,10 @@ window.Ebook = {
             });
         },
         setWidth: function() {
-            $("#columns-outer").css("width", (Ebook.webViewWidth - (2 * Ebook.margins.Left)) + "px");
+            $("#columns-outer").css("width", (Ebook.webViewWidth - (Ebook.margins.Left + Ebook.margins.Right)) + "px");
         },
         setHeight: function() {
-            $("#columns-outer").css("height", (Ebook.webViewHeight - (2 * Ebook.margins.Top)) + "px");
+            $("#columns-outer").css("height", (Ebook.webViewHeight - (Ebook.margins.Top + Ebook.margins.Bottom)) + "px");
         },
         setMargin: function() {
             $("#columns-outer").css({
