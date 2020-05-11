@@ -5,14 +5,41 @@
     xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
     xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
     BackgroundColor="Transparent"
+    x:Name="BookInfoPopupView"
     x:Class="JetReader.Page.Reader.Popups.BookInfoPopup">
-    <ScrollView Margin="20, 20, 20, 20">
-        <StackLayout x:Name="container" BackgroundColor="#EEEEEE" Padding="20, 20, 20, 20" Orientation="Vertical">
-            <Image x:Name="Cover" 
-                Source="book.png"
-                HorizontalOptions="Fill" 
-                VerticalOptions="StartAndExpand" />
 
+    <Frame Margin="20, 20, 20, 20" BindingContext="{Reference BookInfoPopupView}">
+        <StackLayout Orientation="Vertical">
+            <ScrollView>
+                <StackLayout x:Name="container" BackgroundColor="#EEEEEE" Padding="20, 20, 20, 20" Orientation="Vertical">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Image x:Name="Cover" 
+                               Grid.Column="0"
+                               Source="book.png"
+                               HorizontalOptions="Fill" 
+                               VerticalOptions="StartAndExpand" />
+
+                        <StackLayout Orientation="Vertical" Grid.Column="1">
+                            <Label FontAttributes="Bold" FontSize="Large" Text="{Binding Book.Title}"></Label>
+                            <StackLayout Orientation="Horizontal">
+                                <Label>by</Label>
+                                <Label Text="{Binding Book.Author}"></Label>
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal">
+                                <Label FontAttributes="Bold" FontSize="16">Language:</Label>
+                                <Label Text="{Binding Book.Language}" FontSize="16"></Label>
+                            </StackLayout>
+                        </StackLayout>
+                    </Grid>
+                </StackLayout>
+            </ScrollView>
+            <Button Clicked="CloseButton_OnClicked" Text="Close"></Button>
         </StackLayout>
-    </ScrollView>
+    </Frame>
+
 </pages:PopupPage>
