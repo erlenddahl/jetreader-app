@@ -51,6 +51,11 @@
       <Folder Include="Properties\" />
     </ItemGroup>
     <ItemGroup>
+      <Reference Include="Extensions">
+        <HintPath>..\Lib\Extensions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+    <ItemGroup>
       <Compile Update="Page\MainPage.xaml.cs">
         <DependentUpon>MainPage.xaml</DependentUpon>
       </Compile>
