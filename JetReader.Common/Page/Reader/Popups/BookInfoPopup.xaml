@@ -18,11 +18,22 @@
                             <ColumnDefinition Width="2*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+
                         <Image x:Name="Cover" 
                                Grid.Column="0"
                                Source="book.png"
-                               HorizontalOptions="Fill" 
-                               VerticalOptions="StartAndExpand" />
+                               HorizontalOptions="Fill"
+                               HeightRequest="150"
+                               VerticalOptions="StartAndExpand">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Tapped="ImageTapped"
+                                    NumberOfTapsRequired="1" />
+                            </Image.GestureRecognizers>
+                        </Image>
 
                         <StackLayout Orientation="Vertical" Grid.Column="1">
                             <Label FontAttributes="Bold" FontSize="Large" Text="{Binding Book.Title}"></Label>

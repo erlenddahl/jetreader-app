@@ -68,6 +68,9 @@
       <Compile Update="Page\Reader\Popups\BookInfoPopup.xaml.cs">
         <DependentUpon>BookInfoPopup.xaml</DependentUpon>
       </Compile>
+      <Compile Update="Page\Reader\Popups\ImagePreviewPopup.xaml.cs">
+        <DependentUpon>ImagePreviewPopup.xaml</DependentUpon>
+      </Compile>
       <Compile Update="Page\Reader\Popups\ThemePickerPopup.xaml.cs">
         <DependentUpon>ThemePickerPopup.xaml</DependentUpon>
       </Compile>

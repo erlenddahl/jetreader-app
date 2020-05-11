@@ -87,5 +87,10 @@ namespace JetReader.Page.Reader.Popups
         {
             this.Hide();
         }
+
+        private void ImageTapped(object sender, EventArgs e)
+        {
+            ImagePreviewPopup.Enlarge(Cover);
+        }
     }
 }
