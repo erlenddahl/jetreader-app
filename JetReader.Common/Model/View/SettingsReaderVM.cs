@@ -10,8 +10,9 @@ using Xamarin.Forms;
 
 namespace JetReader.Model.View {
     public class SettingsReaderVm {
-
         public ScrollSpeedVm ScrollSpeed { get; set; } = new ScrollSpeedVm();
+        public FontSizeVm FontSize { get; set; } = new FontSizeVm();
+        public MarginVm Margins { get; set; } = new MarginVm();
         public FullscreenVm Fullscreen { get; set; } = new FullscreenVm();
     }
 }

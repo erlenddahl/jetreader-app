@@ -53,11 +53,7 @@
                     <StackLayout Style="{StaticResource wrapper}">
                         <StackLayout Orientation="Horizontal" CompressedLayout.IsHeadless="true">
                             <Label Text="Margin" Style="{StaticResource title}" />
-                            <Picker ItemsSource="{Binding Margin.Items}" SelectedItem="{Binding Margin.Value}" Style="{StaticResource control}">
-                                <Picker.Title>
-                                    <OnPlatform x:TypeArguments="x:String" Android="Select margin" />
-                                </Picker.Title>
-                            </Picker>
+                            <Button Text="{Binding Margins.Summary}" Style="{StaticResource control}" Clicked="OpenMarginEditor_OnClicked"></Button>
                         </StackLayout>
                     </StackLayout>
 

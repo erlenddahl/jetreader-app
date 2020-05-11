@@ -77,6 +77,9 @@
       <Compile Update="Page\Reader\Popups\ThemeVisualizer.xaml.cs">
         <DependentUpon>ThemeColorVisualizer.xaml</DependentUpon>
       </Compile>
+      <Compile Update="Page\Settings\Popups\MarginEditor.xaml.cs">
+        <DependentUpon>MarginEditor.xaml</DependentUpon>
+      </Compile>
       <Compile Update="Page\Settings\Popups\CellEditorPopup.xaml.cs">
         <DependentUpon>CellEditorPopup.xaml</DependentUpon>
       </Compile>

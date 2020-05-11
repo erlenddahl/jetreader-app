@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage 
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+    xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
+    BackgroundColor="Transparent"
+    BackgroundInputTransparent="False"
+    CloseWhenBackgroundIsClicked="True"
+    x:Name="MarginEditorPopup"
+    x:Class="JetReader.Page.Settings.Popups.MarginEditor">
+
+    <!--You can use any elements here which are extended from Xamarin.Forms.View-->
+    <Frame Margin="20" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" BackgroundColor="#EEEEEE" BorderColor="#555555" CornerRadius="10" HasShadow="True">
+        <StackLayout Orientation="Vertical">
+
+            <Label Text="Edit margins"></Label>
+
+            <Grid BindingContext="{Reference MarginEditorPopup}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <StackLayout Grid.Row="0" Grid.Column="1" Orientation="Vertical">
+                    <Label Text="&#8593; Top" />
+                    <Picker ItemsSource="{Binding Values}" SelectedItem="{Binding TopValue}"></Picker>
+                </StackLayout>
+                <StackLayout Grid.Row="1" Grid.Column="0" Orientation="Vertical">
+                    <Label Text="&#8592; Left" />
+                    <Picker ItemsSource="{Binding Values}" SelectedItem="{Binding LeftValue}"></Picker>
+                </StackLayout>
+                <StackLayout Grid.Row="1" Grid.Column="2" Orientation="Vertical">
+                    <Label Text="&#8594; Right" />
+                    <Picker ItemsSource="{Binding Values}" SelectedItem="{Binding RightValue}"></Picker>
+                </StackLayout>
+                <StackLayout Grid.Row="2" Grid.Column="1" Orientation="Vertical">
+                    <Label Text="&#8595; Bottom" />
+                    <Picker ItemsSource="{Binding Values}" SelectedItem="{Binding BottomValue}"></Picker>
+                </StackLayout>
+
+                <StackLayout Grid.Row="1" Grid.Column="1" Orientation="Vertical">
+                    <Label Text="All" />
+                    <Picker ItemsSource="{Binding ValuesForAll}" SelectedItem="{Binding AllValues}"></Picker>
+                </StackLayout>
+
+            </Grid>
+            <Button Clicked="SaveButton_OnClicked" Text="Apply"></Button>
+            <Button Clicked="CancelButton_OnClicked" Text="Cancel"></Button>
+        </StackLayout>
+    </Frame>
+
+</pages:PopupPage>
