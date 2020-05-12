@@ -90,6 +90,7 @@
     <Compile Include="EpubLoaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EbookChapterTests.cs" />
+    <Compile Include="MobiLoaderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
