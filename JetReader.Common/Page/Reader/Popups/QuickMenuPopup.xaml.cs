@@ -53,13 +53,7 @@ namespace JetReader.Page.Reader.Popups
             _messageBus = IocManager.Container.Resolve<IMessageBus>();
 
             InitializeComponent();
-
-            var tap = new TapGestureRecognizer();
-            tap.Tapped += async (sender, e) => {
-                await Navigation.PushPopupAsync(_themePicker);
-            };
-            themeRow.GestureRecognizers.Add(tap);
-
+            
             _themePicker.ThemeSelected += theme => { SelectedTheme = theme; };
 
             BindingContext = this;
@@ -83,6 +77,11 @@ namespace JetReader.Page.Reader.Popups
         private void FontSizeUpClicked(object sender, EventArgs e)
         {
             FontSize += 1;
+        }
+
+        private void TapGestureRecognizer_OnTapped(object sender, EventArgs e)
+        {
+            Navigation.PushPopupAsync(_themePicker);
         }
     }
 }
