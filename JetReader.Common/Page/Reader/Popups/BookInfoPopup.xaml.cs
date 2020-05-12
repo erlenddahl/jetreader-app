@@ -38,10 +38,13 @@ namespace JetReader.Page.Reader.Popups
                 AddInfoControl(container, item);
             }
 
-            AddEmpty(container);
-            foreach (var item in Book.Info.ReadStats.Dates.Select(p => (p.Date.ToShortDateString(), $"{TimeSpan.FromSeconds(p.Seconds).ToShortPrettyFormat()}, {p.Words:n0} words, {(p.Words / (p.Seconds / 60)):n0} words/min.")))
+            if (Book.Info.HasStats())
             {
-                AddInfoControl(container, item);
+                AddEmpty(container);
+                foreach (var item in Book.Info.ReadStats.Dates.Select(p => (p.Date.ToShortDateString(), $"{TimeSpan.FromSeconds(p.Seconds).ToShortPrettyFormat()}, {p.Words:n0} words, {(p.Words / (p.Seconds / 60)):n0} words/min.")))
+                {
+                    AddInfoControl(container, item);
+                }
             }
         }
 

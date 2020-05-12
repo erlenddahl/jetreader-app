@@ -163,5 +163,10 @@ namespace JetReader.Books
 
             return (before, current, after);
         }
+
+        public bool HasStats()
+        {
+            return ReadStats?.Dates?.Any(p => p.Seconds > 1) == true;
+        }
     }
 }

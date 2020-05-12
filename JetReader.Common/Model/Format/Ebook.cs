@@ -56,9 +56,9 @@ namespace JetReader.Model.Format
             var secondsRead = Info.ReadStats.Dates.Sum(p => p.Seconds);
             var wordsRead = Info.ReadStats.Dates.Sum(p => p.Words);
             var totalWords = Info.ChapterInfo.Sum(p => p.Words);
-            var wordsPerSecond = wordsRead / secondsRead;
+            var wordsPerSecond = secondsRead > 0 ? wordsRead / secondsRead : 0;
 
-            return new List<(string title, string value)>()
+            var items = new List<(string title, string value)>()
             {
                 ("Description", Description),
                 ("", ""),
@@ -68,14 +68,20 @@ namespace JetReader.Model.Format
                 ("", ""),
 
                 ("Words in book", totalWords.ToString("n0")),
-                ("Characters in book", Info.ChapterInfo.Sum(p => p.Letters).ToString("n0")),
-                ("", ""),
-
-                ("Total reading time", TimeSpan.FromSeconds(secondsRead).ToShortPrettyFormat()),
-                ("Total words read", $"{wordsRead:n0} ({(wordsRead / totalWords * 100):n1}%)"),
-                ("Average reading speed", $"{(wordsPerSecond * 60):n0} words/min"),
-                ("Estimated remaining reading time", TimeSpan.FromSeconds((totalWords - wordsRead)/wordsPerSecond).ToShortPrettyFormat()),
+                ("Characters in book", Info.ChapterInfo.Sum(p => p.Letters).ToString("n0"))
             };
+
+            if (secondsRead >= 1)
+            {
+                items.Add(("", ""));
+
+                items.Add(("Total reading time", TimeSpan.FromSeconds(secondsRead).ToShortPrettyFormat()));
+                items.Add(("Total words read", $"{wordsRead:n0} ({(wordsRead / totalWords * 100):n1}%)"));
+                items.Add(("Average reading speed", $"{(wordsPerSecond * 60):n0} words/min"));
+                items.Add(("Estimated remaining reading time", TimeSpan.FromSeconds((totalWords - wordsRead) / wordsPerSecond).ToShortPrettyFormat()));
+            }
+
+            return items;
         }
     }
 }
