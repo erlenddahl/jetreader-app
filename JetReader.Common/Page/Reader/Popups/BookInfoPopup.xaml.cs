@@ -41,7 +41,7 @@ namespace JetReader.Page.Reader.Popups
             if (Book.Info.HasStats())
             {
                 AddEmpty(container);
-                foreach (var item in Book.Info.ReadStats.Dates.Select(p => (p.Date.ToShortDateString(), $"{TimeSpan.FromSeconds(p.Seconds).ToShortPrettyFormat()}, {p.Words:n0} words, {(p.Words / (p.Seconds / 60)):n0} words/min.")))
+                foreach (var item in Book.Info.ReadStats.Dates.Where(p => p.Seconds >= 1).Select(p => (p.Date.ToShortDateString(), $"{TimeSpan.FromSeconds(p.Seconds).ToShortPrettyFormat()}, {p.Words:n0} words, {(p.Words / (p.Seconds / 60)):n0} words/min.")))
                 {
                     AddInfoControl(container, item);
                 }
