@@ -107,7 +107,7 @@ namespace JetReader.Page.Reader.Popups
         public async void SetBook(Ebook ebook, BookInfo bookInfo)
         {
             _bookInfo = bookInfo;
-            Chapters = ebook.HtmlFiles;
+            Chapters = ebook.TableOfContents;
             await RefreshBookmarks();
         }
 

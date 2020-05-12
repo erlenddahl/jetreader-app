@@ -4,6 +4,7 @@ using JetReader.BookLoaders;
 using JetReader.Books;
 using EpubSharp;
 using HtmlAgilityPack;
+using JetReader.Extensions;
 
 namespace JetReader.Model.Format
 {
@@ -30,6 +31,7 @@ namespace JetReader.Model.Format
             Description = book.Format.Opf.Metadata.Descriptions.FirstOrDefault() ?? "";
             Language = book.Format.Opf.Metadata.Languages.FirstOrDefault() ?? "";
             HtmlFiles = GetHtmlFilesInReadingOrder(book).ToList();
+            TableOfContents = FlattenToc(book.TableOfContents).ToList();
             Data = book;
 
             if (book.CoverImage != null && book.CoverImage.Length > 0)
@@ -39,6 +41,22 @@ namespace JetReader.Model.Format
             }
 
             GenerateInfo();
+        }
+
+        private IEnumerable<EbookChapter> FlattenToc(IEnumerable<EpubChapter> toc, int depth = 0)
+        {
+            foreach (var chapter in toc)
+            {
+                yield return ToEbookChapter(chapter, depth);
+                if(chapter.SubChapters.Any())
+                    foreach (var subchapter in FlattenToc(chapter.SubChapters, depth + 1))
+                        yield return subchapter;
+            }
+        }
+
+        private EbookChapter ToEbookChapter(EpubChapter c, int depth)
+        {
+            return new EbookChapter(c.Title, "", c.FileName + "#" + c.Anchor, depth);
         }
 
         private string GetTitle(Dictionary<string, EpubChapter> dict, EpubTextFile text)

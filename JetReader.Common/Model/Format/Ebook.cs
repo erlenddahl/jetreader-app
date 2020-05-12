@@ -23,6 +23,7 @@ namespace JetReader.Model.Format
         public string Description { get; set; }
         public string Language { get; set; }
         public List<EbookChapter> HtmlFiles { get; set; }
+        public List<EbookChapter> TableOfContents { get; set; }
         public byte[] CoverData { get; set; }
         public string CoverFilename { get; set; }
 
