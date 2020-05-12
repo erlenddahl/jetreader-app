@@ -83,6 +83,13 @@ namespace JetReader.Page
             _chapterListPopup = new ChapterListPopup();
             _chapterListPopup.OnChapterClicked += ChapterList_OnChapterClicked;
             _chapterListPopup.OnBookmarkClicked += ChapterListPopupOnBookmarkClicked;
+
+            ToolbarItems.Add(new ToolbarItem("Search", null, () => { }, ToolbarItemOrder.Secondary, 0));
+            ToolbarItems.Add(new ToolbarItem("Sync", null, () => SynchronizeAll(), ToolbarItemOrder.Secondary, 0));
+            ToolbarItems.Add(new ToolbarItem("Backup", null, () => DoBackup(), ToolbarItemOrder.Secondary, 0));
+            ToolbarItems.Add(new ToolbarItem("Restore", null, () => DoRestore(), ToolbarItemOrder.Secondary, 0));
+            ToolbarItems.Add(new ToolbarItem("Book info", null, () => new BookInfoPopup(_ebook).Show(), ToolbarItemOrder.Secondary, 0));
+            ToolbarItems.Add(new ToolbarItem("Chapters/bookmarks", null, () => _chapterListPopup.Show(), ToolbarItemOrder.Secondary, 0));
         }
 
         private void ChapterListPopupOnBookmarkClicked(object sender, Bookmark e)
@@ -138,48 +145,19 @@ namespace JetReader.Page
                     }
                     break;
                 case GridCommand.BookInfo:
-                    var infoPage = new BookInfoPopup(_ebook);
-                    await Navigation.PushPopupAsync(infoPage);
+                    await new BookInfoPopup(_ebook).Show();
                     break;
                 case GridCommand.OpenQuickSettings:
                     await Navigation.PushPopupAsync(_quickPanel, false);
                     break;
                 case GridCommand.Sync:
-                    WebView.Messages.ShowProgressMessage("Loading sync data from other devices ...");
-                    await LoadProgress();
-                    WebView.Messages.ShowProgressMessage("Saving sync data from this device ...");
-                    SaveProgress();
-                    WebView.Messages.ShowProgressMessage("Synchronizing bookmarks ...");
-                    SynchronizeBookmarks();
-                    WebView.Messages.ShowProgressMessage("Synchronization successful.", preset: ProgressMessagePreset.Success);
+                    await SynchronizeAll();
                     break;
                 case GridCommand.Backup:
-                    WebView.Messages.ShowProgressMessage("Performing backup ...");
-                    await Backup();
-                    WebView.Messages.ShowProgressMessage("Backup successful.", preset: ProgressMessagePreset.Success);
+                    await DoBackup();
                     break;
                 case GridCommand.Restore:
-                    WebView.Messages.ShowProgressMessage("Fetching restore list ...");
-                    var files = await _syncService.GetDatabaseRestorationList();
-                    if (files != null && files.Any())
-                        await new ItemPickerPopup("Pick backup file to restore:", files.Select(p => p.Split('/').Last().Split('.').First()).ToArray(), async (_, ix) =>
-                        {
-                            WebView.Messages.ShowProgressMessage("Restoring backup ...");
-                            try
-                            {
-                                var res = await _syncService.RestoreBackup(files[ix]);
-                                if (res)
-                                    WebView.Messages.ShowProgressMessage("Backup restored.", preset: ProgressMessagePreset.Success);
-                                else
-                                    WebView.Messages.ShowProgressMessage("Restore failed.", preset: ProgressMessagePreset.Failure);
-                            }
-                            catch (Exception ex)
-                            {
-                                WebView.Messages.ShowProgressMessage("Restore failed: " + ex.Message, preset: ProgressMessagePreset.Failure);
-                            }
-                        }).Show();
-                    else
-                        WebView.Messages.ShowProgressMessage("No backup files found.", preset: ProgressMessagePreset.Failure);
+                    await DoRestore();
                     break;
                 case GridCommand.ShowChapters:
                     _chapterListPopup.Show();
@@ -188,6 +166,49 @@ namespace JetReader.Page
                     _chapterListPopup.Show();
                     break;
             }
+        }
+
+        private async Task DoBackup()
+        {
+            WebView.Messages.ShowProgressMessage("Performing backup ...");
+            await Backup();
+            WebView.Messages.ShowProgressMessage("Backup successful.", preset: ProgressMessagePreset.Success);
+        }
+
+        private async Task DoRestore()
+        {
+            WebView.Messages.ShowProgressMessage("Fetching restore list ...");
+            var files = await _syncService.GetDatabaseRestorationList();
+            if (files != null && files.Any())
+                await new ItemPickerPopup("Pick backup file to restore:", files.Select(p => p.Split('/').Last().Split('.').First()).ToArray(), async (_, ix) =>
+                {
+                    WebView.Messages.ShowProgressMessage("Restoring backup ...");
+                    try
+                    {
+                        var res = await _syncService.RestoreBackup(files[ix]);
+                        if (res)
+                            WebView.Messages.ShowProgressMessage("Backup restored.", preset: ProgressMessagePreset.Success);
+                        else
+                            WebView.Messages.ShowProgressMessage("Restore failed.", preset: ProgressMessagePreset.Failure);
+                    }
+                    catch (Exception ex)
+                    {
+                        WebView.Messages.ShowProgressMessage("Restore failed: " + ex.Message, preset: ProgressMessagePreset.Failure);
+                    }
+                }).Show();
+            else
+                WebView.Messages.ShowProgressMessage("No backup files found.", preset: ProgressMessagePreset.Failure);
+        }
+
+        private async Task SynchronizeAll()
+        {
+            WebView.Messages.ShowProgressMessage("Loading sync data from other devices ...");
+            await LoadProgress();
+            WebView.Messages.ShowProgressMessage("Saving sync data from this device ...");
+            SaveProgress();
+            WebView.Messages.ShowProgressMessage("Synchronizing bookmarks ...");
+            SynchronizeBookmarks();
+            WebView.Messages.ShowProgressMessage("Synchronization successful.", preset: ProgressMessagePreset.Success);
         }
 
         private async Task Backup()
