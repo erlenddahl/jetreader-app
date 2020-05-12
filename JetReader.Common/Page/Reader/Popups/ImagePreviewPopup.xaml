@@ -9,26 +9,15 @@
     CloseWhenBackgroundIsClicked="True"
     x:Class="JetReader.Page.Reader.Popups.ImagePreviewPopup">
 
-    <!--You can use any elements here which are extended from Xamarin.Forms.View-->
-    <Frame Margin="20" VerticalOptions="Fill" HorizontalOptions="Fill" BackgroundColor="#EEEEEE" BorderColor="#555555" CornerRadius="10" HasShadow="True">
-        
-        <Image x:Name="LargeImage"
-               Aspect="AspectFit"
-               HorizontalOptions="Fill"
-               VerticalOptions="Fill">
-            <Image.GestureRecognizers>
-                <TapGestureRecognizer
-                    Tapped="CancelButton_OnClicked"
-                    NumberOfTapsRequired="1" />
-            </Image.GestureRecognizers>
-        </Image>
-
-        <Frame.GestureRecognizers>
+    <Image x:Name="LargeImage"
+           Aspect="AspectFit"
+           HorizontalOptions="Fill"
+           VerticalOptions="Fill">
+        <Image.GestureRecognizers>
             <TapGestureRecognizer
                 Tapped="CancelButton_OnClicked"
                 NumberOfTapsRequired="1" />
-        </Frame.GestureRecognizers>
-
-    </Frame>
+        </Image.GestureRecognizers>
+    </Image>
 
 </pages:PopupPage>
